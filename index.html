@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#1f3a2e">
+<meta name="theme-color" content="#1463e0">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -13,95 +13,167 @@
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon-180.png">
 <style>
+  /* Çelik Kubbe 2.0 görünümü (Ocean teması): geçişli başlık + büyük daire, beyaz yumuşak gölgeli kartlar, parlak rozetler, geçişli hap butonlar. */
   :root {
-    --bg: #f4f1ea; --card: #fffdf8; --ink: #1d231f; --muted: #6b716c; --line: #e3ddd0;
-    --green: #1f3a2e; --green-2: #2c5442; --amber: #e8a33d; --red: #b8402c; --ok: #2f7d4f;
-    --r: 18px;
+    --hero-a: #1463e0; --hero-b: #1e9e6a; --hero-a2: #3077e4; --hero-b2: #3aaa7c;
+    --bg: #f0f5fc; --card: #ffffff; --field: #eff1f7; --ink: #151823; --muted: #5f6678; --line: #e3e6ef;
+    --primary: #1463e0; --primary-soft: #dceaff;
+    --ok: #1e9e6a; --ok-bg: #dcf3e8; --ok-ink: #11603f;
+    --err: #dc2626; --err-bg: #fee2e2; --err-ink: #7f1d1d;
+    --shadow: 0 10px 28px -12px rgba(20, 99, 224, .35), 0 2px 6px -2px rgba(20, 99, 224, .10);
+    --card-r: 24px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --hero-a: #0f4bb0; --hero-b: #167a52; --hero-a2: #2a63c0; --hero-b2: #2a8a64;
+      --bg: #0e1016; --card: #1b1e29; --field: #222634; --ink: #e6e8ef; --muted: #9ca3b4; --line: #2a2e3d;
+      --primary: #8ec0ff; --primary-soft: #1e2c47;
+      --ok-bg: #133a2a; --ok-ink: #9be3c1; --err-bg: #4c1d1d; --err-ink: #fecaca;
+      --shadow: none;
+    }
   }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body { margin: 0; background: var(--bg); color: var(--ink);
-    font: 17px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    font: 17px/1.4 Roboto, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
   body { min-height: 100dvh; display: flex; flex-direction: column; }
+  svg { display: block; }
 
-  header { background: var(--green); color: #f4f1ea;
-    padding: calc(env(safe-area-inset-top) + 18px) 22px 22px; }
-  header h1 { margin: 0; font-size: 26px; letter-spacing: -.02em; display: flex; align-items: center; gap: 10px; }
-  header h1 span { width: 10px; height: 10px; border-radius: 50%; background: var(--amber); }
-  header p { margin: 4px 0 0; opacity: .75; font-size: 15px; }
+  /* Başlık */
+  header { position: relative; overflow: hidden; color: #fff;
+    background: linear-gradient(135deg, var(--hero-a), var(--hero-a2));
+    border-radius: 0 0 36px 36px;
+    padding: calc(env(safe-area-inset-top) + 22px) 20px 30px 22px; }
+  header::before { content: ""; position: absolute; width: 124vw; max-width: 800px; aspect-ratio: 1; border-radius: 50%;
+    right: -64vw; top: -70vw; background: linear-gradient(160deg, var(--hero-b), var(--hero-b2)); }
+  @media (min-width: 640px) { header::before { right: -380px; top: -460px; } }
+  header::after { content: ""; position: absolute; width: 76vw; aspect-ratio: 1; border-radius: 50%;
+    left: -34vw; bottom: -46vw; background: rgba(255, 255, 255, .07); }
+  .hero { position: relative; z-index: 1; display: flex; align-items: center; gap: 14px; max-width: 640px; margin: 0 auto; }
+  .hero > div { flex: 1; min-width: 0; }
+  header h1 { margin: 0; font-size: 27px; font-weight: 700; letter-spacing: -.01em; }
+  header p { margin: 2px 0 0; color: rgba(255, 255, 255, .85); font-size: 15px; }
+  .glass { width: 48px; height: 48px; border-radius: 50%; flex: none; display: grid; place-items: center;
+    background: rgba(255, 255, 255, .2); border: 1px solid rgba(255, 255, 255, .35); }
+  .glass svg { width: 24px; height: 24px; }
 
-  main { flex: 1; padding: 18px 18px 140px; display: flex; flex-direction: column; gap: 16px;
+  main { flex: 1; padding: 20px 18px 150px; display: flex; flex-direction: column; gap: 16px;
     max-width: 640px; width: 100%; margin: 0 auto; }
-  .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 16px; }
-  .step { display: flex; align-items: center; gap: 10px; font-weight: 650; margin-bottom: 10px; }
-  .num { width: 26px; height: 26px; border-radius: 50%; background: var(--green); color: #fff;
-    display: grid; place-items: center; font-size: 14px; flex: none; }
-  input[type=text] { width: 100%; font: inherit; font-size: 20px; padding: 14px 16px; border-radius: 14px;
-    border: 2px solid var(--line); background: #fff; color: var(--ink); outline: none; }
-  input[type=text]:focus { border-color: var(--green-2); }
+  .card { background: var(--card); border-radius: var(--card-r); padding: 18px; box-shadow: var(--shadow); }
 
-  .actions { display: grid; grid-template-columns: 1.4fr 1fr; gap: 10px; }
-  .btn { appearance: none; border: 0; font: inherit; font-weight: 650; border-radius: 16px; cursor: pointer;
-    display: flex; align-items: center; justify-content: center; gap: 10px; padding: 18px 14px;
-    transition: transform .08s, opacity .2s; }
+  /* Kart başlığı: parlak rozet + yazı */
+  .step { display: flex; align-items: center; gap: 12px; font-weight: 650; font-size: 18px; margin-bottom: 14px; }
+  .step small { color: var(--muted); font-weight: 500; font-size: 15px; }
+  .badge { --c: #1463e0; --c1: #4382e6; --c2: #0f4daf; width: 40px; height: 40px; border-radius: 13px; flex: none;
+    position: relative; display: grid; place-items: center; color: #fff;
+    background: linear-gradient(135deg, var(--c1), var(--c2));
+    box-shadow: 0 4px 10px -3px var(--c); }
+  .badge::after { content: ""; position: absolute; inset: 0; border-radius: inherit;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, .22), transparent 50%); }
+  .badge svg { width: 20px; height: 20px; }
+  .badge.green { --c: #1e9e6a; --c1: #4cb187; --c2: #177b52; }
+
+  /* Başlıktaki beyaz hap giriş alanı (Çelik Kubbe arama kutusu gibi) */
+  .who { position: relative; z-index: 1; max-width: 640px; margin: 22px auto 0; }
+  .who label { display: block; font-size: 14px; font-weight: 600; letter-spacing: .02em; color: rgba(255, 255, 255, .85); margin: 0 0 8px 6px; }
+  .search { display: flex; align-items: center; gap: 10px; background: #fff; border-radius: 999px; padding: 0 8px 0 18px;
+    box-shadow: 0 10px 24px -12px rgba(0, 0, 0, .45); border: 2px solid transparent; transition: border-color .2s; }
+  .search:focus-within { border-color: rgba(255, 255, 255, .9); box-shadow: 0 0 0 4px rgba(255, 255, 255, .25), 0 10px 24px -12px rgba(0, 0, 0, .45); }
+  .search svg { width: 22px; height: 22px; color: #1463e0; flex: none; }
+  .search input { flex: 1; min-width: 0; font: inherit; font-size: 18px; padding: 16px 4px; border: 0; background: none; color: #151823; outline: none; }
+  .search input::placeholder { color: #5f6678; opacity: .8; }
+
+  /* Butonlar */
+  .actions { display: grid; grid-template-columns: 1.45fr 1fr; gap: 10px; }
+  .btn { appearance: none; border: 0; font: inherit; font-weight: 600; border-radius: 999px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 10px; padding: 16px 18px;
+    transition: transform .1s, opacity .2s, box-shadow .2s; user-select: none; }
   .btn:active { transform: scale(.97); }
-  .btn svg { width: 26px; height: 26px; flex: none; }
-  .btn-cam { background: var(--amber); color: #2a1d06; font-size: 19px; min-height: 76px; }
-  .btn-gal { background: #fff; color: var(--green); border: 2px solid var(--line); }
+  .btn svg { width: 24px; height: 24px; flex: none; }
+  .btn-grad { color: #fff; background: linear-gradient(135deg, var(--hero-a), var(--hero-b));
+    box-shadow: 0 10px 22px -10px var(--hero-a); }
+  .btn-cam { font-size: 18px; min-height: 64px; }
+  .btn-gal { background: var(--primary-soft); color: var(--primary); min-height: 64px; }
   .file { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
 
-  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 4px; }
-  .grid:empty::before { content: "Henüz foto yok"; grid-column: 1 / -1; color: var(--muted);
-    text-align: center; padding: 26px 0; border: 2px dashed var(--line); border-radius: 14px; }
-  .ph { position: relative; aspect-ratio: 1; border-radius: 12px; overflow: hidden; background: #ddd; }
+  /* Fotoğraflar */
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 14px; }
+  .grid:empty::before { content: "Henüz foto yok"; grid-column: 1 / -1; color: var(--muted); font-size: 15px;
+    text-align: center; padding: 24px 0; border-radius: 18px; background: var(--field); }
+  .ph { position: relative; aspect-ratio: 1; border-radius: 18px; overflow: hidden; background: var(--field);
+    animation: pop .25s ease-out; }
+  @keyframes pop { from { transform: scale(.85); opacity: 0; } }
   .ph img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .ph .x { position: absolute; top: 5px; right: 5px; width: 30px; height: 30px; border-radius: 50%; border: 0;
-    background: rgba(0,0,0,.55); color: #fff; font-size: 18px; line-height: 30px; padding: 0; cursor: pointer; }
-  .ph .st { position: absolute; inset: 0; display: grid; place-items: center; font-size: 30px; color: #fff; }
-  .ph.sending .st { background: rgba(31,58,46,.45); }
-  .ph.sending .st::after { content: ""; width: 28px; height: 28px; border-radius: 50%;
-    border: 3px solid rgba(255,255,255,.4); border-top-color: #fff; animation: spin .8s linear infinite; }
-  .ph.done .st { background: rgba(47,125,79,.55); }
-  .ph.done .st::after { content: "✓"; }
-  .ph.fail .st { background: rgba(184,64,44,.6); }
-  .ph.fail .st::after { content: "!"; font-weight: 800; }
+  .ph .x { position: absolute; top: 6px; right: 6px; width: 30px; height: 30px; border-radius: 50%; padding: 0; cursor: pointer;
+    display: grid; place-items: center; color: #fff;
+    background: rgba(15, 18, 30, .45); border: 1px solid rgba(255, 255, 255, .35); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+  .ph .x svg { width: 14px; height: 14px; }
+  .ph .st { position: absolute; inset: 0; display: grid; place-items: center; transition: background .2s; }
+  .ph .st::after { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center;
+    color: #fff; font-weight: 800; font-size: 20px; }
+  .ph.sending .st { background: rgba(20, 99, 224, .35); }
+  .ph.sending .st::after { content: ""; width: 30px; height: 30px; border: 3px solid rgba(255, 255, 255, .4);
+    border-top-color: #fff; animation: spin .8s linear infinite; }
+  .ph.done .st { background: rgba(30, 158, 106, .35); }
+  .ph.done .st::after { content: "✓"; background: var(--ok); box-shadow: 0 4px 12px -2px rgba(0, 0, 0, .3); }
+  .ph.fail .st { background: rgba(220, 38, 38, .3); }
+  .ph.fail .st::after { content: "!"; background: var(--err); box-shadow: 0 4px 12px -2px rgba(0, 0, 0, .3); }
   .ph.sending .x, .ph.done .x { display: none; }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  .bar { position: fixed; left: 0; right: 0; bottom: 0; padding: 12px 18px calc(env(safe-area-inset-bottom) + 14px);
-    background: linear-gradient(to top, var(--bg) 70%, rgba(244,241,234,0)); }
+  /* Yapışkan gönder butonu */
+  .bar { position: fixed; left: 0; right: 0; bottom: 0; padding: 18px 18px calc(env(safe-area-inset-bottom) + 16px);
+    background: linear-gradient(to top, var(--bg) 65%, transparent); }
   .bar-in { max-width: 640px; margin: 0 auto; }
-  .btn-send { width: 100%; background: var(--green); color: #fff; font-size: 20px; min-height: 64px; position: relative; overflow: hidden; }
-  .btn-send:disabled { opacity: .4; }
-  .btn-send .prog { position: absolute; left: 0; top: 0; bottom: 0; background: var(--green-2); width: 0; transition: width .3s; }
-  .btn-send .lbl { position: relative; }
+  .btn-send { width: 100%; font-size: 19px; min-height: 62px; position: relative; overflow: hidden; }
+  .btn-send:disabled { opacity: .45; box-shadow: none; }
+  .btn-send .prog { position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: rgba(255, 255, 255, .22); transition: width .3s; }
+  .btn-send .lbl { position: relative; display: flex; align-items: center; gap: 10px; }
 
-  .msg { border-radius: 14px; padding: 14px 16px; font-weight: 600; display: none; }
-  .msg.show { display: block; }
-  .msg.ok { background: #dcefe2; color: #1c5134; }
-  .msg.err { background: #f6ded8; color: #7c2716; }
+  /* Bildirim */
+  .msg { border-radius: 20px; padding: 14px 16px; font-weight: 600; display: none; align-items: flex-start; gap: 12px; font-size: 16px; }
+  .msg.show { display: flex; animation: pop .25s ease-out; }
+  .msg::before { width: 28px; height: 28px; border-radius: 50%; flex: none; display: grid; place-items: center; color: #fff; font-weight: 800; font-size: 15px; }
+  .msg.ok { background: var(--ok-bg); color: var(--ok-ink); }
+  .msg.ok::before { content: "✓"; background: var(--ok); }
+  .msg.err { background: var(--err-bg); color: var(--err-ink); }
+  .msg.err::before { content: "!"; background: var(--err); }
   .setup { text-align: center; color: var(--muted); }
+  .setup b { color: var(--ink); }
 </style>
 </head>
 <body>
 <header>
-  <h1><span></span>Foto Gönder</h1>
-  <p>Foto çek, gönder. Ofise otomatik gider.</p>
+  <div class="hero">
+    <div>
+      <h1>Foto Gönder</h1>
+      <p>Foto çek, gönder. Ofise otomatik gider.</p>
+    </div>
+    <span class="glass" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18a4.5 4.5 0 0 1-.6-8.96A6 6 0 0 1 18 9a4 4 0 0 1 0 8"/><path d="M12 12v8m-3-5 3-3 3 3"/></svg>
+    </span>
+  </div>
+  <div class="who" id="who">
+    <label for="customer">Müşteri</label>
+    <div class="search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-5h4v5"/></svg>
+      <input id="customer" type="text" list="recent" placeholder="Ad, örn. Jansen – Dorpstraat 12"
+             autocomplete="off" autocapitalize="words" enterkeyhint="done">
+    </div>
+    <datalist id="recent"></datalist>
+  </div>
 </header>
 
 <main id="app">
   <div id="msg" class="msg" role="status" aria-live="polite"></div>
 
-  <section class="card">
-    <label class="step" for="customer"><span class="num">1</span>Müşteri adı</label>
-    <input id="customer" type="text" list="recent" placeholder="örn. Jansen – Dorpstraat 12"
-           autocomplete="off" autocapitalize="words" enterkeyhint="done">
-    <datalist id="recent"></datalist>
-  </section>
 
   <section class="card">
-    <div class="step"><span class="num">2</span>Fotoğraflar <span id="count" style="color:var(--muted);font-weight:500"></span></div>
+    <div class="step">
+      <span class="badge green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></span>
+      Fotoğraflar <small id="count"></small>
+    </div>
     <div class="actions">
-      <label class="btn btn-cam" for="cam">
+      <label class="btn btn-grad btn-cam" for="cam">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>
         Foto çek
       </label>
@@ -112,12 +184,12 @@
       <input id="cam" class="file" type="file" accept="image/*" capture="environment">
       <input id="gal" class="file" type="file" accept="image/*" multiple>
     </div>
-    <div id="grid" class="grid" style="margin-top:14px"></div>
+    <div id="grid" class="grid"></div>
   </section>
 </main>
 
 <div class="bar"><div class="bar-in">
-  <button id="send" class="btn btn-send" disabled><span class="prog" id="prog"></span><span class="lbl" id="sendLbl">Gönder</span></button>
+  <button id="send" class="btn btn-grad btn-send" disabled><span class="prog" id="prog"></span><span class="lbl" id="sendLbl">Gönder</span></button>
 </div></div>
 
 <script src="config.js"></script>
@@ -146,6 +218,7 @@
   if (!scriptUrl || !key) {
     $('app').innerHTML = '<div class="card setup"><b>Uygulama henüz kurulmamış.</b><br>Size gönderilen kurulum linkini açın.</div>';
     $('send').style.display = 'none';
+    $('who').remove();
     return;
   }
 
@@ -166,7 +239,7 @@
       const p = { file, url: URL.createObjectURL(file), state: '' };
       p.el = document.createElement('div');
       p.el.className = 'ph';
-      p.el.innerHTML = `<img src="${p.url}" alt=""><span class="st"></span><button class="x" aria-label="Fotoğrafı sil">×</button>`;
+      p.el.innerHTML = `<img src="${p.url}" alt=""><span class="st"></span><button class="x" aria-label="Fotoğrafı sil"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>`;
       p.el.querySelector('.x').onclick = () => {
         if (busy) return;
         photos.splice(photos.indexOf(p), 1);
@@ -247,7 +320,7 @@
       // Başarısız fotoğraflar ekranda kalır, "Gönder" ile yeniden denenir; hiçbiri kaybolmaz.
       show(`${sent} foto gönderildi, ${failed} foto gönderilemedi. İnterneti kontrol edip tekrar "Gönder"e basın. (${lastErr && lastErr.message})`, 'err');
     } else {
-      show(`✓ ${sent} foto "${customer}" klasörüne gönderildi.`, 'ok');
+      show(`${sent} foto "${customer}" klasörüne gönderildi.`, 'ok');
       setTimeout(() => {
         for (const p of photos.filter(p => p.state === 'done')) { URL.revokeObjectURL(p.url); p.el.remove(); }
         photos.splice(0, photos.length, ...photos.filter(p => p.state !== 'done'));
