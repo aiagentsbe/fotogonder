@@ -278,6 +278,7 @@
 
   /* Hakkında */
   .about { text-align: center; padding: 24px 18px 18px; }
+  .cs-logo { display: block; width: 220px; max-width: 80%; height: auto; margin: 0 auto 6px; border-radius: 16px; }
   .about .logo { width: 80px; height: 80px; margin: 0 auto 12px; border-radius: 22px; box-shadow: var(--shadow); }
   .brand { font-size: 26px; font-weight: 800; letter-spacing: -.02em; margin: 0; }
   .brand span { font-weight: 400; background: var(--g-red); -webkit-background-clip: text; background-clip: text; color: transparent; }
@@ -445,12 +446,14 @@
 
     <div class="section-t" data-i18n="about"></div>
     <section class="card about">
-      <img class="logo" src="cintrasoft.svg?v=315" alt="Cintra Software">
-      <p class="brand">Cintra <span>Software</span></p>
+      <picture>
+        <source srcset="cintra-dikey-koyu.svg?v=316" media="(prefers-color-scheme: dark)">
+        <img class="cs-logo" src="cintra-dikey-acik.svg?v=316" alt="Cintra Software">
+      </picture>
       <p class="tagline" data-i18n="tagline"></p>
       <div class="rows">
         <div class="row"><span data-i18n="app"></span><span>Foto Gönder</span></div>
-        <div class="row"><span data-i18n="version"></span><span>3.15</span></div>
+        <div class="row"><span data-i18n="version"></span><span>3.16</span></div>
         <div class="row"><span data-i18n="developer"></span><span>Cintra Software</span></div>
       </div>
       <p class="desc" data-i18n="desc"></p>
@@ -459,7 +462,7 @@
   </div>
 </dialog>
 
-<script src="config.js?v=315"></script>
+<script src="config.js?v=316"></script>
 <script>
 (async () => {
   const MAX_SIDE = 2560;            // Drive'a giden fotoğrafın uzun kenarı; offerte için fazlasıyla yeterli
