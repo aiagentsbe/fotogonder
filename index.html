@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#e4eeff" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0b1324" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#fff1ea" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1a110d" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -14,24 +14,24 @@
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon-180.png">
 <style>
-  /* Mavi → camgöbeği → yeşil palet (şablondan): açık mavi zemin, beyaz çerçeveli kutular, geçiş yalnız müşteri ve şirket kartında. */
+  /* Kırmızı → turuncu palet: sıcak açık zemin, beyaz çerçeveli kutular, geçiş yalnız müşteri ve şirket kartında. */
   :root {
-    --bg: #e4eeff; --card: #ffffff; --field: #eef4ff; --ink: #0a1a36; --muted: #5a6b84; --line: #c6d9f3;
-    --red: #0a63ff; --red-light: #2f86ff; --red-dark: #0041c4; /* ana renk (mavi); değişken adları eski */
+    --bg: #fff1ea; --card: #ffffff; --field: #fff6f1; --ink: #2a1610; --muted: #8a6a5e; --line: #f6d3c3;
+    --red: #f0441f; --red-light: #ff7a2e; --red-dark: #d11c22; /* ana renk: turuncu → kırmızı */
     --navy: #0d2140; --navy-light: #2a4a75; --navy-dark: #081630; --grey: #9aa9bd; --green: #22c55e;
-    --primary: #0a63ff; --primary-soft: #dce8ff; --link: #0b9e47;
+    --primary: #e6401c; --primary-soft: #ffe3d6; --link: #e86a0c;
     --ok: #16a34a; --ok-bg: #e7f8ee; --ok-ink: #14532d;
     --err: #e5484d; --err-bg: #fdecea; --err-ink: #7f1d1d;
-    --tint: 10, 99, 255;
-    --shadow: 0 1px 2px rgba(10, 26, 54, .06), 0 10px 20px -12px rgba(10, 99, 255, .35);
+    --tint: 240, 68, 31;
+    --shadow: 0 1px 2px rgba(42, 22, 16, .06), 0 10px 20px -12px rgba(240, 68, 31, .35);
     --g-navy: linear-gradient(180deg, var(--navy-light), var(--navy-dark));
     --g-red: linear-gradient(180deg, var(--red-light), var(--red) 55%, var(--red-dark)); /* mavi düğmeler */
-    --g-main: linear-gradient(135deg, #0050f0 0%, #0a8dff 50%, #00c264 100%);      /* doygun mavi → camgöbeği → yeşil */
+    --g-main: linear-gradient(135deg, #ff9a1f 0%, #ff5a1f 50%, #d9122a 100%);      /* turuncu → kırmızı-turuncu → kırmızı */
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg: #0b1324; --card: #121c33; --field: #1a2643; --ink: #e8f0ff; --muted: #8ea3c4; --line: #22314f;
-      --primary: #5aa9ff; --primary-soft: #162a4d; --link: #4ade80; --ok-bg: #12382a; --ok-ink: #9be3c1; --err-bg: #3a1d1c; --err-ink: #ffc9cb;
+      --bg: #1a110d; --card: #261914; --field: #33221b; --ink: #fff0e8; --muted: #b39a8e; --line: #45312a;
+      --primary: #ff8a5c; --primary-soft: #40231a; --link: #ffad5c; --ok-bg: #12382a; --ok-ink: #9be3c1; --err-bg: #3a1d1c; --err-ink: #ffc9cb;
       --shadow: 0 1px 2px rgba(0, 0, 0, .4);
     }
   }
@@ -85,11 +85,11 @@
   .hero > * { position: relative; z-index: 1; }
   .hero label { display: block; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: rgba(255, 255, 255, .9); margin: 0 0 8px 2px; }
   .pill { display: flex; align-items: center; gap: 10px; background: #fff; border-radius: 14px; padding: 0 14px; border: 2px solid transparent; }
-  .pill:focus-within { border-color: #bfe0ff; }
+  .pill:focus-within { border-color: #ffd0b5; }
   .pill svg { width: 20px; height: 20px; color: var(--red); flex: none; }
   .pill input { flex: 1; min-width: 0; border: 0; background: none; outline: none; font: inherit; font-size: 17px; font-weight: 600;
-    color: #0d2140; padding: 13px 0; }
-  .pill input::placeholder { color: #8ea0b8; font-weight: 500; }
+    color: #2a1610; padding: 13px 0; }
+  .pill input::placeholder { color: #b3968b; font-weight: 500; }
   .stats { display: flex; gap: 8px; margin-top: 12px; }
   .stat { flex: 1; background: rgba(255, 255, 255, .2); border: 1px solid rgba(255, 255, 255, .45); border-radius: 12px; padding: 9px 12px; }
   .stat small { display: block; font-size: 11.5px; color: rgba(255, 255, 255, .88); }
@@ -126,7 +126,7 @@
     border-radius: 14px; font-weight: 650; font-size: 14px; cursor: pointer; }
   .mic svg { width: 18px; height: 18px; }
   #dictate { background: var(--primary-soft); color: var(--primary); }
-  #record { background: #d9f6e4; color: #0b8a3e; }
+  #record { background: #ffe8d1; color: #c25a00; }
   @media (prefers-color-scheme: dark) { #record { background: #12382a; color: #6fd99f; } }
   .mic.on { background: var(--err) !important; color: #fff !important; animation: pulse 1.4s ease-in-out infinite; }
   .mic:disabled { opacity: .4; }
@@ -172,14 +172,14 @@
   .hist .hx svg { width: 13px; height: 13px; }
   .sq { width: 40px; height: 40px; border-radius: 13px; display: grid; place-items: center; color: #fff; flex: none; }
   .sq svg { width: 19px; height: 19px; }
-  .c0 { background: linear-gradient(180deg, #2f86ff, #0050e0); color: #fff; }
-  .c1 { background: linear-gradient(180deg, #22c55e, #0f8f3f); color: #fff; }
-  .c2 { background: linear-gradient(180deg, #14b8a6, #0b7d71); color: #fff; }
-  .c3 { background: linear-gradient(180deg, #0ea5e9, #0369a1); color: #fff; }
-  .c4 { background: linear-gradient(180deg, #6366f1, #4338ca); color: #fff; }
+  .c0 { background: linear-gradient(180deg, #ff7a2e, #e0301c); color: #fff; }
+  .c1 { background: linear-gradient(180deg, #ffb02e, #f07a0c); color: #fff; }
+  .c2 { background: linear-gradient(180deg, #f25c54, #c81e2a); color: #fff; }
+  .c3 { background: linear-gradient(180deg, #ff8f5a, #e85a1c); color: #fff; }
+  .c4 { background: linear-gradient(180deg, #e2453b, #9e1520); color: #fff; }
   .c5 { background: linear-gradient(180deg, #22c55e, #0f8f3f); color: #fff; }
   @media (prefers-color-scheme: dark) {
-    #record { background: #12382a; color: #6fd99f; }
+    #record { background: #3a2412; color: #ffb36b; }
   }
 
   /* Bildirim (yeşil/kırmızı/mavi şerit) */
@@ -450,7 +450,7 @@
       <p class="tagline" data-i18n="tagline"></p>
       <div class="rows">
         <div class="row"><span data-i18n="app"></span><span>Foto Gönder</span></div>
-        <div class="row"><span data-i18n="version"></span><span>3.10</span></div>
+        <div class="row"><span data-i18n="version"></span><span>3.11</span></div>
         <div class="row"><span data-i18n="developer"></span><span>Cintra Software</span></div>
       </div>
       <p class="desc" data-i18n="desc"></p>
@@ -459,7 +459,7 @@
   </div>
 </dialog>
 
-<script src="config.js?v=310"></script>
+<script src="config.js?v=311"></script>
 <script>
 (async () => {
   const MAX_SIDE = 2560;            // Drive'a giden fotoğrafın uzun kenarı; offerte için fazlasıyla yeterli
