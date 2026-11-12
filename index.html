@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#fdf3ee" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#1a1412" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f3f4f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#070915" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -14,23 +14,25 @@
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon-180.png">
 <style>
-  /* Fintech tarzı: lavanta zemin, mavi geçişli ana kart, beyaz yuvarlak kartlar, renkli kare simgeler, ortası yeşil kamera düğmeli alt menü. */
+  /* Fintech tarzı yerleşim: lacivert geçişli ana kart, beyaz yuvarlak kartlar, renkli kare simgeler, ortası kamera düğmeli alt menü. */
   :root {
-    /* Sıcak palet: kırmızı-turuncudan amber'e geçen ana renk, krem zemin, koyu mürdüm yazı, mor→turuncu vurgu */
-    --bg: #fdf3ee; --card: #ffffff; --field: #fbf0ea; --ink: #2b2433; --muted: #9a8c88; --line: #f3e4dc;
-    --accent: #f0612b; --accent2: #f8a41c; --accent-deep: #e2402a; --plum: #a03fa8; --green: #22b573;
-    --orange: #ff9f43; --purple: #a03fa8; --pink: #ff5c7a; --teal: #19b5c8;
-    --primary: #e8562a; --primary-soft: #ffe8dc;
+    /* Ramka logosunun renkleri, geçişler açıktan koyuya: lacivert ana kart, kırmızı düğmeler, açık gri zemin */
+    --bg: #f3f4f7; --card: #ffffff; --field: #f1f2f6; --ink: #0b0d1c; --muted: #8a8f9c; --line: #e6e8ee;
+    --red: #e1262d; --red-light: #f2474d; --red-dark: #a8141a;
+    --navy: #141a3a; --navy-light: #2c3770; --navy-dark: #070915; --grey: #9aa0ad; --green: #22b573;
+    --primary: #d61f26; --primary-soft: #fde7e8;
     --ok: #22b573; --ok-bg: #e7f7ee; --ok-ink: #17643f;
     --err: #e5484d; --err-bg: #fde8e9; --err-ink: #8c1d22;
-    --tint: 232, 86, 42; /* turuncu gölge rengi (rgb) */
-    --shadow: 0 10px 22px -18px rgba(var(--tint), .6);
+    --tint: 11, 13, 28; /* lacivert gölge (rgb) */
+    --shadow: 0 10px 22px -18px rgba(var(--tint), .5);
+    --g-navy: linear-gradient(135deg, var(--navy-light), var(--navy) 55%, var(--navy-dark));
+    --g-red: linear-gradient(135deg, var(--red-light), var(--red) 50%, var(--red-dark));
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg: #1a1412; --card: #261d1a; --field: #31251f; --ink: #f5ece6; --muted: #a8978e; --line: #3a2c25;
-      --primary: #ff9b6a; --primary-soft: #3a2419; --ok-bg: #12382a; --ok-ink: #9be3c1; --err-bg: #43191c; --err-ink: #ffc9cb;
-      --shadow: none;
+      --bg: #070915; --card: #12162b; --field: #1b2140; --ink: #eef0f7; --muted: #8f95ad; --line: #232a4a;
+      --primary: #ff6b70; --primary-soft: #3a1418; --ok-bg: #12382a; --ok-ink: #9be3c1; --err-bg: #43191c; --err-ink: #ffc9cb;
+      --navy-light: #34407e; --shadow: none;
     }
   }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -50,14 +52,14 @@
   .topbar { display: flex; align-items: center; gap: 12px; max-width: 640px; margin: 0 auto;
     padding: calc(env(safe-area-inset-top) + 16px) 20px 4px; }
   .avatar { width: 46px; height: 46px; border-radius: 15px; flex: none; display: grid; place-items: center; overflow: hidden;
-    color: #fff; font-weight: 800; font-size: 16px; background: linear-gradient(135deg, var(--plum), var(--accent));
-    box-shadow: 0 8px 16px -8px var(--accent); }
+    color: #fff; font-weight: 800; font-size: 16px; background: var(--g-red);
+    box-shadow: 0 8px 16px -8px var(--red); }
   .avatar.logo { background: #fff; width: auto; min-width: 46px; max-width: 120px; padding: 4px 8px; }
   .avatar img { width: auto; max-width: 100%; height: 100%; object-fit: contain; }
   .avatar svg { width: 22px; height: 22px; }
   .hello { flex: 1; min-width: 0; }
   .hello small { display: block; color: var(--muted); font-size: 13px; }
-  .hello b { display: block; font-size: 17px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .hello b { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; font-size: 16px; line-height: 1.2; overflow: hidden; }
   .icon-btn { appearance: none; border: 0; width: 44px; height: 44px; border-radius: 14px; flex: none; cursor: pointer;
     display: grid; place-items: center; background: var(--card); color: var(--ink); box-shadow: var(--shadow); }
   .icon-btn svg { width: 21px; height: 21px; }
@@ -74,22 +76,22 @@
   .seg { display: flex; background: var(--card); border-radius: 14px; padding: 4px; box-shadow: var(--shadow); }
   .seg button { appearance: none; border: 0; flex: 1; padding: 10px 8px; border-radius: 11px; background: none; cursor: pointer;
     font-weight: 650; font-size: 15px; color: var(--muted); transition: background .2s, color .2s; }
-  .seg button[aria-pressed="true"] { background: var(--accent); color: #fff; box-shadow: 0 6px 12px -6px var(--accent); }
+  .seg button[aria-pressed="true"] { background: var(--g-red); color: #fff; box-shadow: 0 6px 12px -6px var(--red); }
 
   /* Mavi ana kart */
   .hero { border-radius: 26px; padding: 18px; color: #fff; position: relative; overflow: hidden;
-    background: linear-gradient(135deg, var(--accent-deep), var(--accent) 50%, var(--accent2)); box-shadow: 0 18px 30px -16px var(--accent); }
+    background: var(--g-navy); box-shadow: 0 18px 30px -16px rgba(var(--tint), .8); }
   .hero::before, .hero::after { content: ""; position: absolute; border-radius: 50%; pointer-events: none; }
   .hero::before { right: -40px; top: -60px; width: 190px; height: 190px; background: rgba(255, 255, 255, .08); }
   .hero::after { right: 30px; bottom: -80px; width: 160px; height: 160px; background: rgba(255, 255, 255, .06); }
   .hero > * { position: relative; z-index: 1; }
   .hero label { display: block; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; opacity: .8; margin: 0 0 8px 2px; }
   .pill { display: flex; align-items: center; gap: 10px; background: #fff; border-radius: 16px; padding: 0 14px; border: 2px solid transparent; }
-  .pill:focus-within { border-color: #ffc2a3; }
-  .pill svg { width: 20px; height: 20px; color: var(--accent); flex: none; }
+  .pill:focus-within { border-color: #f2a3a6; }
+  .pill svg { width: 20px; height: 20px; color: var(--red); flex: none; }
   .pill input { flex: 1; min-width: 0; border: 0; background: none; outline: none; font: inherit; font-size: 17px; font-weight: 600;
     color: #1a1d2e; padding: 14px 0; }
-  .pill input::placeholder { color: #b3a39c; font-weight: 500; }
+  .pill input::placeholder { color: #9aa0ad; font-weight: 500; }
   .stats { display: flex; gap: 8px; margin-top: 12px; }
   .stat { flex: 1; background: rgba(255, 255, 255, .14); border-radius: 14px; padding: 9px 12px; }
   .stat small { display: block; font-size: 11.5px; opacity: .85; }
@@ -114,7 +116,7 @@
   .ph.fail .st { background: rgba(229, 72, 77, .3); }
   .ph.fail .st::after { content: "!"; background: var(--err); }
   .ph.queued .st { background: rgba(var(--tint), .3); }
-  .ph.queued .st::after { content: "⏱"; background: var(--accent); font-size: 16px; }
+  .ph.queued .st::after { content: "⏱"; background: var(--navy); font-size: 16px; }
   .ph.sending .x, .ph.done .x { display: none; }
 
   /* Not + mikrofon */
@@ -126,15 +128,15 @@
     border-radius: 14px; font-weight: 650; font-size: 14px; cursor: pointer; }
   .mic svg { width: 18px; height: 18px; }
   #dictate { background: var(--primary-soft); color: var(--primary); }
-  #record { background: #f6e6f6; color: var(--plum); }
-  @media (prefers-color-scheme: dark) { #record { background: #3a2238; color: #e6a3ea; } }
+  #record { background: #e8eaf3; color: var(--navy); }
+  @media (prefers-color-scheme: dark) { #record { background: #1f2647; color: #b9c2ee; } }
   .mic.on { background: var(--err) !important; color: #fff !important; animation: pulse 1.4s ease-in-out infinite; }
   .mic:disabled { opacity: .4; }
   .voices { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
   .voices:empty { display: none; }
   .voice { display: flex; align-items: center; gap: 12px; padding: 8px; border-radius: 16px; background: var(--field); animation: pop .25s ease-out; }
   .voice .play { appearance: none; border: 0; width: 40px; height: 40px; border-radius: 13px; flex: none; display: grid; place-items: center;
-    cursor: pointer; color: #fff; background: linear-gradient(135deg, var(--plum), var(--accent)); }
+    cursor: pointer; color: #fff; background: var(--g-navy); }
   .voice .play svg { width: 17px; height: 17px; }
   .voice .vi { flex: 1; min-width: 0; }
   .voice .vi b { display: block; font-size: 14.5px; }
@@ -172,11 +174,11 @@
   .hist .hx svg { width: 13px; height: 13px; }
   .sq { width: 40px; height: 40px; border-radius: 13px; display: grid; place-items: center; color: #fff; flex: none; }
   .sq svg { width: 19px; height: 19px; }
-  .c0 { background: linear-gradient(135deg, #ff9a5a, var(--accent)); }
-  .c1 { background: linear-gradient(135deg, #ffc76b, var(--accent2)); }
-  .c2 { background: linear-gradient(135deg, #ff8a9e, var(--pink)); }
-  .c3 { background: linear-gradient(135deg, #c972cf, var(--plum)); }
-  .c4 { background: linear-gradient(135deg, #ff8f7a, #e8473c); }
+  .c0 { background: var(--g-red); }
+  .c1 { background: var(--g-navy); }
+  .c2 { background: linear-gradient(135deg, #b6bac6, #6f7586); }
+  .c3 { background: linear-gradient(135deg, #c0393e, #7d0f13); }
+  .c4 { background: linear-gradient(135deg, #4a578f, var(--navy)); }
   .c5 { background: linear-gradient(135deg, #5fd69a, var(--green)); }
 
   /* Bildirim (yeşil/kırmızı/mavi şerit) */
@@ -190,7 +192,7 @@
   .msg.err { background: var(--err-bg); color: var(--err-ink); }
   .msg.err::before { content: "!"; background: var(--err); }
   .msg.info { background: var(--primary-soft); color: var(--primary); }
-  .msg.info::before { content: "⏱"; background: var(--accent); font-size: 15px; }
+  .msg.info::before { content: "⏱"; background: var(--navy); font-size: 15px; }
   .msg .ob { padding: 9px 14px; border-radius: 12px; color: #fff; background: var(--green); font-weight: 700; font-size: 14px; text-decoration: none; white-space: nowrap; }
   .setup { text-align: center; color: var(--muted); }
   .setup b { color: var(--ink); }
@@ -201,8 +203,8 @@
     background: linear-gradient(to top, var(--bg) 62%, transparent); }
   .bar-in { position: relative; max-width: 640px; margin: 0 auto; padding: 0 20px 12px; }
   .btn-send { appearance: none; border: 0; width: 100%; height: 54px; border-radius: 18px; cursor: pointer; position: relative; overflow: hidden;
-    color: #fff; font-weight: 700; font-size: 16.5px; background: linear-gradient(135deg, var(--accent-deep), var(--accent) 50%, var(--accent2));
-    box-shadow: 0 14px 24px -12px var(--accent); transition: transform .1s, opacity .2s; }
+    color: #fff; font-weight: 700; font-size: 16.5px; background: var(--g-red);
+    box-shadow: 0 14px 24px -12px var(--red); transition: transform .1s, opacity .2s; }
   .btn-send:active { transform: scale(.98); }
   .btn-send:disabled { opacity: .45; box-shadow: none; }
   .btn-send .prog { position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: rgba(255, 255, 255, .22); transition: width .3s; }
@@ -215,7 +217,7 @@
   .nav svg { width: 22px; height: 22px; }
   .nav .act { color: var(--primary); }
   .nav .fab { width: 64px; height: 64px; border-radius: 50%; place-items: center; margin-top: -34px; padding: 0; color: #fff;
-    background: linear-gradient(135deg, var(--plum), var(--accent) 70%, var(--accent2)); box-shadow: 0 12px 22px -8px var(--accent), 0 0 0 6px var(--bg); }
+    background: var(--g-red); box-shadow: 0 12px 22px -8px var(--red), 0 0 0 6px var(--bg); }
   .nav .fab svg { width: 28px; height: 28px; }
   .nav .fab:active { transform: scale(.94); }
 
@@ -253,7 +255,7 @@
   /* Şirket bilgileri: mavi katlanır kart */
   details.fold { padding: 0; overflow: hidden; }
   details.fold > summary { list-style: none; display: flex; align-items: center; gap: 12px; padding: 16px; cursor: pointer; color: #fff;
-    border-radius: 22px; background: linear-gradient(135deg, var(--accent-deep), var(--accent) 50%, var(--accent2)); box-shadow: 0 14px 26px -16px var(--accent); }
+    border-radius: 22px; background: var(--g-navy); box-shadow: 0 14px 26px -16px rgba(var(--tint), .8); }
   details.fold > summary::-webkit-details-marker { display: none; }
   details.fold > summary .t { flex: 1; min-width: 0; }
   details.fold > summary small { display: block; font-size: 12.5px; opacity: .85; }
@@ -263,7 +265,7 @@
     border-bottom: 2.5px solid #fff; transform: rotate(-45deg); opacity: .8; transition: transform .2s; }
   details.fold[open] > summary::after { transform: rotate(45deg); }
   .sumlogo { width: 46px; height: 46px; flex: none; border-radius: 14px; object-fit: contain; background: #fff; }
-  .suminit { width: 46px; height: 46px; flex: none; border-radius: 14px; background: #fff; color: var(--accent); display: grid; place-items: center; font-weight: 800; }
+  .suminit { width: 46px; height: 46px; flex: none; border-radius: 14px; background: #fff; color: var(--red); display: grid; place-items: center; font-weight: 800; }
   .fold-body { padding: 14px; }
   .hint { margin: 0 0 12px; color: var(--muted); font-size: 13.5px; }
   .logo-row { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
@@ -277,7 +279,7 @@
   .about { text-align: center; padding: 24px 18px 18px; }
   .about .logo { width: 80px; height: 80px; margin: 0 auto 12px; border-radius: 22px; box-shadow: 0 14px 30px -12px rgba(var(--tint), .6); }
   .brand { font-size: 26px; font-weight: 800; letter-spacing: -.02em; margin: 0; }
-  .brand span { font-weight: 400; background: linear-gradient(135deg, var(--accent-deep), var(--accent2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .brand span { font-weight: 400; background: var(--g-red); -webkit-background-clip: text; background-clip: text; color: transparent; }
   .tagline { margin: 2px 0 16px; color: var(--muted); font-size: 14.5px; }
   .rows { text-align: left; border-radius: 16px; background: var(--field); }
   .row { display: flex; justify-content: space-between; gap: 12px; padding: 12px 14px; font-size: 15px; }
@@ -447,7 +449,7 @@
       <p class="tagline" data-i18n="tagline"></p>
       <div class="rows">
         <div class="row"><span data-i18n="app"></span><span>Foto Gönder</span></div>
-        <div class="row"><span data-i18n="version"></span><span>3.4</span></div>
+        <div class="row"><span data-i18n="version"></span><span>3.5</span></div>
         <div class="row"><span data-i18n="developer"></span><span>Cintra Software</span></div>
       </div>
       <p class="desc" data-i18n="desc"></p>
@@ -456,7 +458,7 @@
   </div>
 </dialog>
 
-<script src="config.js?v=34"></script>
+<script src="config.js?v=35"></script>
 <script>
 (async () => {
   const MAX_SIDE = 2560;            // Drive'a giden fotoğrafın uzun kenarı; offerte için fazlasıyla yeterli
@@ -649,7 +651,7 @@
   }
 
   // Renkli kare simgeli satır; renk müşteri adından (aynı müşteri hep aynı renk).
-  const colorOf = s => 'c' + [...s].reduce((a, ch) => a + ch.charCodeAt(0), 0) % 6;
+  const colorOf = s => 'c' + [...s].reduce((a, ch) => a + ch.charCodeAt(0), 0) % 5; // c5 (yeşil) sadece bağlantı simgesi
   function histRow(e, onDelete) {
     const fmt = new Intl.DateTimeFormat(lang === 'nl' ? 'nl-NL' : 'tr-TR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
     const li = document.createElement('li');
