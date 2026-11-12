@@ -55,6 +55,42 @@
   .glass { width: 48px; height: 48px; border-radius: 50%; flex: none; display: grid; place-items: center;
     background: rgba(255, 255, 255, .2); border: 1px solid rgba(255, 255, 255, .35); }
   .glass svg { width: 24px; height: 24px; }
+  button.glass { appearance: none; padding: 0; cursor: pointer; transition: transform .1s, background .2s; }
+  button.glass:active { transform: scale(.92); background: rgba(255, 255, 255, .3); }
+  button.glass:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+
+  /* Ayarlar: alttan açılan sayfa */
+  dialog.sheet { border: 0; padding: 0; margin: auto auto 0; width: 100%; max-width: 640px; max-height: 92dvh;
+    background: var(--bg); color: var(--ink); border-radius: 30px 30px 0 0; overflow: auto;
+    padding-bottom: env(safe-area-inset-bottom); }
+  dialog.sheet[open] { animation: up .28s cubic-bezier(.2, .8, .2, 1); }
+  dialog.sheet::backdrop { background: rgba(10, 14, 28, .45); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); }
+  @keyframes up { from { transform: translateY(100%); } }
+  .sheet-head { display: flex; align-items: center; padding: 12px 18px 4px 22px; position: relative; }
+  .sheet-head::before { content: ""; position: absolute; top: 8px; left: 50%; width: 40px; height: 5px; margin-left: -20px;
+    border-radius: 3px; background: var(--line); }
+  .sheet-head h2 { flex: 1; margin: 14px 0 0; font-size: 24px; font-weight: 700; letter-spacing: -.01em; }
+  .close { appearance: none; border: 0; width: 40px; height: 40px; margin-top: 14px; border-radius: 50%; cursor: pointer;
+    display: grid; place-items: center; background: var(--field); color: var(--muted); }
+  .close svg { width: 18px; height: 18px; }
+  .sheet-body { padding: 14px 18px 24px; display: flex; flex-direction: column; gap: 14px; }
+  .section-t { font-size: 13px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 4px 0 -4px 6px; }
+  .about { text-align: center; padding: 26px 20px 20px; }
+  .about .logo { width: 84px; height: 84px; margin: 0 auto 14px; border-radius: 24px;
+    box-shadow: 0 14px 30px -12px rgba(20, 99, 224, .6); }
+  .brand { font-size: 28px; font-weight: 800; letter-spacing: -.02em; margin: 0; }
+  .brand span { font-weight: 400; background: linear-gradient(135deg, var(--hero-a), var(--hero-b));
+    -webkit-background-clip: text; background-clip: text; color: transparent; }
+  @media (prefers-color-scheme: dark) { .brand span { background-image: linear-gradient(135deg, #8ec0ff, #6fd3a6); } }
+  .tagline { margin: 2px 0 18px; color: var(--muted); font-size: 15px; }
+  .rows { text-align: left; border-radius: 18px; background: var(--field); }
+  .row { display: flex; justify-content: space-between; gap: 12px; padding: 13px 16px; font-size: 16px; }
+  .row + .row { border-top: 1px solid var(--line); }
+  .row span:first-child { color: var(--muted); }
+  .row span:last-child { font-weight: 600; text-align: right; }
+  .about p.desc { margin: 18px 4px 0; color: var(--muted); font-size: 15px; line-height: 1.5; }
+  .copy { margin: 4px 0 0; text-align: center; color: var(--muted); font-size: 14px; line-height: 1.6; }
+  .copy b { color: var(--ink); font-weight: 650; }
 
   main { flex: 1; padding: 20px 18px 150px; display: flex; flex-direction: column; gap: 16px;
     max-width: 640px; width: 100%; margin: 0 auto; }
@@ -148,9 +184,9 @@
       <h1>Foto Gönder</h1>
       <p>Foto çek, gönder. Ofise otomatik gider.</p>
     </div>
-    <span class="glass" aria-hidden="true">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18a4.5 4.5 0 0 1-.6-8.96A6 6 0 0 1 18 9a4 4 0 0 1 0 8"/><path d="M12 12v8m-3-5 3-3 3 3"/></svg>
-    </span>
+    <button class="glass" id="openSettings" type="button" aria-label="Ayarlar" aria-haspopup="dialog">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    </button>
   </div>
   <div class="who" id="who">
     <label for="customer">Müşteri</label>
@@ -192,11 +228,42 @@
   <button id="send" class="btn btn-grad btn-send" disabled><span class="prog" id="prog"></span><span class="lbl" id="sendLbl">Gönder</span></button>
 </div></div>
 
+<dialog class="sheet" id="settings" aria-labelledby="settingsTitle">
+  <div class="sheet-head">
+    <h2 id="settingsTitle">Ayarlar</h2>
+    <button class="close" id="closeSettings" type="button" aria-label="Kapat">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+  <div class="sheet-body">
+    <div class="section-t">Hakkında</div>
+    <section class="card about">
+      <img class="logo" src="cintrasoft.svg" alt="CintraSoft logosu">
+      <p class="brand">Cintra<span>Soft</span></p>
+      <p class="tagline">Akıllı yazılım, sade çözümler.</p>
+      <div class="rows">
+        <div class="row"><span>Uygulama</span><span>Foto Gönder</span></div>
+        <div class="row"><span>Sürüm</span><span>1.2</span></div>
+        <div class="row"><span>Geliştirici</span><span>CintraSoft</span></div>
+      </div>
+      <p class="desc">Foto Gönder, sahada çekilen fotoğrafları tek dokunuşla ofise ulaştırmak için CintraSoft tarafından tasarlandı ve geliştirildi.</p>
+    </section>
+    <p class="copy">© <span id="year">2026</span> <b>CintraSoft</b>. Tüm hakları saklıdır.<br>İzinsiz kopyalanamaz, çoğaltılamaz ve dağıtılamaz.</p>
+  </div>
+</dialog>
+
 <script src="config.js"></script>
 <script>
 (() => {
   const MAX_SIDE = 2560;            // Drive'a giden fotoğrafın uzun kenarı; offerte için fazlasıyla yeterli
   const $ = id => document.getElementById(id);
+
+  // Ayarlar: kurulum yapılmamış olsa da açılabilsin diye en başta bağlanır.
+  const sheet = $('settings');
+  $('year').textContent = Math.max(2026, new Date().getFullYear());
+  $('openSettings').onclick = () => sheet.showModal();
+  $('closeSettings').onclick = () => sheet.close();
+  sheet.addEventListener('click', e => { if (e.target === sheet) sheet.close(); }); // boşluğa dokununca kapan
   const scriptUrl = (window.FOTO_CONFIG || {}).scriptUrl;
 
   // Anahtar kurulum linkinden (?k=…) gelir. iOS ana ekran uygulaması Safari'nin hafızasını paylaşmaz,
