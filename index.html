@@ -216,8 +216,11 @@
   .hist li + li { border-top: 1px solid var(--line); }
   .hist li > div { min-width: 0; }
   .hist b { display: block; font-weight: 650; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .hist small, .hist time { color: var(--muted); font-size: 14px; }
-  .hist time { flex: none; text-align: right; }
+  .hist small { color: var(--muted); font-size: 14px; }
+  .hist .ob { appearance: none; border: 0; flex: none; font: inherit; font-size: 14px; font-weight: 650; padding: 8px 13px;
+    border-radius: 999px; cursor: pointer; text-decoration: none; white-space: nowrap; background: var(--primary-soft); color: var(--primary); }
+  .hist a.ob { color: #fff; background: linear-gradient(135deg, var(--hero-a), var(--hero-b)); }
+  .hist .ob:disabled { opacity: .6; }
   .hist .empty { color: var(--muted); justify-content: center; }
   /* Mikrofon: sesle yazma + sesli mesaj */
   .mics { display: flex; gap: 10px; margin-top: 10px; }
@@ -361,7 +364,7 @@
       <p class="tagline" data-i18n="tagline"></p>
       <div class="rows">
         <div class="row"><span data-i18n="app"></span><span>Foto Gönder</span></div>
-        <div class="row"><span data-i18n="version"></span><span>2.1</span></div>
+        <div class="row"><span data-i18n="version"></span><span>2.2</span></div>
         <div class="row"><span data-i18n="developer"></span><span>CintraSoft</span></div>
       </div>
       <p class="desc" data-i18n="desc"></p>
@@ -400,6 +403,7 @@
       connection: 'Bağlantı', pending: 'Telefonda bekleyen', check: 'Bağlantıyı kontrol et', checking: 'Kontrol ediliyor…',
       connOk: '✓ Bağlantı çalışıyor', connBadKey: 'Anahtar geçersiz. Kurulum linkini yeniden açın.', connOffline: 'İnternet yok veya sunucuya ulaşılamıyor.',
       history: 'Geçmiş', historyEmpty: 'Henüz gönderim yok.', photo1: '1 foto', photosN: '{n} foto', withNote: 'not',
+      offerte: 'Offerte', making: 'Hazırlanıyor…', openOfferte: 'Offerteyi aç',
       dictate: 'Sesle yaz', listening: 'Dinliyorum… bitir', record: 'Sesli mesaj', recording: 'Kayıt {t} · bitir',
       voice: 'Sesli mesaj', voice1: '1 sesli mesaj', voiceN: '{n} sesli mesaj', voiceFile: 'Sesli-mesaj', play: 'Dinle',
       micDenied: 'Mikrofon izni yok. Telefon ayarlarından bu uygulamaya mikrofon izni verin.',
@@ -422,6 +426,7 @@
       connection: 'Verbinding', pending: 'Wacht op de telefoon', check: 'Verbinding controleren', checking: 'Bezig met controleren…',
       connOk: '✓ Verbinding werkt', connBadKey: 'Sleutel ongeldig. Open de installatielink opnieuw.', connOffline: 'Geen internet of server onbereikbaar.',
       history: 'Geschiedenis', historyEmpty: 'Nog niets verstuurd.', photo1: '1 foto', photosN: '{n} foto\'s', withNote: 'notitie',
+      offerte: 'Offerte', making: 'Bezig…', openOfferte: 'Open offerte',
       dictate: 'Dicteren', listening: 'Luisteren… stop', record: 'Spraakbericht', recording: 'Opname {t} · stop',
       voice: 'Spraakbericht', voice1: '1 spraakbericht', voiceN: '{n} spraakberichten', voiceFile: 'Spraakbericht', play: 'Afspelen',
       micDenied: 'Geen toegang tot de microfoon. Sta dit toe in de instellingen van de telefoon.',
@@ -569,12 +574,35 @@
     const fmt = new Intl.DateTimeFormat(lang === 'nl' ? 'nl-NL' : 'tr-TR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
     $('hist').replaceChildren(...(h.length ? h.map(e => {
       const li = document.createElement('li');
-      li.innerHTML = '<div><b></b><small></small></div><time></time>';
+      li.innerHTML = '<div><b></b><small></small></div>';
       li.querySelector('b').textContent = e.c;
-      li.querySelector('small').textContent = summary(e.p, e.a, e.note);
-      li.querySelector('time').textContent = fmt.format(new Date(e.at));
+      li.querySelector('small').textContent = [summary(e.p, e.a, e.note), fmt.format(new Date(e.at))].filter(Boolean).join(' · ');
+      if (configured) li.append(offerteBtn(e, h));
       return li;
     }) : [Object.assign(document.createElement('li'), { className: 'empty', textContent: t('historyEmpty') })]));
+  }
+
+  // Offerte taslağı: Google o ziyaretin gün klasöründen bir Google Docs belgesi yapar; bağlantısı geçmişte saklanır.
+  function offerteBtn(e, h) {
+    const day = x => x.d || today(new Date(x.at)); // eski kayıtlarda gün yok → gönderim günü
+    if (e.u) return Object.assign(document.createElement('a'), { className: 'ob', href: e.u, target: '_blank', rel: 'noopener', textContent: t('openOfferte') });
+    const b = Object.assign(document.createElement('button'), { className: 'ob', type: 'button', textContent: t('offerte') });
+    b.onclick = async () => {
+      b.disabled = true; b.textContent = t('making');
+      try {
+        const out = await post({ key, action: 'offerte', customer: e.c, date: day(e) });
+        if (!out.ok) throw new Error(out.error);
+        for (const x of h) if (x.c === e.c && day(x) === day(e)) x.u = out.url; // aynı ziyaretin kayıtları aynı belgeyi açsın
+        localStorage.setItem('history', JSON.stringify(h));
+        renderHistory();
+      } catch (err) {
+        b.disabled = false; b.textContent = t('offerte');
+        const sm = b.parentNode.querySelector('small');
+        sm.textContent = navigator.onLine ? String(err.message || err) : t('connOffline');
+        sm.style.color = 'var(--err)';
+      }
+    };
+    return b;
   }
 
   // ---------- Ayarlar ----------
@@ -785,7 +813,7 @@
     busy = true; refresh();
     $('msg').className = 'msg';
     let sent = 0, failed = 0, lastErr;
-    const log = new Map(); // müşteri → { c, p, note }
+    const log = new Map(); // müşteri|gün → { c, d, p, a, note }
     for (const [n, it] of todo.entries()) {
       if (!navigator.onLine) break; // kalanlar telefonda bekler
       it.state = 'sending'; paint(it);
@@ -794,9 +822,10 @@
         await upload(it);
         it.state = 'done'; sent++;
         await dbDel(it.id);
-        const e = log.get(it.customer) || { c: it.customer, p: 0, a: 0, note: false };
+        const k = it.customer + '|' + it.date;
+        const e = log.get(k) || { c: it.customer, d: it.date, p: 0, a: 0, note: false };
         if (it.kind === 'note') e.note = true; else if (it.kind === 'audio') e.a++; else e.p++;
-        log.set(it.customer, e);
+        log.set(k, e);
       } catch (e) { it.state = 'fail'; failed++; lastErr = e; }
       paint(it);
       $('prog').style.width = `${((n + 1) / todo.length) * 100}%`;
@@ -816,7 +845,7 @@
     else if (sent) {
       const e = [...log.values()];
       const what = summary(e.reduce((s, x) => s + x.p, 0), e.reduce((s, x) => s + (x.a || 0), 0), e.some(x => x.note));
-      show(t('sentOk', { c: e.map(x => x.c).join(', '), what }), 'ok');
+      show(t('sentOk', { c: [...new Set(e.map(x => x.c))].join(', '), what }), 'ok');
     }
     setTimeout(() => { for (const it of items.filter(i => i.state === 'done')) drop(it); refresh(); }, 1500);
     refresh();
