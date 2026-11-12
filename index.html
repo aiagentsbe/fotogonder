@@ -167,9 +167,10 @@
   .hist .r { text-align: right; font-size: 12.5px; color: var(--muted); flex: none; }
   .hist .r b { color: var(--green); font-size: 13px; }
   .hist .empty { color: var(--muted); justify-content: center; font-size: 14px; }
-  .hist .hx { appearance: none; border: 0; background: none; width: 34px; height: 34px; border-radius: 50%; flex: none;
-    display: grid; place-items: center; color: var(--muted); cursor: pointer; }
-  .hist .hx svg { width: 13px; height: 13px; }
+  .hist .hx { appearance: none; border: 0; width: 38px; height: 38px; border-radius: 12px; flex: none;
+    display: grid; place-items: center; color: var(--err); background: var(--err-bg); cursor: pointer; transition: transform .1s, background .2s; }
+  .hist .hx:active { transform: scale(.9); background: var(--err); color: #fff; }
+  .hist .hx svg { width: 18px; height: 18px; }
   .sq { width: 40px; height: 40px; border-radius: 13px; display: grid; place-items: center; color: #fff; flex: none; }
   .sq svg { width: 19px; height: 19px; }
   .c0 { background: linear-gradient(180deg, #ff2a2a, #b0000d); color: #fff; }
@@ -469,7 +470,7 @@
       <p class="tagline" data-i18n="tagline"></p>
       <div class="rows">
         <div class="row"><span data-i18n="app"></span><span>Foto Gönder</span></div>
-        <div class="row"><span data-i18n="version"></span><span>3.19</span></div>
+        <div class="row"><span data-i18n="version"></span><span>3.20</span></div>
         <div class="row"><span data-i18n="developer"></span><span>Cintra Software</span></div>
       </div>
       <p class="desc" data-i18n="desc"></p>
@@ -478,7 +479,7 @@
   </div>
 </dialog>
 
-<script src="config.js?v=319"></script>
+<script src="config.js?v=320"></script>
 <script>
 (async () => {
   const MAX_SIDE = 2560;            // Drive'a giden fotoğrafın uzun kenarı; offerte için fazlasıyla yeterli
@@ -680,6 +681,9 @@
 
   // Renkli kare simgeli satır; renk müşteri adından (aynı müşteri hep aynı renk).
   const colorOf = s => 'c' + [...s].reduce((a, ch) => a + ch.charCodeAt(0), 0) % 5; // c5 (yeşil) sadece bağlantı simgesi
+  const TRASH = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1z"/><path d="M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12"/><path d="M10 11v6M14 11v6"/></svg>';
+  // Düğme yazısı + çöp kutusu simgesi
+  const clearLabel = k => { $('clearHist').innerHTML = TRASH + '<span></span>'; $('clearHist').lastChild.textContent = t(k); };
   function histRow(e, onDelete) {
     const fmt = new Intl.DateTimeFormat(lang === 'nl' ? 'nl-NL' : 'tr-TR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
     const li = document.createElement('li');
@@ -692,7 +696,7 @@
       r.append(when);
       li.append(r);
     } else {
-      const x = Object.assign(document.createElement('button'), { className: 'hx', type: 'button', innerHTML: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>' });
+      const x = Object.assign(document.createElement('button'), { className: 'hx', type: 'button', innerHTML: TRASH });
       x.setAttribute('aria-label', t('delEntry') + ': ' + e.c);
       x.onclick = onDelete;
       li.append(x);
@@ -712,7 +716,7 @@
     const c = $('clearHist');
     c.hidden = $('histHint').hidden = !h.length;
     delete c.dataset.sure;
-    c.textContent = t('clearHist');
+    clearLabel('clearHist');
   }
 
   // Tümünü sil: yanlışlıkla basılmasın diye 3 sn içinde ikinci dokunuş gerekir.
@@ -720,8 +724,8 @@
     const c = $('clearHist');
     if (c.dataset.sure) { localStorage.removeItem('history'); renderHistory(); return; }
     c.dataset.sure = '1';
-    c.textContent = t('clearSure');
-    setTimeout(() => { if (c.dataset.sure) { delete c.dataset.sure; c.textContent = t('clearHist'); } }, 3000);
+    clearLabel('clearSure');
+    setTimeout(() => { if (c.dataset.sure) { delete c.dataset.sure; clearLabel('clearHist'); } }, 3000);
   };
 
   // ---------- Şirket + müşteri bilgileri (offerte için, telefonda saklanır) ----------
