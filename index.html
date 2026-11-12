@@ -444,7 +444,7 @@
       <p class="tagline" data-i18n="tagline"></p>
       <div class="rows">
         <div class="row"><span data-i18n="app"></span><span>Foto Gönder</span></div>
-        <div class="row"><span data-i18n="version"></span><span>3.0</span></div>
+        <div class="row"><span data-i18n="version"></span><span>3.1</span></div>
         <div class="row"><span data-i18n="developer"></span><span>Cintra Software</span></div>
       </div>
       <p class="desc" data-i18n="desc"></p>
@@ -828,7 +828,6 @@
   // Son müşteriler: aynı isim farklı yazılıp iki klasör açılmasın diye öneri olarak çıkar.
   const recent = JSON.parse(localStorage.getItem('recent') || '[]');
   $('recent').innerHTML = recent.map(n => `<option value="${n.replace(/&/g, '&amp;').replace(/"/g, '&quot;')}">`).join('');
-  $('customer').value = localStorage.getItem('lastCustomer') || '';
   $('note').value = localStorage.getItem('noteDraft') || '';
   $('note').addEventListener('input', e => { localStorage.setItem('noteDraft', e.target.value); refresh(); });
 
@@ -1020,7 +1019,6 @@
       await Promise.all(items.filter(i => i.state === 'queued').map(dbPut));
       fresh.forEach(paint);
       $('note').value = ''; localStorage.removeItem('noteDraft');
-      localStorage.setItem('lastCustomer', customer);
       const r = [customer, ...JSON.parse(localStorage.getItem('recent') || '[]').filter(n => n.toLowerCase() !== customer.toLowerCase())].slice(0, 30);
       localStorage.setItem('recent', JSON.stringify(r));
       if (wantOff) {
