@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#f6f6f7" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#141416" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f6302f" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#d4122a" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -16,14 +16,14 @@
 <style>
   /* Fintech tarzı yerleşim: kırmızı geçişli ana kart, beyaz yuvarlak kartlar, renkli kare simgeler, ortası kamera düğmeli alt menü. */
   :root {
-    /* Kırmızı iş şablonu paleti: beyaz/açık gri zemin, mercan → koyu kırmızı geçişler (açıktan koyuya), antrasit yazı, gri ikincil */
+    /* Kırmızı iş şablonu paleti (canlı): beyaz/açık gri zemin, mercan → canlı kırmızı → koyu kırmızı (açıktan koyuya), antrasit yazı */
     --bg: #f6f6f7; --card: #ffffff; --field: #f2f2f4; --ink: #2d2d33; --muted: #8b8b94; --line: #ececef;
-    --red: #e2343b; --red-light: #f2645c; --red-dark: #b3202a;
+    --red: #f01d2c; --red-light: #ff6a52; --red-dark: #b80012;
     --navy: #3a3a42; --navy-light: #5c5c66; --navy-dark: #1e1e23; --grey: #a3a3ab; --green: #22b573;
-    --primary: #d92f36; --primary-soft: #fde9e8;
+    --primary: #e8101f; --primary-soft: #ffe5e6;
     --ok: #22b573; --ok-bg: #e7f7ee; --ok-ink: #17643f;
     --err: #e5484d; --err-bg: #fde8e9; --err-ink: #8c1d22;
-    --tint: 226, 52, 59; /* kırmızı gölge (rgb) */
+    --tint: 240, 29, 44; /* kırmızı gölge (rgb) */
     --shadow: 0 10px 22px -18px rgba(45, 45, 51, .45);
     --g-navy: linear-gradient(135deg, var(--navy-light), var(--navy) 55%, var(--navy-dark));
     --g-red: linear-gradient(135deg, var(--red-light), var(--red) 50%, var(--red-dark));
@@ -38,7 +38,11 @@
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body { margin: 0; background: var(--bg); color: var(--ink);
     font: 16px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-  body { min-height: 100dvh; }
+  /* Uygulama geneli desen: hafif kırmızı çapraz çizgiler + üstte dalgalı kırmızı şerit */
+  body { min-height: 100dvh; position: relative; isolation: isolate; /* dalga şeridi zeminin üstünde, içeriğin altında */
+    background: repeating-linear-gradient(135deg, rgba(var(--tint), .05) 0 2px, transparent 2px 24px), var(--bg); background-attachment: fixed; }
+  body::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: calc(env(safe-area-inset-top) + 172px); z-index: -1;
+    background: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20100%20100%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23ff6a52%22/%3E%3Cstop%20offset%3D%22.5%22%20stop-color%3D%22%23f01d2c%22/%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23b80012%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath%20d%3D%22M0%200H100V58C76%2090%2038%2050%200%20100Z%22%20fill%3D%22url%28%23g%29%22/%3E%3Cpath%20d%3D%22M0%20100C38%2050%2076%2090%20100%2058V70C76%20100%2040%2064%200%20100Z%22%20fill%3D%22%23fff%22%20fill-opacity%3D%22.18%22/%3E%3C/svg%3E") center / 100% 100% no-repeat; }
   svg { display: block; }
   [hidden] { display: none !important; } /* display veren sınıflar hidden'ı ezmesin */
   button, label { font: inherit; }
@@ -58,10 +62,10 @@
   .avatar img { width: auto; max-width: 100%; height: 100%; object-fit: contain; }
   .avatar svg { width: 22px; height: 22px; }
   .hello { flex: 1; min-width: 0; }
-  .hello small { display: block; color: var(--muted); font-size: 13px; }
-  .hello b { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; font-size: 16px; line-height: 1.2; overflow: hidden; }
+  .hello small { display: block; color: rgba(255, 255, 255, .85); font-size: 13px; }
+  .hello b { color: #fff; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; font-size: 16px; line-height: 1.2; overflow: hidden; }
   .icon-btn { appearance: none; border: 0; width: 44px; height: 44px; border-radius: 14px; flex: none; cursor: pointer;
-    display: grid; place-items: center; background: var(--card); color: var(--ink); box-shadow: var(--shadow); }
+    display: grid; place-items: center; background: rgba(255, 255, 255, .2); color: #fff; border: 1px solid rgba(255, 255, 255, .35); }
   .icon-btn svg { width: 21px; height: 21px; }
 
   main { max-width: 640px; margin: 0 auto; padding: 14px 20px 200px; display: flex; flex-direction: column; }
@@ -223,7 +227,8 @@
 
   /* Ayarlar: alttan açılan sayfa */
   dialog.sheet { border: 0; padding: 0; margin: auto auto 0; width: 100%; max-width: 640px; max-height: 92dvh;
-    background: var(--bg); color: var(--ink); border-radius: 30px 30px 0 0; overflow: auto; padding-bottom: env(safe-area-inset-bottom); }
+    background: repeating-linear-gradient(135deg, rgba(var(--tint), .05) 0 2px, transparent 2px 24px), var(--bg);
+    color: var(--ink); border-radius: 30px 30px 0 0; overflow: auto; padding-bottom: env(safe-area-inset-bottom); border-top: 5px solid var(--red); }
   dialog.sheet[open] { animation: up .28s cubic-bezier(.2, .8, .2, 1); }
   dialog.sheet::backdrop { background: rgba(10, 14, 28, .45); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); }
   .sheet-head { display: flex; align-items: center; padding: 12px 20px 0; position: relative; }
@@ -449,7 +454,7 @@
       <p class="tagline" data-i18n="tagline"></p>
       <div class="rows">
         <div class="row"><span data-i18n="app"></span><span>Foto Gönder</span></div>
-        <div class="row"><span data-i18n="version"></span><span>3.6</span></div>
+        <div class="row"><span data-i18n="version"></span><span>3.7</span></div>
         <div class="row"><span data-i18n="developer"></span><span>Cintra Software</span></div>
       </div>
       <p class="desc" data-i18n="desc"></p>
@@ -458,7 +463,7 @@
   </div>
 </dialog>
 
-<script src="config.js?v=36"></script>
+<script src="config.js?v=37"></script>
 <script>
 (async () => {
   const MAX_SIDE = 2560;            // Drive'a giden fotoğrafın uzun kenarı; offerte için fazlasıyla yeterli
