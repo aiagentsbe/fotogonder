@@ -133,7 +133,7 @@
 
   /* Fotoğraflar */
   .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 14px; }
-  .grid:empty::before { content: "Henüz foto yok"; grid-column: 1 / -1; color: var(--muted); font-size: 15px;
+  .grid:empty::before { content: attr(data-empty); grid-column: 1 / -1; color: var(--muted); font-size: 15px;
     text-align: center; padding: 24px 0; border-radius: 18px; background: var(--field); }
   .ph { position: relative; aspect-ratio: 1; border-radius: 18px; overflow: hidden; background: var(--field);
     animation: pop .25s ease-out; }
@@ -175,6 +175,50 @@
   .msg.err::before { content: "!"; background: var(--err); }
   .setup { text-align: center; color: var(--muted); }
   .setup b { color: var(--ink); }
+  /* Bölüm etiketleri (oda) */
+  .chips { display: flex; gap: 8px; overflow-x: auto; margin: 0 -18px 14px; padding: 2px 18px 4px; scrollbar-width: none; }
+  .chips::-webkit-scrollbar { display: none; }
+  .chip { appearance: none; border: 0; flex: none; font: inherit; font-size: 15px; font-weight: 600; padding: 9px 15px;
+    border-radius: 999px; background: var(--field); color: var(--muted); cursor: pointer; transition: transform .1s; }
+  .chip:active { transform: scale(.95); }
+  .chip[aria-pressed="true"] { color: #fff; background: linear-gradient(135deg, var(--hero-a), var(--hero-b)); }
+  .ph .tg { position: absolute; z-index: 1; left: 6px; bottom: 6px; max-width: calc(100% - 12px); padding: 3px 8px;
+    border-radius: 999px; font-size: 12px; font-weight: 700; color: #fff; background: rgba(15, 18, 30, .55);
+    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ph.queued .st { background: rgba(20, 99, 224, .25); }
+  .ph.queued .st::after { content: "⏱"; background: var(--primary); font-size: 17px; box-shadow: 0 4px 12px -2px rgba(0, 0, 0, .3); }
+  .badge.amber { --c: #d97706; --c1: #f5a524; --c2: #c26a05; }
+  .note { display: block; width: 100%; min-height: 96px; resize: vertical; font: inherit; font-size: 16px; line-height: 1.45;
+    padding: 14px 16px; border: 2px solid transparent; border-radius: 18px; background: var(--field); color: var(--ink); outline: none; }
+  .note:focus { border-color: var(--primary); }
+  .msg.info { background: var(--primary-soft); color: var(--primary); }
+  .msg.info::before { content: "⏱"; background: var(--primary); font-size: 14px; }
+
+  /* Ayarlar satırları */
+  .set { padding: 4px 16px; }
+  .set-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 0; }
+  .set-row + .set-row { border-top: 1px solid var(--line); }
+  .set-row > span { font-weight: 600; }
+  .seg { display: flex; background: var(--field); border-radius: 999px; padding: 4px; }
+  .seg button { appearance: none; border: 0; font: inherit; font-size: 15px; font-weight: 600; padding: 8px 14px;
+    border-radius: 999px; background: none; color: var(--muted); cursor: pointer; }
+  .seg button[aria-pressed="true"] { background: var(--card); color: var(--primary); box-shadow: 0 2px 6px rgba(0, 0, 0, .12); }
+  .set-in { flex: 1; min-width: 0; max-width: 230px; font: inherit; font-size: 16px; padding: 10px 14px; border-radius: 14px;
+    border: 2px solid transparent; background: var(--field); color: var(--ink); outline: none; text-align: right; }
+  .set-in:focus { border-color: var(--primary); }
+  .btn-soft { width: 100%; background: var(--primary-soft); color: var(--primary); padding: 13px; margin: 8px 0 2px; }
+  .btn-soft svg { width: 20px; height: 20px; }
+  .conn { min-height: 22px; font-size: 15px; font-weight: 600; text-align: center; padding: 6px 0 10px; color: var(--muted); }
+  .conn.ok { color: var(--ok); }
+  .conn.err { color: var(--err); }
+  .hist { list-style: none; margin: 0; padding: 0; }
+  .hist li { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 12px 0; font-size: 15px; }
+  .hist li + li { border-top: 1px solid var(--line); }
+  .hist li > div { min-width: 0; }
+  .hist b { display: block; font-weight: 650; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .hist small, .hist time { color: var(--muted); font-size: 14px; }
+  .hist time { flex: none; text-align: right; }
+  .hist .empty { color: var(--muted); justify-content: center; }
 </style>
 </head>
 <body>
@@ -182,17 +226,17 @@
   <div class="hero">
     <div>
       <h1>Foto Gönder</h1>
-      <p>Foto çek, gönder. Ofise otomatik gider.</p>
+      <p data-i18n="sub"></p>
     </div>
-    <button class="glass" id="openSettings" type="button" aria-label="Ayarlar" aria-haspopup="dialog">
+    <button class="glass" id="openSettings" type="button" data-i18n-aria="settings" aria-haspopup="dialog">
       <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
     </button>
   </div>
   <div class="who" id="who">
-    <label for="customer">Müşteri</label>
+    <label for="customer" data-i18n="customer"></label>
     <div class="search">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-5h4v5"/></svg>
-      <input id="customer" type="text" list="recent" placeholder="Ad, örn. Jansen – Dorpstraat 12"
+      <input id="customer" type="text" list="recent" data-i18n-ph="customerPh"
              autocomplete="off" autocapitalize="words" enterkeyhint="done">
     </div>
     <datalist id="recent"></datalist>
@@ -201,69 +245,99 @@
 
 <main id="app">
   <div id="msg" class="msg" role="status" aria-live="polite"></div>
-
+  <div id="setup" class="card setup" data-i18n="notConfigured" hidden></div>
 
   <section class="card">
     <div class="step">
       <span class="badge green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></span>
-      Fotoğraflar <small id="count"></small>
+      <span data-i18n="photos"></span> <small id="count"></small>
     </div>
+    <div class="chips" id="tags" role="group" data-i18n-aria="room"></div>
     <div class="actions">
       <label class="btn btn-grad btn-cam" for="cam">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>
-        Foto çek
+        <span data-i18n="cam"></span>
       </label>
       <label class="btn btn-gal" for="gal">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 16l5-5 4 4 3-3 6 6"/></svg>
-        Galeri
+        <span data-i18n="gal"></span>
       </label>
       <input id="cam" class="file" type="file" accept="image/*" capture="environment">
       <input id="gal" class="file" type="file" accept="image/*" multiple>
     </div>
     <div id="grid" class="grid"></div>
   </section>
+
+  <section class="card">
+    <div class="step">
+      <span class="badge amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg></span>
+      <label for="note" data-i18n="noteT"></label> <small data-i18n="optional"></small>
+    </div>
+    <textarea id="note" class="note" data-i18n-ph="notePh" rows="3"></textarea>
+  </section>
 </main>
 
-<div class="bar"><div class="bar-in">
-  <button id="send" class="btn btn-grad btn-send" disabled><span class="prog" id="prog"></span><span class="lbl" id="sendLbl">Gönder</span></button>
+<div class="bar" id="bar"><div class="bar-in">
+  <button id="send" class="btn btn-grad btn-send" disabled><span class="prog" id="prog"></span><span class="lbl" id="sendLbl"></span></button>
 </div></div>
 
 <dialog class="sheet" id="settings" aria-labelledby="settingsTitle">
   <div class="sheet-head">
-    <h2 id="settingsTitle">Ayarlar</h2>
-    <button class="close" id="closeSettings" type="button" aria-label="Kapat">
+    <h2 id="settingsTitle" data-i18n="settings"></h2>
+    <button class="close" id="closeSettings" type="button" data-i18n-aria="close">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
     </button>
   </div>
   <div class="sheet-body">
-    <div class="section-t">Hakkında</div>
-    <section class="card about">
-      <img class="logo" src="cintrasoft.svg" alt="CintraSoft logosu">
-      <p class="brand">Cintra<span>Soft</span></p>
-      <p class="tagline">Akıllı yazılım, sade çözümler.</p>
-      <div class="rows">
-        <div class="row"><span>Uygulama</span><span>Foto Gönder</span></div>
-        <div class="row"><span>Sürüm</span><span>1.2</span></div>
-        <div class="row"><span>Geliştirici</span><span>CintraSoft</span></div>
+    <div class="section-t" data-i18n="general"></div>
+    <section class="card set">
+      <div class="set-row">
+        <span data-i18n="language"></span>
+        <div class="seg" id="langSeg" role="group">
+          <button type="button" data-lang="tr">Türkçe</button>
+          <button type="button" data-lang="nl">Nederlands</button>
+        </div>
       </div>
-      <p class="desc">Foto Gönder, sahada çekilen fotoğrafları tek dokunuşla ofise ulaştırmak için CintraSoft tarafından tasarlandı ve geliştirildi.</p>
+      <div class="set-row">
+        <label for="worker" data-i18n="yourName"></label>
+        <input id="worker" class="set-in" type="text" autocomplete="name" autocapitalize="words" enterkeyhint="done" data-i18n-ph="namePh">
+      </div>
     </section>
-    <p class="copy">© <span id="year">2026</span> <b>CintraSoft</b>. Tüm hakları saklıdır.<br>İzinsiz kopyalanamaz, çoğaltılamaz ve dağıtılamaz.</p>
+
+    <div class="section-t" data-i18n="connection"></div>
+    <section class="card set">
+      <div class="set-row"><span data-i18n="pending"></span><b id="pendingCount">0</b></div>
+      <button class="btn btn-soft" id="ping" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0"/><circle cx="12" cy="19.5" r="1"/><path d="M2 9a14.5 14.5 0 0 1 20 0"/></svg>
+        <span data-i18n="check"></span>
+      </button>
+      <div class="conn" id="conn" role="status" aria-live="polite"></div>
+    </section>
+
+    <div class="section-t" data-i18n="history"></div>
+    <section class="card set"><ul class="hist" id="hist"></ul></section>
+
+    <div class="section-t" data-i18n="about"></div>
+    <section class="card about">
+      <img class="logo" src="cintrasoft.svg" alt="CintraSoft">
+      <p class="brand">Cintra<span>Soft</span></p>
+      <p class="tagline" data-i18n="tagline"></p>
+      <div class="rows">
+        <div class="row"><span data-i18n="app"></span><span>Foto Gönder</span></div>
+        <div class="row"><span data-i18n="version"></span><span>2.0</span></div>
+        <div class="row"><span data-i18n="developer"></span><span>CintraSoft</span></div>
+      </div>
+      <p class="desc" data-i18n="desc"></p>
+    </section>
+    <p class="copy" data-i18n="copy"></p>
   </div>
 </dialog>
 
 <script src="config.js"></script>
 <script>
-(() => {
+(async () => {
   const MAX_SIDE = 2560;            // Drive'a giden fotoğrafın uzun kenarı; offerte için fazlasıyla yeterli
   const $ = id => document.getElementById(id);
-
-  // Ayarlar: kurulum yapılmamış olsa da açılabilsin diye en başta bağlanır.
-  const sheet = $('settings');
-  $('year').textContent = Math.max(2026, new Date().getFullYear());
-  $('openSettings').onclick = () => sheet.showModal();
-  $('closeSettings').onclick = () => sheet.close();
-  sheet.addEventListener('click', e => { if (e.target === sheet) sheet.close(); }); // boşluğa dokununca kapan
   const scriptUrl = (window.FOTO_CONFIG || {}).scriptUrl;
 
   // Anahtar kurulum linkinden (?k=…) gelir. iOS ana ekran uygulaması Safari'nin hafızasını paylaşmaz,
@@ -271,9 +345,87 @@
   const urlKey = new URLSearchParams(location.search).get('k');
   if (urlKey) localStorage.setItem('key', urlKey);
   const key = urlKey || localStorage.getItem('key');
+  const configured = !!(scriptUrl && key);
 
-  const photos = []; // { file, url, state: '' | 'sending' | 'done' | 'fail', el }
+  // ---------- Dil ----------
+  const L = {
+    tr: {
+      sub: 'Foto çek, gönder. Ofise otomatik gider.', customer: 'Müşteri', customerPh: 'Ad, örn. Jansen – Dorpstraat 12',
+      photos: 'Fotoğraflar', room: 'Bölüm', cam: 'Foto çek', gal: 'Galeri', empty: 'Henüz foto yok', del: 'Fotoğrafı sil',
+      noteT: 'Not', optional: '(isteğe bağlı)', notePh: 'Ölçüler, yapılacak işler… örn. Mutfak 3,20 × 4,10 m, eski fayans sökülecek',
+      send: 'Gönder', sendN: 'Gönder ({p})', sendNote: 'Notu gönder', retryN: 'Tekrar gönder ({n})', sending: 'Gönderiliyor… {i}/{n}',
+      needCustomer: 'Önce müşteri adını yazın.', sentOk: '"{c}" klasörüne gönderildi: {what}.',
+      offline: 'İnternet yok. {n} öğe telefonda saklanıyor, internet gelince kendiliğinden gönderilecek.',
+      failed: '{sent} gönderildi, {failed} gönderilemedi ({err}). Telefonda saklanıyor; tekrar denenecek.',
+      badImg: 'Bu fotoğraf açılamadı.',
+      notConfigured: '<b>Uygulama henüz kurulmamış.</b><br>Size gönderilen kurulum linkini açın.',
+      settings: 'Ayarlar', close: 'Kapat', general: 'Genel', language: 'Dil', yourName: 'Adınız', namePh: 'örn. Ahmet',
+      connection: 'Bağlantı', pending: 'Telefonda bekleyen', check: 'Bağlantıyı kontrol et', checking: 'Kontrol ediliyor…',
+      connOk: '✓ Bağlantı çalışıyor', connBadKey: 'Anahtar geçersiz. Kurulum linkini yeniden açın.', connOffline: 'İnternet yok veya sunucuya ulaşılamıyor.',
+      history: 'Geçmiş', historyEmpty: 'Henüz gönderim yok.', photo1: '1 foto', photosN: '{n} foto', withNote: 'not',
+      noteFile: 'Not', dateL: 'Tarih', byL: 'Gönderen',
+      about: 'Hakkında', tagline: 'Akıllı yazılım, sade çözümler.', app: 'Uygulama', version: 'Sürüm', developer: 'Geliştirici',
+      desc: 'Foto Gönder, sahada çekilen fotoğrafları tek dokunuşla ofise ulaştırmak için CintraSoft tarafından tasarlandı ve geliştirildi.',
+      copy: '© {y} <b>CintraSoft</b>. Tüm hakları saklıdır.<br>İzinsiz kopyalanamaz, çoğaltılamaz ve dağıtılamaz.',
+    },
+    nl: {
+      sub: 'Maak foto\'s, verstuur. Ze komen vanzelf op kantoor.', customer: 'Klant', customerPh: 'Naam, bijv. Jansen – Dorpstraat 12',
+      photos: 'Foto\'s', room: 'Ruimte', cam: 'Foto maken', gal: 'Galerij', empty: 'Nog geen foto\'s', del: 'Foto verwijderen',
+      noteT: 'Notitie', optional: '(optioneel)', notePh: 'Maten, werkzaamheden… bijv. Keuken 3,20 × 4,10 m, oude tegels eruit',
+      send: 'Versturen', sendN: 'Versturen ({p})', sendNote: 'Notitie versturen', retryN: 'Opnieuw versturen ({n})', sending: 'Versturen… {i}/{n}',
+      needCustomer: 'Vul eerst de klantnaam in.', sentOk: 'Verstuurd naar map "{c}": {what}.',
+      offline: 'Geen internet. {n} items blijven op de telefoon en gaan vanzelf zodra er internet is.',
+      failed: '{sent} verstuurd, {failed} mislukt ({err}). Ze blijven op de telefoon; we proberen het opnieuw.',
+      badImg: 'Deze foto kan niet worden geopend.',
+      notConfigured: '<b>De app is nog niet ingesteld.</b><br>Open de installatielink die u heeft ontvangen.',
+      settings: 'Instellingen', close: 'Sluiten', general: 'Algemeen', language: 'Taal', yourName: 'Uw naam', namePh: 'bijv. Ahmet',
+      connection: 'Verbinding', pending: 'Wacht op de telefoon', check: 'Verbinding controleren', checking: 'Bezig met controleren…',
+      connOk: '✓ Verbinding werkt', connBadKey: 'Sleutel ongeldig. Open de installatielink opnieuw.', connOffline: 'Geen internet of server onbereikbaar.',
+      history: 'Geschiedenis', historyEmpty: 'Nog niets verstuurd.', photo1: '1 foto', photosN: '{n} foto\'s', withNote: 'notitie',
+      noteFile: 'Notitie', dateL: 'Datum', byL: 'Verstuurd door',
+      about: 'Over', tagline: 'Slimme software, eenvoudige oplossingen.', app: 'App', version: 'Versie', developer: 'Ontwikkelaar',
+      desc: 'Foto Gönder is ontworpen en ontwikkeld door CintraSoft om foto\'s van de bouwplaats met één tik op kantoor te krijgen.',
+      copy: '© {y} <b>CintraSoft</b>. Alle rechten voorbehouden.<br>Niets mag zonder toestemming worden gekopieerd, verveelvoudigd of verspreid.',
+    },
+  };
+  // [anahtar, Türkçe, Nederlands] — dosya adının başına seçili dildeki ad yazılır.
+  const TAGS = [['', 'Genel', 'Algemeen'], ['kitchen', 'Mutfak', 'Keuken'], ['bath', 'Banyo', 'Badkamer'],
+    ['living', 'Salon', 'Woonkamer'], ['bed', 'Yatak odası', 'Slaapkamer'], ['roof', 'Çatı', 'Dak'],
+    ['facade', 'Cephe', 'Gevel'], ['garden', 'Bahçe', 'Tuin'], ['other', 'Diğer', 'Overig']];
+  let lang = localStorage.getItem('lang') || (/^nl/i.test(navigator.language) ? 'nl' : 'tr');
+  const year = Math.max(2026, new Date().getFullYear());
+  const t = (k, v = {}) => L[lang][k].replace(/\{(\w+)\}/g, (_, n) => v[n]);
+  const pn = n => n === 1 ? t('photo1') : t('photosN', { n });
+  const tagName = k => (TAGS.find(x => x[0] === k) || TAGS[0])[lang === 'nl' ? 2 : 1];
+
+  // ---------- Telefonda saklama (IndexedDB) ----------
+  // Fotoğraflar küçültülüp hemen kaydedilir; uygulama kapansa da, internet olmasa da kaybolmaz.
+  let db = null;
+  try {
+    db = await new Promise((ok, no) => {
+      const r = indexedDB.open('fotogonder', 1);
+      r.onupgradeneeded = () => r.result.createObjectStore('q', { keyPath: 'id' });
+      r.onsuccess = () => ok(r.result);
+      r.onerror = () => no(r.error);
+    });
+  } catch { /* gizli sekme vb.: yalnızca bellekte çalışır */ }
+  const req = r => new Promise((ok, no) => { r.onsuccess = () => ok(r.result); r.onerror = () => no(r.error); });
+  const store = mode => db.transaction('q', mode).objectStore('q');
+  const dbPut = it => db ? req(store('readwrite').put({ id: it.id, kind: it.kind, blob: it.blob, tag: it.tag,
+    customer: it.customer, date: it.date, fileName: it.fileName })) : Promise.resolve();
+  const dbDel = id => db ? req(store('readwrite').delete(id)) : Promise.resolve();
+  const dbAll = () => db ? req(store('readonly').getAll()) : Promise.resolve([]);
+
+  const items = []; // { id, kind: 'photo'|'note', blob, tag, customer, date, fileName, state, url, el }
   let busy = false;
+  let tag = localStorage.getItem('tag') || '';
+
+  const z = n => String(n).padStart(2, '0');
+  const today = (d = new Date()) => `${d.getFullYear()}-${z(d.getMonth() + 1)}-${z(d.getDate())}`;
+  const stamp = (d = new Date()) => `${today(d)}_${z(d.getHours())}${z(d.getMinutes())}${z(d.getSeconds())}`;
+  const newId = () => Date.now().toString(36) + Math.random().toString(36).slice(2);
+  const fileSafe = s => String(s || '').trim().replace(/[^\p{L}\p{N}]+/gu, '-').replace(/^-+|-+$/g, '').slice(0, 30);
+  const worker = () => localStorage.getItem('worker') || '';
 
   function show(text, kind) {
     const m = $('msg');
@@ -282,50 +434,127 @@
     if (kind === 'ok') setTimeout(() => m.className === 'msg show ok' && (m.className = 'msg'), 6000);
   }
 
-  if (!scriptUrl || !key) {
-    $('app').innerHTML = '<div class="card setup"><b>Uygulama henüz kurulmamış.</b><br>Size gönderilen kurulum linkini açın.</div>';
-    $('send').style.display = 'none';
-    $('who').remove();
+  // ---------- Ekran ----------
+  function applyLang() {
+    document.documentElement.lang = lang;
+    for (const el of document.querySelectorAll('[data-i18n]')) el.innerHTML = t(el.dataset.i18n, { y: year });
+    for (const el of document.querySelectorAll('[data-i18n-ph]')) el.placeholder = t(el.dataset.i18nPh);
+    for (const el of document.querySelectorAll('[data-i18n-aria]')) el.setAttribute('aria-label', t(el.dataset.i18nAria));
+    for (const b of $('langSeg').children) b.setAttribute('aria-pressed', b.dataset.lang === lang);
+    $('grid').dataset.empty = t('empty');
+    $('conn').textContent = '';
+    renderTags(); renderHistory(); items.forEach(paint); refresh();
+  }
+
+  function renderTags() {
+    $('tags').replaceChildren(...TAGS.map(([k]) => {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'chip'; b.textContent = tagName(k);
+      b.setAttribute('aria-pressed', k === tag);
+      b.onclick = () => { tag = k; localStorage.setItem('tag', k); renderTags(); };
+      return b;
+    }));
+  }
+
+  function render(it) {
+    it.url = URL.createObjectURL(it.blob);
+    it.el = document.createElement('div');
+    it.el.innerHTML = `<img src="${it.url}" alt=""><span class="tg"></span><span class="st"></span><button class="x" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>`;
+    it.el.querySelector('.x').onclick = async () => {
+      if (busy) return;
+      await dbDel(it.id);
+      drop(it);
+      refresh();
+    };
+    paint(it);
+    $('grid').append(it.el);
+  }
+
+  function paint(it) {
+    if (!it.el) return; // notların küçük resmi yok
+    it.el.className = 'ph ' + (it.state || '');
+    const tg = it.el.querySelector('.tg');
+    tg.textContent = it.tag ? tagName(it.tag) : '';
+    tg.hidden = !it.tag;
+    it.el.querySelector('.x').setAttribute('aria-label', t('del'));
+  }
+
+  function drop(it) {
+    if (it.url) URL.revokeObjectURL(it.url);
+    if (it.el) it.el.remove();
+    items.splice(items.indexOf(it), 1);
+  }
+
+  function refresh() {
+    const fresh = items.filter(i => !i.customer).length;               // henüz Gönder'e basılmamış fotoğraflar
+    const waiting = items.filter(i => i.customer && i.state !== 'done').length; // kuyrukta bekleyenler
+    const hasNote = $('note').value.trim() !== '';
+    const shown = items.filter(i => i.kind === 'photo').length;
+    $('count').textContent = shown ? `(${shown})` : '';
+    $('pendingCount').textContent = fresh + waiting;
+    $('send').disabled = busy || !(fresh || waiting || hasNote);
+    if (!busy) $('sendLbl').textContent = fresh ? t('sendN', { p: pn(fresh) }) : waiting ? t('retryN', { n: waiting })
+      : hasNote ? t('sendNote') : t('send');
+  }
+
+  function renderHistory() {
+    const h = JSON.parse(localStorage.getItem('history') || '[]');
+    const fmt = new Intl.DateTimeFormat(lang === 'nl' ? 'nl-NL' : 'tr-TR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+    $('hist').replaceChildren(...(h.length ? h.map(e => {
+      const li = document.createElement('li');
+      li.innerHTML = '<div><b></b><small></small></div><time></time>';
+      li.querySelector('b').textContent = e.c;
+      li.querySelector('small').textContent = [e.p ? pn(e.p) : '', e.note ? t('withNote') : ''].filter(Boolean).join(' · ');
+      li.querySelector('time').textContent = fmt.format(new Date(e.at));
+      return li;
+    }) : [Object.assign(document.createElement('li'), { className: 'empty', textContent: t('historyEmpty') })]));
+  }
+
+  // ---------- Ayarlar ----------
+  const sheet = $('settings');
+  $('openSettings').onclick = () => { renderHistory(); refresh(); sheet.showModal(); };
+  $('closeSettings').onclick = () => sheet.close();
+  sheet.addEventListener('click', e => { if (e.target === sheet) sheet.close(); }); // boşluğa dokununca kapan
+  for (const b of $('langSeg').children) b.onclick = () => { lang = b.dataset.lang; localStorage.setItem('lang', lang); $('msg').className = 'msg'; applyLang(); };
+  $('worker').value = worker();
+  $('worker').addEventListener('input', e => localStorage.setItem('worker', e.target.value.trim()));
+
+  async function post(body) {
+    // text/plain: tarayıcı ön kontrol (CORS preflight) yapmaz, Apps Script bunu kabul eder.
+    const res = await fetch(scriptUrl, { method: 'POST', body: JSON.stringify(body), headers: { 'Content-Type': 'text/plain;charset=utf-8' } });
+    return res.json();
+  }
+
+  $('ping').onclick = async () => {
+    const c = $('conn');
+    c.className = 'conn'; c.textContent = t('checking');
+    try {
+      const out = await post({ key, ping: true });
+      c.className = 'conn ' + (out.ok ? 'ok' : 'err');
+      c.textContent = out.ok ? t('connOk') : /anahtar/i.test(out.error || '') ? t('connBadKey') : out.error;
+    } catch { c.className = 'conn err'; c.textContent = t('connOffline'); }
+  };
+
+  applyLang();
+
+  if (!configured) {
+    $('setup').hidden = false;
+    for (const s of $('app').querySelectorAll('section')) s.hidden = true;
+    $('who').hidden = true;
+    $('bar').hidden = true;
     return;
   }
 
+  // ---------- Fotoğraf ekleme ----------
   // Son müşteriler: aynı isim farklı yazılıp iki klasör açılmasın diye öneri olarak çıkar.
   const recent = JSON.parse(localStorage.getItem('recent') || '[]');
-  $('recent').innerHTML = recent.map(n => `<option value="${n.replace(/"/g, '&quot;')}">`).join('');
+  $('recent').innerHTML = recent.map(n => `<option value="${n.replace(/&/g, '&amp;').replace(/"/g, '&quot;')}">`).join('');
   $('customer').value = localStorage.getItem('lastCustomer') || '';
+  $('note').value = localStorage.getItem('noteDraft') || '';
+  $('note').addEventListener('input', e => { localStorage.setItem('noteDraft', e.target.value); refresh(); });
 
-  function refresh() {
-    const pending = photos.filter(p => p.state !== 'done').length;
-    $('count').textContent = photos.length ? `(${photos.length})` : '';
-    $('send').disabled = busy || !pending;
-    if (!busy) $('sendLbl').textContent = pending ? `Gönder (${pending} foto)` : 'Gönder';
-  }
-
-  function add(files) {
-    for (const file of files) {
-      const p = { file, url: URL.createObjectURL(file), state: '' };
-      p.el = document.createElement('div');
-      p.el.className = 'ph';
-      p.el.innerHTML = `<img src="${p.url}" alt=""><span class="st"></span><button class="x" aria-label="Fotoğrafı sil"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>`;
-      p.el.querySelector('.x').onclick = () => {
-        if (busy) return;
-        photos.splice(photos.indexOf(p), 1);
-        URL.revokeObjectURL(p.url);
-        p.el.remove();
-        refresh();
-      };
-      photos.push(p);
-      $('grid').append(p.el);
-    }
-    refresh();
-  }
-
-  for (const id of ['cam', 'gal']) {
-    $(id).addEventListener('change', e => { add(e.target.files); e.target.value = ''; });
-  }
-
-  // iPhone fotoğrafları 4–12 MB; küçültüp JPEG yaparak hem hızlı gider hem Apps Script sınırının altında kalır.
-  async function toJpegBase64(file) {
+  // iPhone fotoğrafları 4–12 MB; küçültüp JPEG yaparak hem telefonda az yer kaplar hem hızlı gider.
+  async function toJpeg(file) {
     const img = new Image();
     img.src = URL.createObjectURL(file);
     try { await img.decode(); } finally { URL.revokeObjectURL(img.src); }
@@ -334,28 +563,46 @@
     c.width = Math.round(img.naturalWidth * scale);
     c.height = Math.round(img.naturalHeight * scale);
     c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
-    const dataUrl = c.toDataURL('image/jpeg', 0.85);
+    const blob = await new Promise(ok => c.toBlob(ok, 'image/jpeg', 0.85));
     c.width = c.height = 0; // iOS Safari'de canvas belleğini hemen bırak
-    return dataUrl.slice(dataUrl.indexOf(',') + 1);
+    if (!blob) throw new Error('jpeg');
+    return blob;
   }
 
-  function fileName(i) {
-    const d = new Date(), z = n => String(n).padStart(2, '0');
-    return `${d.getFullYear()}-${z(d.getMonth() + 1)}-${z(d.getDate())}_${z(d.getHours())}${z(d.getMinutes())}${z(d.getSeconds())}_${i + 1}.jpg`;
+  async function add(files) {
+    for (const file of files) {
+      let blob;
+      try { blob = await toJpeg(file); } catch { show(t('badImg'), 'err'); continue; }
+      const it = { id: newId(), kind: 'photo', blob, tag, customer: null, date: null, fileName: null, state: '' };
+      items.push(it);
+      render(it);
+      refresh();
+      await dbPut(it);
+    }
+  }
+  for (const id of ['cam', 'gal']) {
+    $(id).addEventListener('change', e => { const f = [...e.target.files]; e.target.value = ''; add(f); });
   }
 
-  async function upload(customer, p, i) {
-    const body = JSON.stringify({ key, customer, fileName: fileName(i), mimeType: 'image/jpeg', data: await toJpegBase64(p.file) });
+  // ---------- Gönderme ----------
+  const b64 = blob => new Promise((ok, no) => {
+    const r = new FileReader();
+    r.onload = () => ok(r.result.slice(r.result.indexOf(',') + 1));
+    r.onerror = () => no(r.error);
+    r.readAsDataURL(blob);
+  });
+
+  async function upload(it) {
+    const body = { key, customer: it.customer, date: it.date, fileName: it.fileName,
+      mimeType: it.kind === 'note' ? 'text/plain' : 'image/jpeg', data: await b64(it.blob) };
     let last;
     for (let attempt = 0; attempt < 3; attempt++) {
       try {
-        // text/plain: tarayıcı ön kontrol (CORS preflight) yapmaz, Apps Script bunu kabul eder.
-        const res = await fetch(scriptUrl, { method: 'POST', body, headers: { 'Content-Type': 'text/plain;charset=utf-8' } });
-        const out = await res.json();
+        const out = await post(body);
         if (out.ok) return;
-        last = new Error(out.error || 'Bilinmeyen hata');
+        last = new Error(out.error || '?');
         if (/anahtar/i.test(last.message)) break; // tekrar denemek işe yaramaz
-      } catch (e) { last = e; }
+      } catch (e) { last = e; if (!navigator.onLine) break; }
       await new Promise(r => setTimeout(r, 1500 * (attempt + 1)));
     }
     throw last;
@@ -363,44 +610,85 @@
 
   $('send').onclick = async () => {
     const customer = $('customer').value.replace(/\s+/g, ' ').trim();
-    if (!customer) { show('Önce müşteri adını yazın.', 'err'); $('customer').focus(); return; }
-    const todo = photos.filter(p => p.state !== 'done');
+    const fresh = items.filter(i => !i.customer);
+    const text = $('note').value.trim();
+    if (fresh.length || text) {
+      if (!customer) { show(t('needCustomer'), 'err'); $('customer').focus(); return; }
+      // Gönder'e basıldığı an fotoğraflar bu müşteriye/güne bağlanır; internet sonra gelse de doğru klasöre gider.
+      const date = today(), st = stamp(), who = fileSafe(worker());
+      fresh.forEach((it, i) => Object.assign(it, { customer, date, state: 'queued',
+        fileName: [it.tag ? fileSafe(tagName(it.tag)) : '', st, who, i + 1].filter(Boolean).join('_') + '.jpg' }));
+      if (text) {
+        const head = `${t('customer')}: ${customer}\n${t('dateL')}: ${date}` + (worker() ? `\n${t('byL')}: ${worker()}` : '');
+        items.push({ id: newId(), kind: 'note', blob: new Blob([`${head}\n\n${text}\n`], { type: 'text/plain' }),
+          tag: '', customer, date, state: 'queued', fileName: [t('noteFile'), st, who].filter(Boolean).join('_') + '.txt' });
+      }
+      await Promise.all(items.filter(i => i.state === 'queued').map(dbPut));
+      fresh.forEach(paint);
+      $('note').value = ''; localStorage.removeItem('noteDraft');
+      localStorage.setItem('lastCustomer', customer);
+      const r = [customer, ...JSON.parse(localStorage.getItem('recent') || '[]').filter(n => n.toLowerCase() !== customer.toLowerCase())].slice(0, 30);
+      localStorage.setItem('recent', JSON.stringify(r));
+    }
+    drain(true);
+  };
+
+  async function drain(manual) {
+    if (busy) return;
+    const todo = items.filter(i => i.customer && i.state !== 'done');
+    if (!todo.length || (!manual && !navigator.onLine)) { refresh(); return; }
     busy = true; refresh();
     $('msg').className = 'msg';
     let sent = 0, failed = 0, lastErr;
-    for (const [i, p] of todo.entries()) {
-      p.state = 'sending'; p.el.className = 'ph sending';
-      $('sendLbl').textContent = `Gönderiliyor… ${i + 1}/${todo.length}`;
-      try { await upload(customer, p, i); p.state = 'done'; sent++; }
-      catch (e) { p.state = 'fail'; failed++; lastErr = e; }
-      p.el.className = 'ph ' + p.state;
-      $('prog').style.width = `${((i + 1) / todo.length) * 100}%`;
+    const log = new Map(); // müşteri → { c, p, note }
+    for (const [n, it] of todo.entries()) {
+      if (!navigator.onLine) break; // kalanlar telefonda bekler
+      it.state = 'sending'; paint(it);
+      $('sendLbl').textContent = t('sending', { i: n + 1, n: todo.length });
+      try {
+        await upload(it);
+        it.state = 'done'; sent++;
+        await dbDel(it.id);
+        const e = log.get(it.customer) || { c: it.customer, p: 0, note: false };
+        it.kind === 'note' ? (e.note = true) : e.p++;
+        log.set(it.customer, e);
+      } catch (e) { it.state = 'fail'; failed++; lastErr = e; }
+      paint(it);
+      $('prog').style.width = `${((n + 1) / todo.length) * 100}%`;
     }
     busy = false;
     $('prog').style.width = '0';
+    for (const it of todo) if (it.state === 'fail' || it.state === 'sending') { it.state = 'queued'; paint(it); }
 
-    localStorage.setItem('lastCustomer', customer);
-    const r = [customer, ...JSON.parse(localStorage.getItem('recent') || '[]').filter(n => n.toLowerCase() !== customer.toLowerCase())].slice(0, 30);
-    localStorage.setItem('recent', JSON.stringify(r));
-
-    if (failed) {
-      // Başarısız fotoğraflar ekranda kalır, "Gönder" ile yeniden denenir; hiçbiri kaybolmaz.
-      show(`${sent} foto gönderildi, ${failed} foto gönderilemedi. İnterneti kontrol edip tekrar "Gönder"e basın. (${lastErr && lastErr.message})`, 'err');
-    } else {
-      show(`${sent} foto "${customer}" klasörüne gönderildi.`, 'ok');
-      setTimeout(() => {
-        for (const p of photos.filter(p => p.state === 'done')) { URL.revokeObjectURL(p.url); p.el.remove(); }
-        photos.splice(0, photos.length, ...photos.filter(p => p.state !== 'done'));
-        refresh();
-      }, 1500);
+    if (log.size) {
+      const h = [...[...log.values()].map(e => ({ ...e, at: Date.now() })), ...JSON.parse(localStorage.getItem('history') || '[]')].slice(0, 30);
+      localStorage.setItem('history', JSON.stringify(h));
+      renderHistory();
     }
+    const left = items.filter(i => i.customer && i.state !== 'done').length;
+    if (left && !navigator.onLine) show(t('offline', { n: left }), 'info');
+    else if (failed) show(t('failed', { sent, failed, err: lastErr && lastErr.message }), 'err');
+    else if (sent) {
+      const e = [...log.values()];
+      const total = e.reduce((a, x) => a + x.p, 0);
+      const what = [total ? pn(total) : '', e.some(x => x.note) ? t('withNote') : ''].filter(Boolean).join(' + ');
+      show(t('sentOk', { c: e.map(x => x.c).join(', '), what }), 'ok');
+    }
+    setTimeout(() => { for (const it of items.filter(i => i.state === 'done')) drop(it); refresh(); }, 1500);
     refresh();
-  };
+  }
 
-  // Gönderilmemiş foto varken uygulama kapatılmak istenirse uyar.
-  addEventListener('beforeunload', e => { if (photos.some(p => p.state !== 'done')) e.preventDefault(); });
-
+  // Telefonda kalanları geri yükle; internet gelince / uygulama öne gelince kendiliğinden gönder.
+  for (const it of (await dbAll()).sort((a, b) => a.id < b.id ? -1 : 1)) {
+    it.state = it.customer ? 'queued' : '';
+    items.push(it);
+    if (it.kind === 'photo') render(it);
+  }
+  addEventListener('online', () => drain());
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) drain(); });
+  if (!db) addEventListener('beforeunload', e => { if (items.some(i => i.state !== 'done')) e.preventDefault(); });
   refresh();
+  drain();
 })();
 </script>
 </body>
