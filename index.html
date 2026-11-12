@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#ffd7bd" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#c8000f" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#1a110d" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -16,17 +16,17 @@
 <style>
   /* Kırmızı → turuncu palet: sıcak açık zemin, beyaz çerçeveli kutular, geçiş yalnız müşteri ve şirket kartında. */
   :root {
-    --bg: #fff1ea; --card: #ffffff; --field: #fff6f1; --ink: #2a1610; --muted: #8a6a5e; --line: #f6d3c3;
-    --red: #f0441f; --red-light: #ff7a2e; --red-dark: #d11c22; /* ana renk: turuncu → kırmızı */
+    --bg: #fbf3f3; --card: #ffffff; --field: #fbf4f4; --ink: #22080a; --muted: #806062; --line: #efd2d3;
+    --red: #d4000f; --red-light: #ff2a2a; --red-dark: #8e000b; /* ana renk: parlak kırmızı → bordo */
     --navy: #0d2140; --navy-light: #2a4a75; --navy-dark: #081630; --grey: #9aa9bd; --green: #22c55e;
-    --primary: #e6401c; --primary-soft: #ffe3d6; --link: #e86a0c;
+    --primary: #c8000f; --primary-soft: #ffe1e2; --link: #c8000f;
     --ok: #16a34a; --ok-bg: #e7f8ee; --ok-ink: #14532d;
     --err: #e5484d; --err-bg: #fdecea; --err-ink: #7f1d1d;
-    --tint: 240, 68, 31;
+    --tint: 200, 0, 15;
     --shadow: 0 1px 2px rgba(42, 22, 16, .06), 0 10px 20px -12px rgba(240, 68, 31, .35);
     --g-navy: linear-gradient(180deg, var(--navy-light), var(--navy-dark));
     --g-red: linear-gradient(180deg, var(--red-light), var(--red) 55%, var(--red-dark)); /* mavi düğmeler */
-    --g-main: linear-gradient(135deg, #ff9a1f 0%, #ff5a1f 50%, #d9122a 100%);      /* turuncu → kırmızı-turuncu → kırmızı */
+    --g-main: linear-gradient(135deg, #ff2a2a 0%, #c8000f 50%, #6e0008 100%);      /* kırmızı → bordo */
   }
   @media (prefers-color-scheme: dark) {
     :root {
@@ -36,14 +36,14 @@
     }
   }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  html, body { margin: 0; background: var(--bg); color: var(--ink);
+  html, body { margin: 0; background: var(--page); color: var(--ink);
     font: 16px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
   body { min-height: 100dvh; position: relative; isolation: isolate; }
-  /* Üstte gün batımında şantiye silüeti (vinç + bina iskeleti); aşağı doğru zemine karışır */
-  body::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: calc(env(safe-area-inset-top) + 200px); z-index: -1;
-    background: url("bouw-bg.svg?v=312") center bottom / cover no-repeat; pointer-events: none;
-    -webkit-mask-image: linear-gradient(#000 78%, transparent); mask-image: linear-gradient(#000 78%, transparent); }
-  @media (prefers-color-scheme: dark) { body::before { opacity: .55; filter: saturate(.8) brightness(.55); } }
+  /* Uygulama arka planı (bütün sayfa, sabit): koyu kırmızı soyut paneller + üstte vinç silüeti. Kutular beyaz kalır. */
+  :root { --page: #3a0509; }
+  body::before { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background: var(--page) url("rood-bg.svg?v=313") center top / cover no-repeat; }
+  @media (prefers-color-scheme: dark) { body::before { filter: brightness(.7); } }
   svg { display: block; }
   [hidden] { display: none !important; } /* display veren sınıflar hidden'ı ezmesin */
   button, label { font: inherit; }
@@ -62,8 +62,8 @@
   .avatar img { width: auto; max-width: 100%; height: 100%; object-fit: contain; }
   .avatar svg { width: 22px; height: 22px; }
   .hello { flex: 1; min-width: 0; }
-  .hello small { display: block; color: var(--muted); font-size: 13px; }
-  .hello b { color: var(--ink); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; font-size: 16px; line-height: 1.2; overflow: hidden; }
+  .hello small { display: block; color: rgba(255, 255, 255, .78); font-size: 13px; }
+  .hello b { color: #fff; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; font-size: 16px; line-height: 1.2; overflow: hidden; }
   .icon-btn { appearance: none; border: 0; width: 44px; height: 44px; border-radius: 14px; flex: none; cursor: pointer;
     display: grid; place-items: center; background: var(--card); color: var(--ink); border: 1px solid var(--line); box-shadow: var(--shadow); }
   .icon-btn svg { width: 21px; height: 21px; }
@@ -72,9 +72,9 @@
   main > * + * { margin-top: 16px; }
   .card { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 14px; box-shadow: var(--shadow); }
   .sec { display: flex; justify-content: space-between; align-items: baseline; margin: 0 2px 10px; }
-  .sec b { font-size: 16px; }
-  .sec small { color: var(--muted); font-size: 13px; }
-  .link { appearance: none; border: 0; background: none; padding: 0; color: var(--link); font-weight: 650; font-size: 14px; cursor: pointer; }
+  .sec b { font-size: 16px; color: #fff; }
+  .sec small { color: rgba(255, 255, 255, .7); font-size: 13px; }
+  .link { appearance: none; border: 0; background: none; padding: 0; color: #ffd0a8; font-weight: 650; font-size: 14px; cursor: pointer; }
 
   /* İki parçalı seçici */
   .seg { display: flex; background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 4px; box-shadow: var(--shadow); }
@@ -83,8 +83,9 @@
   .seg button[aria-pressed="true"] { background: var(--g-red); color: #fff; box-shadow: 0 4px 10px -6px rgba(var(--tint), .8); }
 
   /* Müşteri kartı: beyaz ve çerçeveli; solda ince kırmızı şerit */
-  .hero { border-radius: 22px; padding: 16px; color: #fff; background: var(--g-main); position: relative; overflow: hidden;
-    box-shadow: 0 14px 26px -16px rgba(var(--tint), .7); }
+  .hero { border-radius: 22px; padding: 16px; color: #fff; position: relative; overflow: hidden;
+    background: linear-gradient(135deg, rgba(255, 60, 60, .28), rgba(40, 0, 4, .55)); border: 1px solid rgba(255, 255, 255, .22);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); box-shadow: 0 18px 30px -18px rgba(0, 0, 0, .8); }
   .hero::after { content: ""; position: absolute; right: -50px; top: -70px; width: 180px; height: 180px; border-radius: 50%;
     background: rgba(255, 255, 255, .12); pointer-events: none; }
   .hero > * { position: relative; z-index: 1; }
@@ -177,10 +178,10 @@
   .hist .hx svg { width: 13px; height: 13px; }
   .sq { width: 40px; height: 40px; border-radius: 13px; display: grid; place-items: center; color: #fff; flex: none; }
   .sq svg { width: 19px; height: 19px; }
-  .c0 { background: linear-gradient(180deg, #ff7a2e, #e0301c); color: #fff; }
-  .c1 { background: linear-gradient(180deg, #ffb02e, #f07a0c); color: #fff; }
+  .c0 { background: linear-gradient(180deg, #ff2a2a, #b0000d); color: #fff; }
+  .c1 { background: linear-gradient(180deg, #5a5560, #2a2630); color: #fff; }
   .c2 { background: linear-gradient(180deg, #f25c54, #c81e2a); color: #fff; }
-  .c3 { background: linear-gradient(180deg, #ff8f5a, #e85a1c); color: #fff; }
+  .c3 { background: linear-gradient(180deg, #e2453b, #8e000b); color: #fff; }
   .c4 { background: linear-gradient(180deg, #e2453b, #9e1520); color: #fff; }
   .c5 { background: linear-gradient(180deg, #22c55e, #0f8f3f); color: #fff; }
   @media (prefers-color-scheme: dark) {
@@ -206,7 +207,7 @@
   /* Alt: Gönder + menü */
   .bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 5; }
   .bar::before { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 190px; pointer-events: none;
-    background: linear-gradient(to top, var(--bg) 62%, transparent); }
+    background: linear-gradient(to top, rgba(26, 1, 3, .92) 55%, transparent); }
   .bar-in { position: relative; max-width: 640px; margin: 0 auto; padding: 0 20px 12px; }
   .btn-send { appearance: none; border: 0; width: 100%; height: 54px; border-radius: 18px; cursor: pointer; position: relative; overflow: hidden;
     color: #fff; font-weight: 700; font-size: 16.5px; background: var(--g-red);
@@ -223,7 +224,7 @@
   .nav svg { width: 22px; height: 22px; }
   .nav .act { color: var(--primary); }
   .nav .fab { width: 64px; height: 64px; border-radius: 50%; place-items: center; margin-top: -34px; padding: 0; color: #fff;
-    background: var(--g-red); box-shadow: 0 8px 16px -6px rgba(var(--tint), .7), 0 0 0 6px var(--bg); }
+    background: var(--g-red); box-shadow: 0 8px 16px -6px rgba(var(--tint), .7), 0 0 0 6px rgba(255, 255, 255, .9); }
   .nav .fab svg { width: 28px; height: 28px; }
   .nav .fab:active { transform: scale(.94); }
 
@@ -455,7 +456,7 @@
       <p class="tagline" data-i18n="tagline"></p>
       <div class="rows">
         <div class="row"><span data-i18n="app"></span><span>Foto Gönder</span></div>
-        <div class="row"><span data-i18n="version"></span><span>3.12</span></div>
+        <div class="row"><span data-i18n="version"></span><span>3.13</span></div>
         <div class="row"><span data-i18n="developer"></span><span>Cintra Software</span></div>
       </div>
       <p class="desc" data-i18n="desc"></p>
@@ -464,7 +465,7 @@
   </div>
 </dialog>
 
-<script src="config.js?v=312"></script>
+<script src="config.js?v=313"></script>
 <script>
 (async () => {
   const MAX_SIDE = 2560;            // Drive'a giden fotoğrafın uzun kenarı; offerte için fazlasıyla yeterli
