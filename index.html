@@ -175,16 +175,6 @@
   .msg.err::before { content: "!"; background: var(--err); }
   .setup { text-align: center; color: var(--muted); }
   .setup b { color: var(--ink); }
-  /* Bölüm etiketleri (oda) */
-  .chips { display: flex; gap: 8px; overflow-x: auto; margin: 0 -18px 14px; padding: 2px 18px 4px; scrollbar-width: none; }
-  .chips::-webkit-scrollbar { display: none; }
-  .chip { appearance: none; border: 0; flex: none; font: inherit; font-size: 15px; font-weight: 600; padding: 9px 15px;
-    border-radius: 999px; background: var(--field); color: var(--muted); cursor: pointer; transition: transform .1s; }
-  .chip:active { transform: scale(.95); }
-  .chip[aria-pressed="true"] { color: #fff; background: linear-gradient(135deg, var(--hero-a), var(--hero-b)); }
-  .ph .tg { position: absolute; z-index: 1; left: 6px; bottom: 6px; max-width: calc(100% - 12px); padding: 3px 8px;
-    border-radius: 999px; font-size: 12px; font-weight: 700; color: #fff; background: rgba(15, 18, 30, .55);
-    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .ph.queued .st { background: rgba(20, 99, 224, .25); }
   .ph.queued .st::after { content: "⏱"; background: var(--primary); font-size: 17px; box-shadow: 0 4px 12px -2px rgba(0, 0, 0, .3); }
   .badge.amber { --c: #d97706; --c1: #f5a524; --c2: #c26a05; }
@@ -217,10 +207,12 @@
   .hist li > div { min-width: 0; }
   .hist b { display: block; font-weight: 650; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .hist small { color: var(--muted); font-size: 14px; }
-  .hist .ob { appearance: none; border: 0; flex: none; font: inherit; font-size: 14px; font-weight: 650; padding: 8px 13px;
-    border-radius: 999px; cursor: pointer; text-decoration: none; white-space: nowrap; background: var(--primary-soft); color: var(--primary); }
-  .hist a.ob { color: #fff; background: linear-gradient(135deg, var(--hero-a), var(--hero-b)); }
-  .hist .ob:disabled { opacity: .6; }
+  /* Gönderildi mesajındaki offerte düğmesi */
+  .msg .ob { display: flex; width: fit-content; align-items: center; margin-top: 10px; appearance: none; border: 0; font: inherit;
+    font-size: 16px; font-weight: 700; padding: 11px 18px; border-radius: 999px; cursor: pointer; text-decoration: none; color: #fff;
+    background: linear-gradient(135deg, var(--hero-a), var(--hero-b)); box-shadow: 0 8px 18px -10px var(--hero-a); }
+  .msg a.ob { background: var(--ok); box-shadow: none; }
+  .msg .ob:disabled { opacity: .7; }
   .hist .empty { color: var(--muted); justify-content: center; }
   /* Mikrofon: sesle yazma + sesli mesaj */
   .mics { display: flex; gap: 10px; margin-top: 10px; }
@@ -281,7 +273,6 @@
       <span class="badge green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></span>
       <span data-i18n="photos"></span> <small id="count"></small>
     </div>
-    <div class="chips" id="tags" role="group" data-i18n-aria="room"></div>
     <div class="actions">
       <label class="btn btn-grad btn-cam" for="cam">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>
@@ -364,7 +355,7 @@
       <p class="tagline" data-i18n="tagline"></p>
       <div class="rows">
         <div class="row"><span data-i18n="app"></span><span>Foto Gönder</span></div>
-        <div class="row"><span data-i18n="version"></span><span>2.2</span></div>
+        <div class="row"><span data-i18n="version"></span><span>2.3</span></div>
         <div class="row"><span data-i18n="developer"></span><span>CintraSoft</span></div>
       </div>
       <p class="desc" data-i18n="desc"></p>
@@ -391,7 +382,7 @@
   const L = {
     tr: {
       sub: 'Foto çek, gönder. Ofise otomatik gider.', customer: 'Müşteri', customerPh: 'Ad, örn. Jansen – Dorpstraat 12',
-      photos: 'Fotoğraflar', room: 'Bölüm', cam: 'Foto çek', gal: 'Galeri', empty: 'Henüz foto yok', del: 'Fotoğrafı sil',
+      photos: 'Fotoğraflar', cam: 'Foto çek', gal: 'Galeri', empty: 'Henüz foto yok', del: 'Fotoğrafı sil',
       noteT: 'Not', optional: '(isteğe bağlı)', notePh: 'Ölçüler, yapılacak işler… örn. Mutfak 3,20 × 4,10 m, eski fayans sökülecek',
       send: 'Gönder', sendN: 'Gönder ({p})', sendNote: 'Notu gönder', retryN: 'Tekrar gönder ({n})', sending: 'Gönderiliyor… {i}/{n}',
       needCustomer: 'Önce müşteri adını yazın.', sentOk: '"{c}" klasörüne gönderildi: {what}.',
@@ -403,7 +394,7 @@
       connection: 'Bağlantı', pending: 'Telefonda bekleyen', check: 'Bağlantıyı kontrol et', checking: 'Kontrol ediliyor…',
       connOk: '✓ Bağlantı çalışıyor', connBadKey: 'Anahtar geçersiz. Kurulum linkini yeniden açın.', connOffline: 'İnternet yok veya sunucuya ulaşılamıyor.',
       history: 'Geçmiş', historyEmpty: 'Henüz gönderim yok.', photo1: '1 foto', photosN: '{n} foto', withNote: 'not',
-      offerte: 'Offerte', making: 'Hazırlanıyor…', openOfferte: 'Offerteyi aç',
+      makeOfferte: '📄 Offerte hazırla', making: 'Hazırlanıyor…', openOfferte: 'Offerteyi aç ↗',
       dictate: 'Sesle yaz', listening: 'Dinliyorum… bitir', record: 'Sesli mesaj', recording: 'Kayıt {t} · bitir',
       voice: 'Sesli mesaj', voice1: '1 sesli mesaj', voiceN: '{n} sesli mesaj', voiceFile: 'Sesli-mesaj', play: 'Dinle',
       micDenied: 'Mikrofon izni yok. Telefon ayarlarından bu uygulamaya mikrofon izni verin.',
@@ -414,7 +405,7 @@
     },
     nl: {
       sub: 'Maak foto\'s, verstuur. Ze komen vanzelf op kantoor.', customer: 'Klant', customerPh: 'Naam, bijv. Jansen – Dorpstraat 12',
-      photos: 'Foto\'s', room: 'Ruimte', cam: 'Foto maken', gal: 'Galerij', empty: 'Nog geen foto\'s', del: 'Foto verwijderen',
+      photos: 'Foto\'s', cam: 'Foto maken', gal: 'Galerij', empty: 'Nog geen foto\'s', del: 'Foto verwijderen',
       noteT: 'Notitie', optional: '(optioneel)', notePh: 'Maten, werkzaamheden… bijv. Keuken 3,20 × 4,10 m, oude tegels eruit',
       send: 'Versturen', sendN: 'Versturen ({p})', sendNote: 'Notitie versturen', retryN: 'Opnieuw versturen ({n})', sending: 'Versturen… {i}/{n}',
       needCustomer: 'Vul eerst de klantnaam in.', sentOk: 'Verstuurd naar map "{c}": {what}.',
@@ -426,7 +417,7 @@
       connection: 'Verbinding', pending: 'Wacht op de telefoon', check: 'Verbinding controleren', checking: 'Bezig met controleren…',
       connOk: '✓ Verbinding werkt', connBadKey: 'Sleutel ongeldig. Open de installatielink opnieuw.', connOffline: 'Geen internet of server onbereikbaar.',
       history: 'Geschiedenis', historyEmpty: 'Nog niets verstuurd.', photo1: '1 foto', photosN: '{n} foto\'s', withNote: 'notitie',
-      offerte: 'Offerte', making: 'Bezig…', openOfferte: 'Open offerte',
+      makeOfferte: '📄 Offerte maken', making: 'Bezig…', openOfferte: 'Open offerte ↗',
       dictate: 'Dicteren', listening: 'Luisteren… stop', record: 'Spraakbericht', recording: 'Opname {t} · stop',
       voice: 'Spraakbericht', voice1: '1 spraakbericht', voiceN: '{n} spraakberichten', voiceFile: 'Spraakbericht', play: 'Afspelen',
       micDenied: 'Geen toegang tot de microfoon. Sta dit toe in de instellingen van de telefoon.',
@@ -436,17 +427,12 @@
       copy: '© {y} <b>CintraSoft</b>. Alle rechten voorbehouden.<br>Niets mag zonder toestemming worden gekopieerd, verveelvoudigd of verspreid.',
     },
   };
-  // [anahtar, Türkçe, Nederlands] — dosya adının başına seçili dildeki ad yazılır.
-  const TAGS = [['', 'Genel', 'Algemeen'], ['kitchen', 'Mutfak', 'Keuken'], ['bath', 'Banyo', 'Badkamer'],
-    ['living', 'Salon', 'Woonkamer'], ['bed', 'Yatak odası', 'Slaapkamer'], ['roof', 'Çatı', 'Dak'],
-    ['facade', 'Cephe', 'Gevel'], ['garden', 'Bahçe', 'Tuin'], ['other', 'Diğer', 'Overig']];
   let lang = localStorage.getItem('lang') || (/^nl/i.test(navigator.language) ? 'nl' : 'tr');
   const year = Math.max(2026, new Date().getFullYear());
   const t = (k, v = {}) => L[lang][k].replace(/\{(\w+)\}/g, (_, n) => v[n]);
   const pn = n => n === 1 ? t('photo1') : t('photosN', { n });
   const vn = n => n === 1 ? t('voice1') : t('voiceN', { n });
   const summary = (p, a, note) => [p ? pn(p) : '', a ? vn(a) : '', note ? t('withNote') : ''].filter(Boolean).join(' + ');
-  const tagName = k => (TAGS.find(x => x[0] === k) || TAGS[0])[lang === 'nl' ? 2 : 1];
 
   // ---------- Telefonda saklama (IndexedDB) ----------
   // Fotoğraflar küçültülüp hemen kaydedilir; uygulama kapansa da, internet olmasa da kaybolmaz.
@@ -461,14 +447,13 @@
   } catch { /* gizli sekme vb.: yalnızca bellekte çalışır */ }
   const req = r => new Promise((ok, no) => { r.onsuccess = () => ok(r.result); r.onerror = () => no(r.error); });
   const store = mode => db.transaction('q', mode).objectStore('q');
-  const dbPut = it => db ? req(store('readwrite').put({ id: it.id, kind: it.kind, blob: it.blob, tag: it.tag,
+  const dbPut = it => db ? req(store('readwrite').put({ id: it.id, kind: it.kind, blob: it.blob,
     dur: it.dur, customer: it.customer, date: it.date, fileName: it.fileName })) : Promise.resolve();
   const dbDel = id => db ? req(store('readwrite').delete(id)) : Promise.resolve();
   const dbAll = () => db ? req(store('readonly').getAll()) : Promise.resolve([]);
 
-  const items = []; // { id, kind: 'photo'|'note', blob, tag, customer, date, fileName, state, url, el }
+  const items = []; // { id, kind: 'photo'|'audio'|'note', blob, dur, customer, date, fileName, state, url, el }
   let busy = false;
-  let tag = localStorage.getItem('tag') || '';
 
   const z = n => String(n).padStart(2, '0');
   const today = (d = new Date()) => `${d.getFullYear()}-${z(d.getMonth() + 1)}-${z(d.getDate())}`;
@@ -495,17 +480,7 @@
     for (const b of $('langSeg').children) b.setAttribute('aria-pressed', b.dataset.lang === lang);
     $('grid').dataset.empty = t('empty');
     $('conn').textContent = '';
-    renderTags(); renderHistory(); items.forEach(paint); refresh();
-  }
-
-  function renderTags() {
-    $('tags').replaceChildren(...TAGS.map(([k]) => {
-      const b = document.createElement('button');
-      b.type = 'button'; b.className = 'chip'; b.textContent = tagName(k);
-      b.setAttribute('aria-pressed', k === tag);
-      b.onclick = () => { tag = k; localStorage.setItem('tag', k); renderTags(); };
-      return b;
-    }));
+    renderHistory(); items.forEach(paint); refresh();
   }
 
   const PLAY = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
@@ -521,7 +496,7 @@
       a.onplay = () => { pb.innerHTML = PAUSE; };
       a.onpause = a.onended = () => { pb.innerHTML = PLAY; };
     } else {
-      it.el.innerHTML = `<img src="${it.url}" alt=""><span class="tg"></span><span class="st"></span>${x}`;
+      it.el.innerHTML = `<img src="${it.url}" alt=""><span class="st"></span>${x}`;
     }
     it.el.querySelector('.x').onclick = async () => {
       if (busy) return;
@@ -544,10 +519,6 @@
       return;
     }
     it.el.className = 'ph ' + (it.state || '');
-    const tg = it.el.querySelector('.tg');
-    tg.textContent = it.tag ? tagName(it.tag) : '';
-    tg.hidden = !it.tag;
-    it.el.querySelector('.x').setAttribute('aria-label', t('del'));
   }
 
   function drop(it) {
@@ -577,32 +548,30 @@
       li.innerHTML = '<div><b></b><small></small></div>';
       li.querySelector('b').textContent = e.c;
       li.querySelector('small').textContent = [summary(e.p, e.a, e.note), fmt.format(new Date(e.at))].filter(Boolean).join(' · ');
-      if (configured) li.append(offerteBtn(e, h));
       return li;
     }) : [Object.assign(document.createElement('li'), { className: 'empty', textContent: t('historyEmpty') })]));
   }
 
-  // Offerte taslağı: Google o ziyaretin gün klasöründen bir Google Docs belgesi yapar; bağlantısı geçmişte saklanır.
-  function offerteBtn(e, h) {
-    const day = x => x.d || today(new Date(x.at)); // eski kayıtlarda gün yok → gönderim günü
-    if (e.u) return Object.assign(document.createElement('a'), { className: 'ob', href: e.u, target: '_blank', rel: 'noopener', textContent: t('openOfferte') });
-    const b = Object.assign(document.createElement('button'), { className: 'ob', type: 'button', textContent: t('offerte') });
+  // Gönderildi mesajı + tek düğmeyle offerte: Google o ziyaretin gün klasöründen bir Google Docs taslağı yapar.
+  function showSent(text, c, d) {
+    const m = $('msg'), box = document.createElement('div');
+    const b = Object.assign(document.createElement('button'), { className: 'ob', type: 'button', textContent: t('makeOfferte') });
     b.onclick = async () => {
       b.disabled = true; b.textContent = t('making');
       try {
-        const out = await post({ key, action: 'offerte', customer: e.c, date: day(e) });
+        const out = await post({ key, action: 'offerte', customer: c, date: d });
         if (!out.ok) throw new Error(out.error);
-        for (const x of h) if (x.c === e.c && day(x) === day(e)) x.u = out.url; // aynı ziyaretin kayıtları aynı belgeyi açsın
-        localStorage.setItem('history', JSON.stringify(h));
-        renderHistory();
+        b.replaceWith(Object.assign(document.createElement('a'), { className: 'ob', href: out.url, target: '_blank', rel: 'noopener', textContent: t('openOfferte') }));
       } catch (err) {
-        b.disabled = false; b.textContent = t('offerte');
-        const sm = b.parentNode.querySelector('small');
-        sm.textContent = navigator.onLine ? String(err.message || err) : t('connOffline');
-        sm.style.color = 'var(--err)';
+        b.disabled = false; b.textContent = t('makeOfferte');
+        box.firstChild.textContent = navigator.onLine ? String(err.message || err) : t('connOffline');
       }
     };
-    return b;
+    box.append(document.createElement('span'), b);
+    box.firstChild.textContent = text;
+    m.replaceChildren(box);
+    m.className = 'msg show ok'; // kendiliğinden kapanmaz; bir sonraki gönderime kadar durur
+    m.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
   // ---------- Ayarlar ----------
@@ -668,7 +637,7 @@
     for (const file of files) {
       let blob;
       try { blob = await toJpeg(file); } catch { show(t('badImg'), 'err'); continue; }
-      const it = { id: newId(), kind: 'photo', blob, tag, customer: null, date: null, fileName: null, state: '' };
+      const it = { id: newId(), kind: 'photo', blob, customer: null, date: null, fileName: null, state: '' };
       items.push(it);
       render(it);
       refresh();
@@ -738,7 +707,7 @@
       const dur = Math.round((Date.now() - t0) / 1000);
       const blob = new Blob(chunks, { type: (rec.mimeType || type || 'audio/webm').split(';')[0] });
       if (!blob.size || dur < 1) return;
-      const it = { id: newId(), kind: 'audio', blob, tag: '', dur, customer: null, date: null, fileName: null, state: '' };
+      const it = { id: newId(), kind: 'audio', blob, dur, customer: null, date: null, fileName: null, state: '' };
       items.push(it);
       render(it);
       refresh();
@@ -786,7 +755,7 @@
       let np = 0, na = 0;
       for (const it of fresh) {
         const audio = it.kind === 'audio';
-        const first = audio ? t('voiceFile') : it.tag ? fileSafe(tagName(it.tag)) : '';
+        const first = audio ? t('voiceFile') : '';
         const ext = audio ? AUDIO_EXT[it.blob.type] || 'webm' : 'jpg';
         Object.assign(it, { customer, date, state: 'queued',
           fileName: [first, st, who, audio ? ++na : ++np].filter(Boolean).join('_') + '.' + ext });
@@ -794,7 +763,7 @@
       if (text) {
         const head = `${t('customer')}: ${customer}\n${t('dateL')}: ${date}` + (worker() ? `\n${t('byL')}: ${worker()}` : '');
         items.push({ id: newId(), kind: 'note', blob: new Blob([`${head}\n\n${text}\n`], { type: 'text/plain' }),
-          tag: '', customer, date, state: 'queued', fileName: [t('noteFile'), st, who].filter(Boolean).join('_') + '.txt' });
+          customer, date, state: 'queued', fileName: [t('noteFile'), st, who].filter(Boolean).join('_') + '.txt' });
       }
       await Promise.all(items.filter(i => i.state === 'queued').map(dbPut));
       fresh.forEach(paint);
@@ -845,7 +814,8 @@
     else if (sent) {
       const e = [...log.values()];
       const what = summary(e.reduce((s, x) => s + x.p, 0), e.reduce((s, x) => s + (x.a || 0), 0), e.some(x => x.note));
-      show(t('sentOk', { c: [...new Set(e.map(x => x.c))].join(', '), what }), 'ok');
+      const last = e[e.length - 1];
+      showSent(t('sentOk', { c: [...new Set(e.map(x => x.c))].join(', '), what }), last.c, last.d);
     }
     setTimeout(() => { for (const it of items.filter(i => i.state === 'done')) drop(it); refresh(); }, 1500);
     refresh();
