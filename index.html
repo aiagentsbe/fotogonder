@@ -52,8 +52,8 @@
   .avatar { width: 46px; height: 46px; border-radius: 15px; flex: none; display: grid; place-items: center; overflow: hidden;
     color: #fff; font-weight: 800; font-size: 16px; background: linear-gradient(135deg, var(--plum), var(--accent));
     box-shadow: 0 8px 16px -8px var(--accent); }
-  .avatar.logo { background: #fff; }
-  .avatar img { width: 100%; height: 100%; object-fit: contain; }
+  .avatar.logo { background: #fff; width: auto; min-width: 46px; max-width: 120px; padding: 4px 8px; }
+  .avatar img { width: auto; max-width: 100%; height: 100%; object-fit: contain; }
   .avatar svg { width: 22px; height: 22px; }
   .hello { flex: 1; min-width: 0; }
   .hello small { display: block; color: var(--muted); font-size: 13px; }
@@ -447,7 +447,7 @@
       <p class="tagline" data-i18n="tagline"></p>
       <div class="rows">
         <div class="row"><span data-i18n="app"></span><span>Foto Gönder</span></div>
-        <div class="row"><span data-i18n="version"></span><span>3.2</span></div>
+        <div class="row"><span data-i18n="version"></span><span>3.3</span></div>
         <div class="row"><span data-i18n="developer"></span><span>Cintra Software</span></div>
       </div>
       <p class="desc" data-i18n="desc"></p>
@@ -699,7 +699,8 @@
     ['tel', 'kTel', 'tel', 'tel'], ['email', 'kEmail', 'email', 'email'], ['btw', 'fBtw'], ['iban', 'fIban'], ['betaling', 'fBetaling']];
   const KLANT_F = [['adres', 'kAdres', 'street-address'], ['plaats', 'kPlaats', 'address-level2'], ['tel', 'kTel', 'tel', 'tel'], ['email', 'kEmail', 'email', 'email']];
   const store_ = (k, d) => JSON.parse(localStorage.getItem(k) || d);
-  const firma = () => store_('firma', '{}');
+  // Telefonda girilen bilgiler, yoksa config.js'teki firmanın varsayılanları (ad, logo).
+  const firma = () => ({ ...((window.FOTO_CONFIG || {}).firma || {}), ...store_('firma', '{}') });
   function fields(box, defs, values, onInput) {
     box.replaceChildren(...defs.map(([k, label, ac, type]) => {
       const l = document.createElement('label');
@@ -941,7 +942,7 @@
   const pendingOff = () => store_('pendingOfferte', '[]');
   const dropOff = o => localStorage.setItem('pendingOfferte', JSON.stringify(pendingOff().filter(x => !(x.c === o.c && x.d === o.d))));
   function firmaPayload() {
-    const f = firma(), out = { ...f };
+    const f = store_('firma', '{}'), out = { ...f }; // sadece telefonda girilenler; boşsa Google kartvizit bilgilerini kullanır
     delete out.logo;
     const m = /^data:(image\/(?:png|jpeg));base64,(.+)$/.exec(f.logo || '');
     if (m) { out.logoType = m[1]; out.logo = m[2]; }
