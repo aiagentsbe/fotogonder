@@ -3,355 +3,378 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#1463e0">
+<meta name="theme-color" content="#eef0fb" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0f1220" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Foto Gönder">
 <title>Foto Gönder</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon-180.png">
 <style>
-  /* Çelik Kubbe 2.0 görünümü (Ocean teması): geçişli başlık + büyük daire, beyaz yumuşak gölgeli kartlar, parlak rozetler, geçişli hap butonlar. */
+  /* Fintech tarzı: lavanta zemin, mavi geçişli ana kart, beyaz yuvarlak kartlar, renkli kare simgeler, ortası yeşil kamera düğmeli alt menü. */
   :root {
-    --hero-a: #1463e0; --hero-b: #1e9e6a; --hero-a2: #3077e4; --hero-b2: #3aaa7c;
-    --bg: #f0f5fc; --card: #ffffff; --field: #eff1f7; --ink: #151823; --muted: #5f6678; --line: #e3e6ef;
-    --primary: #1463e0; --primary-soft: #dceaff;
-    --ok: #1e9e6a; --ok-bg: #dcf3e8; --ok-ink: #11603f;
-    --err: #dc2626; --err-bg: #fee2e2; --err-ink: #7f1d1d;
-    --shadow: 0 10px 28px -12px rgba(20, 99, 224, .35), 0 2px 6px -2px rgba(20, 99, 224, .10);
-    --card-r: 24px;
+    --bg: #eef0fb; --card: #ffffff; --field: #f4f5fb; --ink: #1a1d2e; --muted: #8a90a6; --line: #eceef6;
+    --blue: #2b4fd8; --blue2: #4b6cf0; --deep: #1b2f8f; --green: #1fbf75; --orange: #ff9f43; --purple: #7b61ff; --pink: #ff5c8a; --teal: #19b5c8;
+    --primary: #2b4fd8; --primary-soft: #e8edff;
+    --ok: #1fbf75; --ok-bg: #e6f8ef; --ok-ink: #146c45;
+    --err: #e5484d; --err-bg: #fde8e9; --err-ink: #8c1d22;
+    --shadow: 0 10px 22px -18px rgba(27, 47, 143, .55);
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --hero-a: #0f4bb0; --hero-b: #167a52; --hero-a2: #2a63c0; --hero-b2: #2a8a64;
-      --bg: #0e1016; --card: #1b1e29; --field: #222634; --ink: #e6e8ef; --muted: #9ca3b4; --line: #2a2e3d;
-      --primary: #8ec0ff; --primary-soft: #1e2c47;
-      --ok-bg: #133a2a; --ok-ink: #9be3c1; --err-bg: #4c1d1d; --err-ink: #fecaca;
+      --bg: #0f1220; --card: #1a1e30; --field: #23283d; --ink: #e8eaf3; --muted: #8f95ad; --line: #262b40;
+      --primary: #8ea6ff; --primary-soft: #222b4d; --ok-bg: #12382a; --ok-ink: #9be3c1; --err-bg: #43191c; --err-ink: #ffc9cb;
       --shadow: none;
     }
   }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body { margin: 0; background: var(--bg); color: var(--ink);
-    font: 17px/1.4 Roboto, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
-  body { min-height: 100dvh; display: flex; flex-direction: column; }
+    font: 16px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  body { min-height: 100dvh; }
   svg { display: block; }
-  [hidden] { display: none !important; } /* .btn gibi display veren sınıflar hidden'ı ezmesin */
-
-  /* Başlık */
-  header { position: relative; overflow: hidden; color: #fff;
-    background: linear-gradient(135deg, var(--hero-a), var(--hero-a2));
-    border-radius: 0 0 36px 36px;
-    padding: calc(env(safe-area-inset-top) + 22px) 20px 30px 22px; }
-  header::before { content: ""; position: absolute; width: 124vw; max-width: 800px; aspect-ratio: 1; border-radius: 50%;
-    right: -64vw; top: -70vw; background: linear-gradient(160deg, var(--hero-b), var(--hero-b2)); }
-  @media (min-width: 640px) { header::before { right: -380px; top: -460px; } }
-  header::after { content: ""; position: absolute; width: 76vw; aspect-ratio: 1; border-radius: 50%;
-    left: -34vw; bottom: -46vw; background: rgba(255, 255, 255, .07); }
-  .hero { position: relative; z-index: 1; display: flex; align-items: center; gap: 14px; max-width: 640px; margin: 0 auto; }
-  .hero > div { flex: 1; min-width: 0; }
-  header h1 { margin: 0; font-size: 27px; font-weight: 700; letter-spacing: -.01em; }
-  header p { margin: 2px 0 0; color: rgba(255, 255, 255, .85); font-size: 15px; }
-  .glass { width: 48px; height: 48px; border-radius: 50%; flex: none; display: grid; place-items: center;
-    background: rgba(255, 255, 255, .2); border: 1px solid rgba(255, 255, 255, .35); }
-  .glass svg { width: 24px; height: 24px; }
-  button.glass { appearance: none; padding: 0; cursor: pointer; transition: transform .1s, background .2s; }
-  button.glass:active { transform: scale(.92); background: rgba(255, 255, 255, .3); }
-  button.glass:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
-
-  /* Ayarlar: alttan açılan sayfa */
-  dialog.sheet { border: 0; padding: 0; margin: auto auto 0; width: 100%; max-width: 640px; max-height: 92dvh;
-    background: var(--bg); color: var(--ink); border-radius: 30px 30px 0 0; overflow: auto;
-    padding-bottom: env(safe-area-inset-bottom); }
-  dialog.sheet[open] { animation: up .28s cubic-bezier(.2, .8, .2, 1); }
-  dialog.sheet::backdrop { background: rgba(10, 14, 28, .45); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); }
-  @keyframes up { from { transform: translateY(100%); } }
-  .sheet-head { display: flex; align-items: center; padding: 12px 18px 4px 22px; position: relative; }
-  .sheet-head::before { content: ""; position: absolute; top: 8px; left: 50%; width: 40px; height: 5px; margin-left: -20px;
-    border-radius: 3px; background: var(--line); }
-  .sheet-head h2 { flex: 1; margin: 14px 0 0; font-size: 24px; font-weight: 700; letter-spacing: -.01em; }
-  .close { appearance: none; border: 0; width: 40px; height: 40px; margin-top: 14px; border-radius: 50%; cursor: pointer;
-    display: grid; place-items: center; background: var(--field); color: var(--muted); }
-  .close svg { width: 18px; height: 18px; }
-  .sheet-body { padding: 14px 18px 24px; display: flex; flex-direction: column; gap: 14px; }
-  .section-t { font-size: 13px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 4px 0 -4px 6px; }
-  .about { text-align: center; padding: 26px 20px 20px; }
-  .about .logo { width: 84px; height: 84px; margin: 0 auto 14px; border-radius: 24px;
-    box-shadow: 0 14px 30px -12px rgba(20, 99, 224, .6); }
-  .brand { font-size: 28px; font-weight: 800; letter-spacing: -.02em; margin: 0; }
-  .brand span { font-weight: 400; background: linear-gradient(135deg, var(--hero-a), var(--hero-b));
-    -webkit-background-clip: text; background-clip: text; color: transparent; }
-  @media (prefers-color-scheme: dark) { .brand span { background-image: linear-gradient(135deg, #8ec0ff, #6fd3a6); } }
-  .tagline { margin: 2px 0 18px; color: var(--muted); font-size: 15px; }
-  .rows { text-align: left; border-radius: 18px; background: var(--field); }
-  .row { display: flex; justify-content: space-between; gap: 12px; padding: 13px 16px; font-size: 16px; }
-  .row + .row { border-top: 1px solid var(--line); }
-  .row span:first-child { color: var(--muted); }
-  .row span:last-child { font-weight: 600; text-align: right; }
-  .about p.desc { margin: 18px 4px 0; color: var(--muted); font-size: 15px; line-height: 1.5; }
-  .copy { margin: 4px 0 0; text-align: center; color: var(--muted); font-size: 14px; line-height: 1.6; }
-  .copy b { color: var(--ink); font-weight: 650; }
-
-  main { flex: 1; padding: 20px 18px 150px; display: flex; flex-direction: column; gap: 16px;
-    max-width: 640px; width: 100%; margin: 0 auto; }
-  .card { background: var(--card); border-radius: var(--card-r); padding: 18px; box-shadow: var(--shadow); }
-
-  /* Kart başlığı: parlak rozet + yazı */
-  .step { display: flex; align-items: center; gap: 12px; font-weight: 650; font-size: 18px; margin-bottom: 14px; }
-  .step small { color: var(--muted); font-weight: 500; font-size: 15px; }
-  .badge { --c: #1463e0; --c1: #4382e6; --c2: #0f4daf; width: 40px; height: 40px; border-radius: 13px; flex: none;
-    position: relative; display: grid; place-items: center; color: #fff;
-    background: linear-gradient(135deg, var(--c1), var(--c2));
-    box-shadow: 0 4px 10px -3px var(--c); }
-  .badge::after { content: ""; position: absolute; inset: 0; border-radius: inherit;
-    background: linear-gradient(to bottom, rgba(255, 255, 255, .22), transparent 50%); }
-  .badge svg { width: 20px; height: 20px; }
-  .badge.green { --c: #1e9e6a; --c1: #4cb187; --c2: #177b52; }
-
-  /* Başlıktaki beyaz hap giriş alanı (Çelik Kubbe arama kutusu gibi) */
-  .who { position: relative; z-index: 1; max-width: 640px; margin: 22px auto 0; }
-  .who label { display: block; font-size: 14px; font-weight: 600; letter-spacing: .02em; color: rgba(255, 255, 255, .85); margin: 0 0 8px 6px; }
-  .search { display: flex; align-items: center; gap: 10px; background: #fff; border-radius: 999px; padding: 0 8px 0 18px;
-    box-shadow: 0 10px 24px -12px rgba(0, 0, 0, .45); border: 2px solid transparent; transition: border-color .2s; }
-  .search:focus-within { border-color: rgba(255, 255, 255, .9); box-shadow: 0 0 0 4px rgba(255, 255, 255, .25), 0 10px 24px -12px rgba(0, 0, 0, .45); }
-  .search svg { width: 22px; height: 22px; color: #1463e0; flex: none; }
-  .search input { flex: 1; min-width: 0; font: inherit; font-size: 18px; padding: 16px 4px; border: 0; background: none; color: #151823; outline: none; }
-  .search input::placeholder { color: #5f6678; opacity: .8; }
-
-  /* Butonlar */
-  .actions { display: grid; grid-template-columns: 1.45fr 1fr; gap: 10px; }
-  .btn { appearance: none; border: 0; font: inherit; font-weight: 600; border-radius: 999px; cursor: pointer;
-    display: flex; align-items: center; justify-content: center; gap: 10px; padding: 16px 18px;
-    transition: transform .1s, opacity .2s, box-shadow .2s; user-select: none; }
-  .btn:active { transform: scale(.97); }
-  .btn svg { width: 24px; height: 24px; flex: none; }
-  .btn-grad { color: #fff; background: linear-gradient(135deg, var(--hero-a), var(--hero-b));
-    box-shadow: 0 10px 22px -10px var(--hero-a); }
-  .btn-cam { font-size: 18px; min-height: 64px; }
-  .btn-gal { background: var(--primary-soft); color: var(--primary); min-height: 64px; }
+  [hidden] { display: none !important; } /* display veren sınıflar hidden'ı ezmesin */
+  button, label { font: inherit; }
   .file { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+  @keyframes pop { from { transform: scale(.9); opacity: 0; } }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes up { from { transform: translateY(100%); } }
+  @keyframes pulse { 50% { box-shadow: 0 0 0 8px rgba(229, 72, 77, .18); } }
+
+  /* Üst satır */
+  .topbar { display: flex; align-items: center; gap: 12px; max-width: 640px; margin: 0 auto;
+    padding: calc(env(safe-area-inset-top) + 16px) 20px 4px; }
+  .avatar { width: 46px; height: 46px; border-radius: 15px; flex: none; display: grid; place-items: center; overflow: hidden;
+    color: #fff; font-weight: 800; font-size: 16px; background: linear-gradient(135deg, var(--orange), var(--pink));
+    box-shadow: 0 8px 16px -8px var(--pink); }
+  .avatar.logo { background: #fff; }
+  .avatar img { width: 100%; height: 100%; object-fit: contain; }
+  .avatar svg { width: 22px; height: 22px; }
+  .hello { flex: 1; min-width: 0; }
+  .hello small { display: block; color: var(--muted); font-size: 13px; }
+  .hello b { display: block; font-size: 17px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .icon-btn { appearance: none; border: 0; width: 44px; height: 44px; border-radius: 14px; flex: none; cursor: pointer;
+    display: grid; place-items: center; background: var(--card); color: var(--ink); box-shadow: var(--shadow); }
+  .icon-btn svg { width: 21px; height: 21px; }
+
+  main { max-width: 640px; margin: 0 auto; padding: 14px 20px 200px; display: flex; flex-direction: column; }
+  main > * + * { margin-top: 16px; }
+  .card { background: var(--card); border-radius: 22px; padding: 14px; box-shadow: var(--shadow); }
+  .sec { display: flex; justify-content: space-between; align-items: baseline; margin: 0 2px 10px; }
+  .sec b { font-size: 16px; }
+  .sec small { color: var(--muted); font-size: 13px; }
+  .link { appearance: none; border: 0; background: none; padding: 0; color: var(--primary); font-weight: 650; font-size: 14px; cursor: pointer; }
+
+  /* İki parçalı seçici */
+  .seg { display: flex; background: var(--card); border-radius: 14px; padding: 4px; box-shadow: var(--shadow); }
+  .seg button { appearance: none; border: 0; flex: 1; padding: 10px 8px; border-radius: 11px; background: none; cursor: pointer;
+    font-weight: 650; font-size: 15px; color: var(--muted); transition: background .2s, color .2s; }
+  .seg button[aria-pressed="true"] { background: var(--blue); color: #fff; box-shadow: 0 6px 12px -6px var(--blue); }
+
+  /* Mavi ana kart */
+  .hero { border-radius: 26px; padding: 18px; color: #fff; position: relative; overflow: hidden;
+    background: linear-gradient(135deg, var(--deep), var(--blue) 55%, var(--blue2)); box-shadow: 0 18px 30px -16px var(--blue); }
+  .hero::before, .hero::after { content: ""; position: absolute; border-radius: 50%; pointer-events: none; }
+  .hero::before { right: -40px; top: -60px; width: 190px; height: 190px; background: rgba(255, 255, 255, .08); }
+  .hero::after { right: 30px; bottom: -80px; width: 160px; height: 160px; background: rgba(255, 255, 255, .06); }
+  .hero > * { position: relative; z-index: 1; }
+  .hero label { display: block; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; opacity: .8; margin: 0 0 8px 2px; }
+  .pill { display: flex; align-items: center; gap: 10px; background: #fff; border-radius: 16px; padding: 0 14px; border: 2px solid transparent; }
+  .pill:focus-within { border-color: #9fb3ff; }
+  .pill svg { width: 20px; height: 20px; color: var(--blue); flex: none; }
+  .pill input { flex: 1; min-width: 0; border: 0; background: none; outline: none; font: inherit; font-size: 17px; font-weight: 600;
+    color: #1a1d2e; padding: 14px 0; }
+  .pill input::placeholder { color: #9aa0b6; font-weight: 500; }
+  .stats { display: flex; gap: 8px; margin-top: 12px; }
+  .stat { flex: 1; background: rgba(255, 255, 255, .14); border-radius: 14px; padding: 9px 12px; }
+  .stat small { display: block; font-size: 11.5px; opacity: .85; }
+  .stat b { font-size: 17px; }
 
   /* Fotoğraflar */
-  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 14px; }
-  .grid:empty::before { content: attr(data-empty); grid-column: 1 / -1; color: var(--muted); font-size: 15px;
-    text-align: center; padding: 24px 0; border-radius: 18px; background: var(--field); }
-  .ph { position: relative; aspect-ratio: 1; border-radius: 18px; overflow: hidden; background: var(--field);
-    animation: pop .25s ease-out; }
-  @keyframes pop { from { transform: scale(.85); opacity: 0; } }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; }
+  .grid:empty::before { content: attr(data-empty); grid-column: 1 / -1; color: var(--muted); font-size: 14px;
+    text-align: center; padding: 22px 0; border-radius: 16px; background: var(--field); }
+  .ph { position: relative; aspect-ratio: 1; border-radius: 16px; overflow: hidden; background: var(--field); animation: pop .25s ease-out; }
   .ph img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .ph .x { position: absolute; top: 6px; right: 6px; width: 30px; height: 30px; border-radius: 50%; padding: 0; cursor: pointer;
-    display: grid; place-items: center; color: #fff;
-    background: rgba(15, 18, 30, .45); border: 1px solid rgba(255, 255, 255, .35); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
-  .ph .x svg { width: 14px; height: 14px; }
+  .ph .x { position: absolute; top: 6px; right: 6px; width: 28px; height: 28px; border-radius: 50%; padding: 0; cursor: pointer;
+    display: grid; place-items: center; color: #fff; background: rgba(15, 18, 30, .45); border: 1px solid rgba(255, 255, 255, .35);
+    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+  .ph .x svg { width: 13px; height: 13px; }
   .ph .st { position: absolute; inset: 0; display: grid; place-items: center; transition: background .2s; }
-  .ph .st::after { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center;
-    color: #fff; font-weight: 800; font-size: 20px; }
-  .ph.sending .st { background: rgba(20, 99, 224, .35); }
-  .ph.sending .st::after { content: ""; width: 30px; height: 30px; border: 3px solid rgba(255, 255, 255, .4);
-    border-top-color: #fff; animation: spin .8s linear infinite; }
-  .ph.done .st { background: rgba(30, 158, 106, .35); }
-  .ph.done .st::after { content: "✓"; background: var(--ok); box-shadow: 0 4px 12px -2px rgba(0, 0, 0, .3); }
-  .ph.fail .st { background: rgba(220, 38, 38, .3); }
-  .ph.fail .st::after { content: "!"; background: var(--err); box-shadow: 0 4px 12px -2px rgba(0, 0, 0, .3); }
+  .ph .st::after { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-weight: 800; font-size: 18px; }
+  .ph.sending .st { background: rgba(43, 79, 216, .35); }
+  .ph.sending .st::after { content: ""; width: 28px; height: 28px; border: 3px solid rgba(255, 255, 255, .4); border-top-color: #fff; animation: spin .8s linear infinite; }
+  .ph.done .st { background: rgba(31, 191, 117, .3); }
+  .ph.done .st::after { content: "✓"; background: var(--green); }
+  .ph.fail .st { background: rgba(229, 72, 77, .3); }
+  .ph.fail .st::after { content: "!"; background: var(--err); }
+  .ph.queued .st { background: rgba(43, 79, 216, .25); }
+  .ph.queued .st::after { content: "⏱"; background: var(--blue); font-size: 16px; }
   .ph.sending .x, .ph.done .x { display: none; }
-  @keyframes spin { to { transform: rotate(360deg); } }
 
-  /* Yapışkan gönder butonu */
-  .bar { position: fixed; left: 0; right: 0; bottom: 0; padding: 18px 18px calc(env(safe-area-inset-bottom) + 16px);
-    background: linear-gradient(to top, var(--bg) 65%, transparent); }
-  .bar-in { max-width: 640px; margin: 0 auto; }
-  .btn-send { width: 100%; font-size: 19px; min-height: 62px; position: relative; overflow: hidden; }
-  .btn-send:disabled { opacity: .45; box-shadow: none; }
-  .btn-send .prog { position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: rgba(255, 255, 255, .22); transition: width .3s; }
-  .btn-send .lbl { position: relative; display: flex; align-items: center; gap: 10px; }
-
-  /* Bildirim */
-  .msg { border-radius: 20px; padding: 14px 16px; font-weight: 600; display: none; align-items: flex-start; gap: 12px; font-size: 16px; }
-  .msg.show { display: flex; animation: pop .25s ease-out; }
-  .msg::before { width: 28px; height: 28px; border-radius: 50%; flex: none; display: grid; place-items: center; color: #fff; font-weight: 800; font-size: 15px; }
-  .msg.ok { background: var(--ok-bg); color: var(--ok-ink); }
-  .msg.ok::before { content: "✓"; background: var(--ok); }
-  .msg.err { background: var(--err-bg); color: var(--err-ink); }
-  .msg.err::before { content: "!"; background: var(--err); }
-  .setup { text-align: center; color: var(--muted); }
-  .setup b { color: var(--ink); }
-  .ph.queued .st { background: rgba(20, 99, 224, .25); }
-  .ph.queued .st::after { content: "⏱"; background: var(--primary); font-size: 17px; box-shadow: 0 4px 12px -2px rgba(0, 0, 0, .3); }
-  .badge.amber { --c: #d97706; --c1: #f5a524; --c2: #c26a05; }
-  .note { display: block; width: 100%; min-height: 96px; resize: vertical; font: inherit; font-size: 16px; line-height: 1.45;
-    padding: 14px 16px; border: 2px solid transparent; border-radius: 18px; background: var(--field); color: var(--ink); outline: none; }
+  /* Not + mikrofon */
+  .note { display: block; width: 100%; min-height: 84px; resize: vertical; font: inherit; font-size: 16px; line-height: 1.45;
+    padding: 12px 14px; border: 2px solid transparent; border-radius: 16px; background: var(--field); color: var(--ink); outline: none; }
   .note:focus { border-color: var(--primary); }
-  .msg.info { background: var(--primary-soft); color: var(--primary); }
-  .msg.info::before { content: "⏱"; background: var(--primary); font-size: 14px; }
-
-  /* Ayarlar satırları */
-  .set { padding: 4px 16px; }
-  .set-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 0; }
-  .set-row + .set-row { border-top: 1px solid var(--line); }
-  .set-row > span { font-weight: 600; }
-  .seg { display: flex; background: var(--field); border-radius: 999px; padding: 4px; }
-  .seg button { appearance: none; border: 0; font: inherit; font-size: 15px; font-weight: 600; padding: 8px 14px;
-    border-radius: 999px; background: none; color: var(--muted); cursor: pointer; }
-  .seg button[aria-pressed="true"] { background: var(--card); color: var(--primary); box-shadow: 0 2px 6px rgba(0, 0, 0, .12); }
-  .set-in { flex: 1; min-width: 0; max-width: 230px; font: inherit; font-size: 16px; padding: 10px 14px; border-radius: 14px;
-    border: 2px solid transparent; background: var(--field); color: var(--ink); outline: none; text-align: right; }
-  .set-in:focus { border-color: var(--primary); }
-  .btn-soft { width: 100%; background: var(--primary-soft); color: var(--primary); padding: 13px; margin: 8px 0 2px; }
-  .btn-soft svg { width: 20px; height: 20px; }
-  .conn { min-height: 22px; font-size: 15px; font-weight: 600; text-align: center; padding: 6px 0 10px; color: var(--muted); }
-  .conn.ok { color: var(--ok); }
-  .conn.err { color: var(--err); }
-  .hist { list-style: none; margin: 0; padding: 0; }
-  .hist li { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 12px 0; font-size: 15px; }
-  .hist li + li { border-top: 1px solid var(--line); }
-  .hist li > div { min-width: 0; }
-  .hist b { display: block; font-weight: 650; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .hist small { color: var(--muted); font-size: 14px; }
-  /* Gönderildi mesajındaki offerte düğmesi */
-  .msg .ob { display: flex; width: fit-content; align-items: center; margin-top: 10px; appearance: none; border: 0; font: inherit;
-    font-size: 16px; font-weight: 700; padding: 11px 18px; border-radius: 999px; cursor: pointer; text-decoration: none; color: #fff;
-    background: linear-gradient(135deg, var(--hero-a), var(--hero-b)); box-shadow: 0 8px 18px -10px var(--hero-a); }
-  .msg a.ob { background: var(--ok); box-shadow: none; }
-  .msg .ob:disabled { opacity: .7; }
-  .hist .empty { color: var(--muted); justify-content: center; }
-  .hist .hx { appearance: none; border: 0; background: none; width: 36px; height: 36px; border-radius: 50%; flex: none;
-    display: grid; place-items: center; color: var(--muted); cursor: pointer; }
-  .hist .hx svg { width: 14px; height: 14px; }
-  .btn-soft.danger { background: var(--err-bg); color: var(--err); }
-  .hist-hint { margin: 2px 0 8px; text-align: center; color: var(--muted); font-size: 13px; }
-  /* Mikrofon: sesle yazma + sesli mesaj */
-  .mics { display: flex; gap: 10px; margin-top: 10px; }
-  .mics > .btn { flex: 1; }
-  .btn.mic { background: var(--primary-soft); color: var(--primary); padding: 12px; font-size: 16px; min-height: 52px; }
-  .btn.mic svg { width: 20px; height: 20px; }
-  .btn.mic.on { background: var(--err); color: #fff; animation: pulse 1.4s ease-in-out infinite; }
-  .btn.mic:disabled { opacity: .4; }
-  @keyframes pulse { 50% { box-shadow: 0 0 0 8px rgba(220, 38, 38, .18); } }
+  .mics { display: flex; gap: 8px; margin-top: 10px; }
+  .mic { appearance: none; border: 0; flex: 1; display: flex; align-items: center; justify-content: center; gap: 7px; padding: 11px;
+    border-radius: 14px; font-weight: 650; font-size: 14px; cursor: pointer; }
+  .mic svg { width: 18px; height: 18px; }
+  #dictate { background: var(--primary-soft); color: var(--primary); }
+  #record { background: #efeaff; color: var(--purple); }
+  @media (prefers-color-scheme: dark) { #record { background: #2a2350; color: #b9a8ff; } }
+  .mic.on { background: var(--err) !important; color: #fff !important; animation: pulse 1.4s ease-in-out infinite; }
+  .mic:disabled { opacity: .4; }
   .voices { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
   .voices:empty { display: none; }
-  .voice { display: flex; align-items: center; gap: 12px; padding: 8px; border-radius: 18px; background: var(--field); animation: pop .25s ease-out; }
-  .voice .play { appearance: none; border: 0; width: 42px; height: 42px; border-radius: 50%; flex: none; display: grid; place-items: center;
-    cursor: pointer; color: #fff; background: linear-gradient(135deg, var(--hero-a), var(--hero-b)); }
-  .voice .play svg { width: 18px; height: 18px; }
+  .voice { display: flex; align-items: center; gap: 12px; padding: 8px; border-radius: 16px; background: var(--field); animation: pop .25s ease-out; }
+  .voice .play { appearance: none; border: 0; width: 40px; height: 40px; border-radius: 13px; flex: none; display: grid; place-items: center;
+    cursor: pointer; color: #fff; background: linear-gradient(135deg, #9b87ff, var(--purple)); }
+  .voice .play svg { width: 17px; height: 17px; }
   .voice .vi { flex: 1; min-width: 0; }
-  .voice .vi b { display: block; font-size: 15px; font-weight: 650; }
-  .voice .vi small { color: var(--muted); font-size: 14px; }
-  .voice .vst { font-size: 17px; font-weight: 800; }
+  .voice .vi b { display: block; font-size: 14.5px; }
+  .voice .vi small { color: var(--muted); font-size: 13px; }
+  .voice .vst { font-size: 16px; font-weight: 800; }
   .voice.queued .vst::after { content: "⏱"; }
   .voice.sending .vst::after { content: ""; display: block; width: 18px; height: 18px; border-radius: 50%;
     border: 3px solid var(--primary-soft); border-top-color: var(--primary); animation: spin .8s linear infinite; }
   .voice.done .vst::after { content: "✓"; color: var(--ok); }
-  .voice .x { appearance: none; border: 0; width: 34px; height: 34px; border-radius: 50%; flex: none; display: grid; place-items: center;
+  .voice .x { appearance: none; border: 0; width: 32px; height: 32px; border-radius: 50%; flex: none; display: grid; place-items: center;
     cursor: pointer; background: none; color: var(--muted); }
-  .voice .x svg { width: 14px; height: 14px; }
+  .voice .x svg { width: 13px; height: 13px; }
   .voice.sending .x, .voice.done .x { visibility: hidden; }
-  /* Offerte modu + form alanları */
-  .offerte-btn { width: 100%; min-height: 56px; font-size: 17px; background: var(--card); color: var(--primary); box-shadow: var(--shadow); }
-  .offerte-btn svg { width: 22px; height: 22px; }
-  .offerte-btn[aria-pressed="true"] { color: #fff; background: linear-gradient(135deg, var(--hero-a), var(--hero-b)); }
+
+  /* Form alanları */
   .fields { display: grid; gap: 10px; }
-  .f { display: grid; gap: 5px; font-size: 14px; font-weight: 600; color: var(--muted); }
+  .f { display: grid; gap: 5px; font-size: 12.5px; font-weight: 650; color: var(--muted); }
+  .f span { margin-left: 4px; }
   .f input { width: 100%; font: inherit; font-size: 16px; font-weight: 400; color: var(--ink); padding: 12px 14px; border-radius: 14px;
     border: 2px solid transparent; background: var(--field); outline: none; }
   .f input:focus { border-color: var(--primary); }
-  .hint { margin: 0 0 12px; color: var(--muted); font-size: 14px; }
-  details.fold { padding: 0; }
-  details.fold > summary { list-style: none; display: flex; align-items: center; gap: 12px; padding: 16px 18px; cursor: pointer; font-weight: 650; }
+
+  /* Renkli kare simgeli liste (son gönderimler / geçmiş) */
+  .hist { list-style: none; margin: 0; padding: 0; }
+  .hist li { display: flex; align-items: center; gap: 12px; padding: 9px 2px; }
+  .hist li + li { border-top: 1px solid var(--line); }
+  .hist .t { flex: 1; min-width: 0; }
+  .hist b { display: block; font-size: 14.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .hist small { color: var(--muted); font-size: 12.5px; }
+  .hist .r { text-align: right; font-size: 12.5px; color: var(--muted); flex: none; }
+  .hist .r b { color: var(--green); font-size: 13px; }
+  .hist .empty { color: var(--muted); justify-content: center; font-size: 14px; }
+  .hist .hx { appearance: none; border: 0; background: none; width: 34px; height: 34px; border-radius: 50%; flex: none;
+    display: grid; place-items: center; color: var(--muted); cursor: pointer; }
+  .hist .hx svg { width: 13px; height: 13px; }
+  .sq { width: 40px; height: 40px; border-radius: 13px; display: grid; place-items: center; color: #fff; flex: none; }
+  .sq svg { width: 19px; height: 19px; }
+  .c0 { background: linear-gradient(135deg, var(--blue2), var(--blue)); }
+  .c1 { background: linear-gradient(135deg, #ffb86b, var(--orange)); }
+  .c2 { background: linear-gradient(135deg, #9b87ff, var(--purple)); }
+  .c3 { background: linear-gradient(135deg, #4fd3e3, var(--teal)); }
+  .c4 { background: linear-gradient(135deg, #ff8aab, var(--pink)); }
+  .c5 { background: linear-gradient(135deg, #4fd99a, var(--green)); }
+
+  /* Bildirim (yeşil/kırmızı/mavi şerit) */
+  .msg { border-radius: 18px; padding: 12px; font-weight: 600; display: none; align-items: center; gap: 12px; font-size: 14.5px; }
+  .msg.show { display: flex; animation: pop .25s ease-out; }
+  .msg::before { width: 38px; height: 38px; border-radius: 12px; flex: none; display: grid; place-items: center; color: #fff; font-weight: 800; font-size: 17px; }
+  .msg > div { flex: 1; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .msg > div span { flex: 1; min-width: 150px; }
+  .msg.ok { background: var(--ok-bg); color: var(--ok-ink); }
+  .msg.ok::before { content: "✓"; background: linear-gradient(135deg, #4fd99a, var(--green)); }
+  .msg.err { background: var(--err-bg); color: var(--err-ink); }
+  .msg.err::before { content: "!"; background: var(--err); }
+  .msg.info { background: var(--primary-soft); color: var(--primary); }
+  .msg.info::before { content: "⏱"; background: var(--blue); font-size: 15px; }
+  .msg .ob { padding: 9px 14px; border-radius: 12px; color: #fff; background: var(--green); font-weight: 700; font-size: 14px; text-decoration: none; white-space: nowrap; }
+  .setup { text-align: center; color: var(--muted); }
+  .setup b { color: var(--ink); }
+
+  /* Alt: Gönder + menü */
+  .bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 5; }
+  .bar::before { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 190px; pointer-events: none;
+    background: linear-gradient(to top, var(--bg) 62%, transparent); }
+  .bar-in { position: relative; max-width: 640px; margin: 0 auto; padding: 0 20px 12px; }
+  .btn-send { appearance: none; border: 0; width: 100%; height: 54px; border-radius: 18px; cursor: pointer; position: relative; overflow: hidden;
+    color: #fff; font-weight: 700; font-size: 16.5px; background: linear-gradient(135deg, var(--deep), var(--blue));
+    box-shadow: 0 14px 24px -12px var(--blue); transition: transform .1s, opacity .2s; }
+  .btn-send:active { transform: scale(.98); }
+  .btn-send:disabled { opacity: .45; box-shadow: none; }
+  .btn-send .prog { position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: rgba(255, 255, 255, .22); transition: width .3s; }
+  .btn-send .lbl { position: relative; }
+  .nav { position: relative; display: flex; align-items: center; justify-content: space-around; max-width: 640px; margin: 0 auto;
+    background: var(--card); border-radius: 26px 26px 0 0; padding: 8px 8px calc(env(safe-area-inset-bottom) + 8px);
+    box-shadow: 0 -10px 24px -18px rgba(27, 47, 143, .45); }
+  .nav > * { appearance: none; border: 0; background: none; cursor: pointer; display: grid; justify-items: center; gap: 3px;
+    font-size: 11px; font-weight: 600; color: var(--muted); width: 64px; padding: 4px 0; }
+  .nav svg { width: 22px; height: 22px; }
+  .nav .act { color: var(--primary); }
+  .nav .fab { width: 64px; height: 64px; border-radius: 50%; place-items: center; margin-top: -34px; padding: 0; color: #fff;
+    background: linear-gradient(135deg, #39d88e, var(--green)); box-shadow: 0 12px 22px -8px var(--green), 0 0 0 6px var(--bg); }
+  .nav .fab svg { width: 28px; height: 28px; }
+  .nav .fab:active { transform: scale(.94); }
+
+  /* Ayarlar: alttan açılan sayfa */
+  dialog.sheet { border: 0; padding: 0; margin: auto auto 0; width: 100%; max-width: 640px; max-height: 92dvh;
+    background: var(--bg); color: var(--ink); border-radius: 30px 30px 0 0; overflow: auto; padding-bottom: env(safe-area-inset-bottom); }
+  dialog.sheet[open] { animation: up .28s cubic-bezier(.2, .8, .2, 1); }
+  dialog.sheet::backdrop { background: rgba(10, 14, 28, .45); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); }
+  .sheet-head { display: flex; align-items: center; padding: 12px 20px 0; position: relative; }
+  .sheet-head::before { content: ""; position: absolute; top: 8px; left: 50%; width: 40px; height: 5px; margin-left: -20px; border-radius: 3px; background: var(--line); }
+  .sheet-head h2 { flex: 1; margin: 16px 0 0; font-size: 26px; font-weight: 800; letter-spacing: -.01em; }
+  .close { appearance: none; border: 0; width: 40px; height: 40px; margin-top: 16px; border-radius: 13px; cursor: pointer;
+    display: grid; place-items: center; background: var(--card); color: var(--muted); box-shadow: var(--shadow); }
+  .close svg { width: 16px; height: 16px; }
+  .sheet-body { padding: 14px 20px 26px; display: flex; flex-direction: column; gap: 10px; }
+  .section-t { font-size: 16px; font-weight: 700; margin: 8px 2px 0; }
+  .set { padding: 4px 14px; }
+  .set-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; }
+  .set-row + .set-row { border-top: 1px solid var(--line); }
+  .set-row > label, .set-row > span:not(.sq) { flex: 1; font-weight: 650; }
+  .set-row .seg { box-shadow: none; background: var(--field); padding: 3px; border-radius: 12px; }
+  .set-row .seg button { padding: 7px 11px; font-size: 13.5px; flex: none; }
+  .set-in { width: 46%; font: inherit; font-size: 15px; padding: 9px 12px; border-radius: 12px; border: 2px solid transparent;
+    background: var(--field); color: var(--ink); outline: none; text-align: right; }
+  .set-in:focus { border-color: var(--primary); }
+  .btn-soft { appearance: none; border: 0; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer;
+    background: var(--primary-soft); color: var(--primary); padding: 12px; margin: 6px 0 2px; border-radius: 14px; font-weight: 650; font-size: 15px; }
+  .btn-soft svg { width: 19px; height: 19px; }
+  .btn-soft.danger { background: var(--err-bg); color: var(--err); }
+  .conn { min-height: 20px; font-size: 14px; font-weight: 650; text-align: center; padding: 6px 0 8px; color: var(--muted); }
+  .conn.ok { color: var(--ok); }
+  .conn.err { color: var(--err); }
+  .hist-hint { margin: 2px 0 8px; text-align: center; color: var(--muted); font-size: 12.5px; }
+
+  /* Şirket bilgileri: mavi katlanır kart */
+  details.fold { padding: 0; overflow: hidden; }
+  details.fold > summary { list-style: none; display: flex; align-items: center; gap: 12px; padding: 16px; cursor: pointer; color: #fff;
+    border-radius: 22px; background: linear-gradient(135deg, var(--deep), var(--blue) 55%, var(--blue2)); box-shadow: 0 14px 26px -16px var(--blue); }
   details.fold > summary::-webkit-details-marker { display: none; }
-  details.fold > summary span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  details.fold > summary span.empty { color: var(--muted); font-weight: 500; }
-  details.fold > summary::after { content: ""; flex: none; width: 9px; height: 9px; margin: 0 6px 4px 0; border-right: 2.5px solid var(--muted);
-    border-bottom: 2.5px solid var(--muted); transform: rotate(45deg); transition: transform .2s; }
-  details.fold[open] > summary::after { transform: rotate(-135deg); margin-bottom: -4px; }
-  .sumlogo { width: 38px; height: 38px; flex: none; border-radius: 10px; object-fit: contain; background: var(--field); }
-  .fold-body { padding: 0 18px 18px; }
+  details.fold > summary .t { flex: 1; min-width: 0; }
+  details.fold > summary small { display: block; font-size: 12.5px; opacity: .85; }
+  details.fold > summary #sumName { display: block; font-weight: 750; font-size: 17px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  details.fold > summary #sumName.empty { font-weight: 500; opacity: .85; }
+  details.fold > summary::after { content: ""; flex: none; width: 9px; height: 9px; margin-right: 6px; border-right: 2.5px solid #fff;
+    border-bottom: 2.5px solid #fff; transform: rotate(-45deg); opacity: .8; transition: transform .2s; }
+  details.fold[open] > summary::after { transform: rotate(45deg); }
+  .sumlogo { width: 46px; height: 46px; flex: none; border-radius: 14px; object-fit: contain; background: #fff; }
+  .suminit { width: 46px; height: 46px; flex: none; border-radius: 14px; background: #fff; color: var(--pink); display: grid; place-items: center; font-weight: 800; }
+  .fold-body { padding: 14px; }
+  .hint { margin: 0 0 12px; color: var(--muted); font-size: 13.5px; }
   .logo-row { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
-  .logo-box { width: 88px; height: 88px; flex: none; border-radius: 18px; background: var(--field); display: grid; place-items: center;
-    overflow: hidden; color: var(--muted); font-size: 13px; text-align: center; border: 2px dashed var(--line); }
+  .logo-box { width: 84px; height: 84px; flex: none; border-radius: 18px; background: var(--field); display: grid; place-items: center;
+    overflow: hidden; color: var(--muted); font-size: 12.5px; text-align: center; border: 2px dashed var(--line); }
   .logo-box img { max-width: 100%; max-height: 100%; object-fit: contain; }
   .logo-btns { flex: 1; display: grid; gap: 8px; }
-  .logo-btns .btn { margin: 0; padding: 11px; font-size: 15px; }
+  .logo-btns .btn-soft { margin: 0; padding: 10px; font-size: 14px; }
+
+  /* Hakkında */
+  .about { text-align: center; padding: 24px 18px 18px; }
+  .about .logo { width: 80px; height: 80px; margin: 0 auto 12px; border-radius: 22px; box-shadow: 0 14px 30px -12px rgba(43, 79, 216, .6); }
+  .brand { font-size: 26px; font-weight: 800; letter-spacing: -.02em; margin: 0; }
+  .brand span { font-weight: 400; background: linear-gradient(135deg, var(--blue), var(--green)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .tagline { margin: 2px 0 16px; color: var(--muted); font-size: 14.5px; }
+  .rows { text-align: left; border-radius: 16px; background: var(--field); }
+  .row { display: flex; justify-content: space-between; gap: 12px; padding: 12px 14px; font-size: 15px; }
+  .row + .row { border-top: 1px solid var(--line); }
+  .row span:first-child { color: var(--muted); }
+  .row span:last-child { font-weight: 650; text-align: right; }
+  .about p.desc { margin: 16px 4px 0; color: var(--muted); font-size: 14px; line-height: 1.5; }
+  .copy { margin: 4px 0 0; text-align: center; color: var(--muted); font-size: 13px; line-height: 1.6; }
+  .copy b { color: var(--ink); font-weight: 650; }
 </style>
 </head>
 <body>
-<header>
-  <div class="hero">
-    <div>
-      <h1>Foto Gönder</h1>
-      <p data-i18n="sub"></p>
-    </div>
-    <button class="glass" id="openSettings" type="button" data-i18n-aria="settings" aria-haspopup="dialog">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-    </button>
-  </div>
-  <div class="who" id="who">
-    <label for="customer" data-i18n="customer"></label>
-    <div class="search">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-5h4v5"/></svg>
-      <input id="customer" type="text" list="recent" data-i18n-ph="customerPh"
-             autocomplete="off" autocapitalize="words" enterkeyhint="done">
-    </div>
-    <datalist id="recent"></datalist>
-  </div>
-</header>
+<div class="topbar">
+  <div class="avatar" id="avatar"></div>
+  <div class="hello"><small id="helloTxt"></small><b id="firmTitle">Foto Gönder</b></div>
+  <button class="icon-btn" id="openSettings" type="button" data-i18n-aria="settings" aria-haspopup="dialog">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+  </button>
+</div>
 
 <main id="app">
   <div id="msg" class="msg" role="status" aria-live="polite"></div>
   <div id="setup" class="card setup" data-i18n="notConfigured" hidden></div>
 
-  <button class="btn offerte-btn" id="offerteMode" type="button" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg><span id="offLbl"></span></button>
-  <section class="card" id="klantCard" hidden>
-    <div class="step">
-      <span class="badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span>
-      <span data-i18n="klantT"></span> <small data-i18n="optional"></small>
-    </div>
-    <div class="fields" id="klantFields"></div>
+  <section class="seg" role="group">
+    <button type="button" id="segFoto" aria-pressed="true" data-i18n="onlyPhotos"></button>
+    <button type="button" id="segOff" aria-pressed="false" data-i18n="offerteSeg"></button>
   </section>
 
-  <section class="card">
-    <div class="step">
-      <span class="badge green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></span>
-      <span data-i18n="photos"></span> <small id="count"></small>
+  <section class="hero" id="who">
+    <label for="customer" data-i18n="customer"></label>
+    <div class="pill">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-5h4v5"/></svg>
+      <input id="customer" type="text" list="recent" data-i18n-ph="customerPh" autocomplete="off" autocapitalize="words" enterkeyhint="done">
     </div>
-    <div class="actions">
-      <label class="btn btn-grad btn-cam" for="cam">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>
-        <span data-i18n="cam"></span>
-      </label>
-      <label class="btn btn-gal" for="gal">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 16l5-5 4 4 3-3 6 6"/></svg>
-        <span data-i18n="gal"></span>
-      </label>
-      <input id="cam" class="file" type="file" accept="image/*" capture="environment">
-      <input id="gal" class="file" type="file" accept="image/*" multiple>
+    <datalist id="recent"></datalist>
+    <div class="stats">
+      <div class="stat"><small data-i18n="todaySent"></small><b id="statToday">0</b></div>
+      <div class="stat"><small data-i18n="pending"></small><b id="statPend">0</b></div>
     </div>
-    <div id="grid" class="grid"></div>
   </section>
 
-  <section class="card">
-    <div class="step">
-      <span class="badge amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg></span>
-      <label for="note" data-i18n="noteT"></label> <small data-i18n="optional"></small>
+  <section id="klantCard" hidden>
+    <div class="sec"><b data-i18n="klantT"></b><small data-i18n="optional"></small></div>
+    <div class="card"><div class="fields" id="klantFields"></div></div>
+  </section>
+
+  <section>
+    <div class="sec"><b><span data-i18n="photos"></span> <span id="count"></span></b><label class="link" for="gal" data-i18n="addGal"></label></div>
+    <div class="card"><div id="grid" class="grid"></div></div>
+    <input id="cam" class="file" type="file" accept="image/*" capture="environment">
+    <input id="gal" class="file" type="file" accept="image/*" multiple>
+  </section>
+
+  <section>
+    <div class="sec"><label for="note"><b data-i18n="noteT"></b></label><small data-i18n="optional"></small></div>
+    <div class="card">
+      <textarea id="note" class="note" data-i18n-ph="notePh" rows="3"></textarea>
+      <div class="mics">
+        <button class="mic" id="dictate" type="button" hidden>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
+          <span id="dictLbl" data-i18n="dictate"></span>
+        </button>
+        <button class="mic" id="record" type="button" hidden>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 10v4M8 7v10M12 4v16M16 7v10M20 10v4"/></svg>
+          <span id="recLbl" data-i18n="record"></span>
+        </button>
+      </div>
+      <div id="voices" class="voices"></div>
     </div>
-    <textarea id="note" class="note" data-i18n-ph="notePh" rows="3"></textarea>
-    <div class="mics">
-      <button class="btn mic" id="dictate" type="button" hidden>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
-        <span id="dictLbl" data-i18n="dictate"></span>
-      </button>
-      <button class="btn mic" id="record" type="button" hidden>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 10v4M8 7v10M12 4v16M16 7v10M20 10v4"/></svg>
-        <span id="recLbl" data-i18n="record"></span>
-      </button>
-    </div>
-    <div id="voices" class="voices"></div>
+  </section>
+
+  <section id="recentSec" hidden>
+    <div class="sec"><b data-i18n="recentT"></b><button class="link" id="allHist" type="button" data-i18n="all"></button></div>
+    <div class="card"><ul class="hist" id="recentList"></ul></div>
   </section>
 </main>
 
-<div class="bar" id="bar"><div class="bar-in">
-  <button id="send" class="btn btn-grad btn-send" disabled><span class="prog" id="prog"></span><span class="lbl" id="sendLbl"></span></button>
-</div></div>
+<div class="bar" id="bar">
+  <div class="bar-in">
+    <button id="send" class="btn-send" disabled><span class="prog" id="prog"></span><span class="lbl" id="sendLbl"></span></button>
+  </div>
+  <nav class="nav">
+    <button class="act" id="navHome" type="button">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg><span data-i18n="navHome"></span>
+    </button>
+    <label for="gal">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M3 16l5-5 4 4 3-3 6 6"/></svg><span data-i18n="gal"></span>
+    </label>
+    <label class="fab" for="cam" data-i18n-aria="cam">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>
+    </label>
+    <button id="navHist" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span data-i18n="history"></span>
+    </button>
+    <button id="navSet" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg><span data-i18n="settings"></span>
+    </button>
+  </nav>
+</div>
 
 <dialog class="sheet" id="settings" aria-labelledby="settingsTitle">
   <div class="sheet-head">
@@ -361,9 +384,26 @@
     </button>
   </div>
   <div class="sheet-body">
+    <details class="card fold" id="firmaFold">
+      <summary><img class="sumlogo" id="sumLogo" alt="" hidden><span class="suminit" id="sumInit"></span><span class="t"><small data-i18n="firmaT"></small><span id="sumName"></span></span></summary>
+      <div class="fold-body">
+        <p class="hint" data-i18n="firmaHint"></p>
+        <div class="logo-row">
+          <div class="logo-box"><img id="logoImg" alt="Logo" hidden><span id="noLogo" data-i18n="noLogo"></span></div>
+          <div class="logo-btns">
+            <label class="btn-soft" for="logoIn"><span data-i18n="pickLogo"></span></label>
+            <button class="btn-soft" id="logoDel" type="button" data-i18n="removeLogo" hidden></button>
+          </div>
+          <input id="logoIn" class="file" type="file" accept="image/png,image/jpeg">
+        </div>
+        <div class="fields" id="firmaFields"></div>
+      </div>
+    </details>
+
     <div class="section-t" data-i18n="general"></div>
     <section class="card set">
       <div class="set-row">
+        <span class="sq c0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg></span>
         <span data-i18n="language"></span>
         <div class="seg" id="langSeg" role="group">
           <button type="button" data-lang="tr">Türkçe</button>
@@ -371,32 +411,19 @@
         </div>
       </div>
       <div class="set-row">
+        <span class="sq c1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span>
         <label for="worker" data-i18n="yourName"></label>
         <input id="worker" class="set-in" type="text" autocomplete="name" autocapitalize="words" enterkeyhint="done" data-i18n-ph="namePh">
       </div>
     </section>
 
-    <div class="section-t" data-i18n="firmaT"></div>
-    <details class="card fold" id="firmaFold">
-      <summary><img class="sumlogo" id="sumLogo" alt="" hidden><span id="sumName"></span></summary>
-      <div class="fold-body">
-      <p class="hint" data-i18n="firmaHint"></p>
-      <div class="logo-row">
-        <div class="logo-box"><img id="logoImg" alt="Logo" hidden><span id="noLogo" data-i18n="noLogo"></span></div>
-        <div class="logo-btns">
-          <label class="btn btn-soft" for="logoIn"><span data-i18n="pickLogo"></span></label>
-          <button class="btn btn-soft" id="logoDel" type="button" data-i18n="removeLogo" hidden></button>
-        </div>
-        <input id="logoIn" class="file" type="file" accept="image/png,image/jpeg">
-      </div>
-      <div class="fields" id="firmaFields"></div>
-      </div>
-    </details>
-
     <div class="section-t" data-i18n="connection"></div>
     <section class="card set">
-      <div class="set-row"><span data-i18n="pending"></span><b id="pendingCount">0</b></div>
-      <button class="btn btn-soft" id="ping" type="button">
+      <div class="set-row">
+        <span class="sq c5"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0"/><circle cx="12" cy="19.5" r="1"/></svg></span>
+        <span data-i18n="pending"></span><b id="pendingCount">0</b>
+      </div>
+      <button class="btn-soft" id="ping" type="button">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0"/><circle cx="12" cy="19.5" r="1"/><path d="M2 9a14.5 14.5 0 0 1 20 0"/></svg>
         <span data-i18n="check"></span>
       </button>
@@ -406,7 +433,7 @@
     <div class="section-t" data-i18n="history"></div>
     <section class="card set">
       <ul class="hist" id="hist"></ul>
-      <button class="btn btn-soft danger" id="clearHist" type="button" hidden></button>
+      <button class="btn-soft danger" id="clearHist" type="button" hidden></button>
       <p class="hist-hint" id="histHint" data-i18n="histHint" hidden></p>
     </section>
 
@@ -417,7 +444,7 @@
       <p class="tagline" data-i18n="tagline"></p>
       <div class="rows">
         <div class="row"><span data-i18n="app"></span><span>Foto Gönder</span></div>
-        <div class="row"><span data-i18n="version"></span><span>2.6</span></div>
+        <div class="row"><span data-i18n="version"></span><span>3.0</span></div>
         <div class="row"><span data-i18n="developer"></span><span>Cintra Software</span></div>
       </div>
       <p class="desc" data-i18n="desc"></p>
@@ -457,7 +484,8 @@
       connOk: '✓ Bağlantı çalışıyor', connBadKey: 'Anahtar geçersiz. Kurulum linkini yeniden açın.', connOffline: 'İnternet yok veya sunucuya ulaşılamıyor.',
       history: 'Geçmiş', historyEmpty: 'Henüz gönderim yok.', clearHist: 'Geçmişi temizle', clearSure: 'Emin misiniz? Silmek için tekrar dokunun',
       delEntry: 'Kaydı sil', histHint: 'Sadece bu liste silinir; Drive\'daki dosyalar yerinde kalır.', photo1: '1 foto', photosN: '{n} foto', withNote: 'not',
-      openOfferte: 'Offerteyi aç ↗', offerteMode: 'Offerte hazırla', offerteOn: 'Offerte hazırlanacak ✓',
+      openOfferte: 'Aç ↗', onlyPhotos: 'Sadece foto', offerteSeg: '📄 Offerte', hello: 'Hoş geldin, {n} 👋', helloPlain: 'Hoş geldin 👋',
+      todaySent: 'Bugün gönderilen', recentT: 'Son gönderimler', all: 'Tümü', addGal: '+ Galeri', navHome: 'Ana sayfa',
       plusOfferte: ' + offerte', onlyOfferte: 'Offerte hazırla', klantT: 'Müşteri bilgileri',
       kAdres: 'Adres', kPlaats: 'Posta kodu ve şehir', kTel: 'Telefon', kEmail: 'E-posta',
       firmaT: 'Şirket bilgileri', firmaHint: 'Bir kez doldurun; her offerte\'ye otomatik eklenir.', fNaam: 'Firma adı', firmaEmpty: 'Henüz doldurulmadı',
@@ -487,7 +515,8 @@
       connOk: '✓ Verbinding werkt', connBadKey: 'Sleutel ongeldig. Open de installatielink opnieuw.', connOffline: 'Geen internet of server onbereikbaar.',
       history: 'Geschiedenis', historyEmpty: 'Nog niets verstuurd.', clearHist: 'Geschiedenis wissen', clearSure: 'Zeker? Tik nogmaals om te wissen',
       delEntry: 'Verwijderen', histHint: 'Alleen deze lijst wordt gewist; bestanden in Drive blijven staan.', photo1: '1 foto', photosN: '{n} foto\'s', withNote: 'notitie',
-      openOfferte: 'Open offerte ↗', offerteMode: 'Offerte maken', offerteOn: 'Offerte wordt gemaakt ✓',
+      openOfferte: 'Open ↗', onlyPhotos: 'Alleen foto\'s', offerteSeg: '📄 Offerte', hello: 'Welkom, {n} 👋', helloPlain: 'Welkom 👋',
+      todaySent: 'Vandaag verstuurd', recentT: 'Recent verstuurd', all: 'Alles', addGal: '+ Galerij', navHome: 'Home',
       plusOfferte: ' + offerte', onlyOfferte: 'Offerte maken', klantT: 'Klantgegevens',
       kAdres: 'Adres', kPlaats: 'Postcode en plaats', kTel: 'Telefoon', kEmail: 'E-mail',
       firmaT: 'Bedrijfsgegevens', firmaHint: 'Eén keer invullen; komt automatisch op elke offerte.', fNaam: 'Bedrijfsnaam', firmaEmpty: 'Nog niet ingevuld',
@@ -556,7 +585,7 @@
     for (const b of $('langSeg').children) b.setAttribute('aria-pressed', b.dataset.lang === lang);
     $('grid').dataset.empty = t('empty');
     $('conn').textContent = '';
-    renderHistory(); items.forEach(paint); $('offLbl').textContent = t(offerteOn ? 'offerteOn' : 'offerteMode'); sumFirma(); refresh();
+    renderHistory(); items.forEach(paint); sumFirma(); refresh();
   }
 
   const PLAY = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
@@ -610,25 +639,43 @@
     const hasNote = $('note').value.trim() !== '';
     const shown = items.filter(i => i.kind === 'photo').length;
     $('count').textContent = shown ? `(${shown})` : '';
-    $('pendingCount').textContent = fresh + waiting;
+    $('pendingCount').textContent = $('statPend').textContent = fresh + waiting;
     $('send').disabled = busy || !(fresh || waiting || hasNote || offerteOn);
     if (!busy) $('sendLbl').textContent = (fresh ? t('sendN', { p: summary(fresh - freshA, freshA) }) : waiting ? t('retryN', { n: waiting })
       : hasNote ? t('sendNote') : offerteOn ? t('onlyOfferte') : t('send')) + (offerteOn && (fresh || waiting || hasNote) ? t('plusOfferte') : '');
   }
 
+  // Renkli kare simgeli satır; renk müşteri adından (aynı müşteri hep aynı renk).
+  const colorOf = s => 'c' + [...s].reduce((a, ch) => a + ch.charCodeAt(0), 0) % 6;
+  function histRow(e, onDelete) {
+    const fmt = new Intl.DateTimeFormat(lang === 'nl' ? 'nl-NL' : 'tr-TR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+    const li = document.createElement('li');
+    li.innerHTML = `<span class="sq ${colorOf(e.c)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M3 11l9-7 9 7M5 10v10h14V10"/></svg></span><div class="t"><b></b><small></small></div>`;
+    li.querySelector('b').textContent = e.c;
+    const when = fmt.format(new Date(e.at));
+    li.querySelector('small').textContent = onDelete ? [summary(e.p, e.a, e.note), when].filter(Boolean).join(' · ') : summary(e.p, e.a, e.note);
+    if (!onDelete) { // ana ekran: sağda ✓ + saat
+      const r = Object.assign(document.createElement('div'), { className: 'r', innerHTML: '<b>✓</b><br>' });
+      r.append(when);
+      li.append(r);
+    } else {
+      const x = Object.assign(document.createElement('button'), { className: 'hx', type: 'button', innerHTML: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>' });
+      x.setAttribute('aria-label', t('delEntry') + ': ' + e.c);
+      x.onclick = onDelete;
+      li.append(x);
+    }
+    return li;
+  }
+
   function renderHistory() {
     const h = JSON.parse(localStorage.getItem('history') || '[]');
-    const fmt = new Intl.DateTimeFormat(lang === 'nl' ? 'nl-NL' : 'tr-TR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
-    $('hist').replaceChildren(...(h.length ? h.map((e, i) => {
-      const li = document.createElement('li');
-      li.innerHTML = '<div><b></b><small></small></div><button class="hx" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>';
-      li.querySelector('b').textContent = e.c;
-      li.querySelector('small').textContent = [summary(e.p, e.a, e.note), fmt.format(new Date(e.at))].filter(Boolean).join(' · ');
-      const x = li.querySelector('.hx');
-      x.setAttribute('aria-label', t('delEntry') + ': ' + e.c);
-      x.onclick = () => { h.splice(i, 1); localStorage.setItem('history', JSON.stringify(h)); renderHistory(); };
-      return li;
-    }) : [Object.assign(document.createElement('li'), { className: 'empty', textContent: t('historyEmpty') })]));
+    $('hist').replaceChildren(...(h.length ? h.map((e, i) => histRow(e, () => { h.splice(i, 1); localStorage.setItem('history', JSON.stringify(h)); renderHistory(); }))
+      : [Object.assign(document.createElement('li'), { className: 'empty', textContent: t('historyEmpty') })]));
+    // Ana ekran: son 3 gönderim + bugün gönderilen foto sayısı
+    $('recentList').replaceChildren(...h.slice(0, 3).map(e => histRow(e)));
+    $('recentSec').hidden = !h.length;
+    const day = today();
+    $('statToday').textContent = pn(h.filter(e => today(new Date(e.at)) === day).reduce((a, e) => a + (e.p || 0), 0));
     const c = $('clearHist');
     c.hidden = $('histHint').hidden = !h.length;
     delete c.dataset.sure;
@@ -668,10 +715,21 @@
   // Katlanır başlık: logo + firma adı; dolduysa kapalı açılır.
   function sumFirma() {
     const f = firma();
+    const init = (f.naam || '').split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join('');
     $('sumName').textContent = f.naam || t('firmaEmpty');
     $('sumName').className = f.naam ? '' : 'empty';
     $('sumLogo').hidden = !f.logo;
+    $('sumInit').hidden = !!f.logo;
+    $('sumInit').textContent = init || '+';
     if (f.logo) $('sumLogo').src = f.logo;
+    // Üst satır: logo (yoksa baş harfler, o da yoksa kamera), selam, firma adı
+    const av = $('avatar');
+    av.className = 'avatar' + (f.logo ? ' logo' : '');
+    if (f.logo) av.replaceChildren(Object.assign(document.createElement('img'), { src: f.logo, alt: '' }));
+    else if (init) av.textContent = init;
+    else av.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>';
+    $('helloTxt').textContent = worker() ? t('hello', { n: worker().split(' ')[0] }) : t('helloPlain');
+    $('firmTitle').textContent = f.naam || 'Foto Gönder';
   }
   $('firmaFold').open = !firma().naam;
   const klantKey = () => $('customer').value.replace(/\s+/g, ' ').trim().toLowerCase();
@@ -716,22 +774,29 @@
   let offerteOn = false;
   function setOfferte(on) {
     offerteOn = on;
-    $('offerteMode').setAttribute('aria-pressed', on);
-    $('offLbl').textContent = t(on ? 'offerteOn' : 'offerteMode');
+    $('segFoto').setAttribute('aria-pressed', !on);
+    $('segOff').setAttribute('aria-pressed', on);
     $('klantCard').hidden = !on;
     refresh();
   }
-  $('offerteMode').onclick = () => { setOfferte(!offerteOn); if (offerteOn) loadKlant(); };
+  $('segFoto').onclick = () => setOfferte(false);
+  $('segOff').onclick = () => { if (!offerteOn) { setOfferte(true); loadKlant(); } };
   $('customer').addEventListener('change', () => { if (offerteOn) loadKlant(); });
 
   // ---------- Ayarlar ----------
   const sheet = $('settings');
-  $('openSettings').onclick = () => { renderHistory(); refresh(); sheet.showModal(); };
+  function openSettings(toHistory) {
+    renderHistory(); refresh(); sheet.showModal();
+    if (toHistory) $('hist').scrollIntoView({ block: 'center' });
+  }
+  $('openSettings').onclick = $('navSet').onclick = () => openSettings(false);
+  $('navHist').onclick = $('allHist').onclick = () => openSettings(true);
+  $('navHome').onclick = () => scrollTo({ top: 0, behavior: 'smooth' });
   $('closeSettings').onclick = () => sheet.close();
   sheet.addEventListener('click', e => { if (e.target === sheet) sheet.close(); }); // boşluğa dokununca kapan
   for (const b of $('langSeg').children) b.onclick = () => { lang = b.dataset.lang; localStorage.setItem('lang', lang); $('msg').className = 'msg'; applyLang(); };
   $('worker').value = worker();
-  $('worker').addEventListener('input', e => localStorage.setItem('worker', e.target.value.trim()));
+  $('worker').addEventListener('input', e => { localStorage.setItem('worker', e.target.value.trim()); sumFirma(); });
 
   async function post(body) {
     // text/plain: tarayıcı ön kontrol (CORS preflight) yapmaz, Apps Script bunu kabul eder.
