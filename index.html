@@ -219,6 +219,32 @@
   .hist small, .hist time { color: var(--muted); font-size: 14px; }
   .hist time { flex: none; text-align: right; }
   .hist .empty { color: var(--muted); justify-content: center; }
+  /* Mikrofon: sesle yazma + sesli mesaj */
+  .mics { display: flex; gap: 10px; margin-top: 10px; }
+  .mics > .btn { flex: 1; }
+  .btn.mic { background: var(--primary-soft); color: var(--primary); padding: 12px; font-size: 16px; min-height: 52px; }
+  .btn.mic svg { width: 20px; height: 20px; }
+  .btn.mic.on { background: var(--err); color: #fff; animation: pulse 1.4s ease-in-out infinite; }
+  .btn.mic:disabled { opacity: .4; }
+  @keyframes pulse { 50% { box-shadow: 0 0 0 8px rgba(220, 38, 38, .18); } }
+  .voices { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+  .voices:empty { display: none; }
+  .voice { display: flex; align-items: center; gap: 12px; padding: 8px; border-radius: 18px; background: var(--field); animation: pop .25s ease-out; }
+  .voice .play { appearance: none; border: 0; width: 42px; height: 42px; border-radius: 50%; flex: none; display: grid; place-items: center;
+    cursor: pointer; color: #fff; background: linear-gradient(135deg, var(--hero-a), var(--hero-b)); }
+  .voice .play svg { width: 18px; height: 18px; }
+  .voice .vi { flex: 1; min-width: 0; }
+  .voice .vi b { display: block; font-size: 15px; font-weight: 650; }
+  .voice .vi small { color: var(--muted); font-size: 14px; }
+  .voice .vst { font-size: 17px; font-weight: 800; }
+  .voice.queued .vst::after { content: "⏱"; }
+  .voice.sending .vst::after { content: ""; display: block; width: 18px; height: 18px; border-radius: 50%;
+    border: 3px solid var(--primary-soft); border-top-color: var(--primary); animation: spin .8s linear infinite; }
+  .voice.done .vst::after { content: "✓"; color: var(--ok); }
+  .voice .x { appearance: none; border: 0; width: 34px; height: 34px; border-radius: 50%; flex: none; display: grid; place-items: center;
+    cursor: pointer; background: none; color: var(--muted); }
+  .voice .x svg { width: 14px; height: 14px; }
+  .voice.sending .x, .voice.done .x { visibility: hidden; }
 </style>
 </head>
 <body>
@@ -274,6 +300,17 @@
       <label for="note" data-i18n="noteT"></label> <small data-i18n="optional"></small>
     </div>
     <textarea id="note" class="note" data-i18n-ph="notePh" rows="3"></textarea>
+    <div class="mics">
+      <button class="btn mic" id="dictate" type="button" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
+        <span id="dictLbl" data-i18n="dictate"></span>
+      </button>
+      <button class="btn mic" id="record" type="button" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 10v4M8 7v10M12 4v16M16 7v10M20 10v4"/></svg>
+        <span id="recLbl" data-i18n="record"></span>
+      </button>
+    </div>
+    <div id="voices" class="voices"></div>
   </section>
 </main>
 
@@ -324,7 +361,7 @@
       <p class="tagline" data-i18n="tagline"></p>
       <div class="rows">
         <div class="row"><span data-i18n="app"></span><span>Foto Gönder</span></div>
-        <div class="row"><span data-i18n="version"></span><span>2.0</span></div>
+        <div class="row"><span data-i18n="version"></span><span>2.1</span></div>
         <div class="row"><span data-i18n="developer"></span><span>CintraSoft</span></div>
       </div>
       <p class="desc" data-i18n="desc"></p>
@@ -363,6 +400,9 @@
       connection: 'Bağlantı', pending: 'Telefonda bekleyen', check: 'Bağlantıyı kontrol et', checking: 'Kontrol ediliyor…',
       connOk: '✓ Bağlantı çalışıyor', connBadKey: 'Anahtar geçersiz. Kurulum linkini yeniden açın.', connOffline: 'İnternet yok veya sunucuya ulaşılamıyor.',
       history: 'Geçmiş', historyEmpty: 'Henüz gönderim yok.', photo1: '1 foto', photosN: '{n} foto', withNote: 'not',
+      dictate: 'Sesle yaz', listening: 'Dinliyorum… bitir', record: 'Sesli mesaj', recording: 'Kayıt {t} · bitir',
+      voice: 'Sesli mesaj', voice1: '1 sesli mesaj', voiceN: '{n} sesli mesaj', voiceFile: 'Sesli-mesaj', play: 'Dinle',
+      micDenied: 'Mikrofon izni yok. Telefon ayarlarından bu uygulamaya mikrofon izni verin.',
       noteFile: 'Not', dateL: 'Tarih', byL: 'Gönderen',
       about: 'Hakkında', tagline: 'Akıllı yazılım, sade çözümler.', app: 'Uygulama', version: 'Sürüm', developer: 'Geliştirici',
       desc: 'Foto Gönder, sahada çekilen fotoğrafları tek dokunuşla ofise ulaştırmak için CintraSoft tarafından tasarlandı ve geliştirildi.',
@@ -382,6 +422,9 @@
       connection: 'Verbinding', pending: 'Wacht op de telefoon', check: 'Verbinding controleren', checking: 'Bezig met controleren…',
       connOk: '✓ Verbinding werkt', connBadKey: 'Sleutel ongeldig. Open de installatielink opnieuw.', connOffline: 'Geen internet of server onbereikbaar.',
       history: 'Geschiedenis', historyEmpty: 'Nog niets verstuurd.', photo1: '1 foto', photosN: '{n} foto\'s', withNote: 'notitie',
+      dictate: 'Dicteren', listening: 'Luisteren… stop', record: 'Spraakbericht', recording: 'Opname {t} · stop',
+      voice: 'Spraakbericht', voice1: '1 spraakbericht', voiceN: '{n} spraakberichten', voiceFile: 'Spraakbericht', play: 'Afspelen',
+      micDenied: 'Geen toegang tot de microfoon. Sta dit toe in de instellingen van de telefoon.',
       noteFile: 'Notitie', dateL: 'Datum', byL: 'Verstuurd door',
       about: 'Over', tagline: 'Slimme software, eenvoudige oplossingen.', app: 'App', version: 'Versie', developer: 'Ontwikkelaar',
       desc: 'Foto Gönder is ontworpen en ontwikkeld door CintraSoft om foto\'s van de bouwplaats met één tik op kantoor te krijgen.',
@@ -396,6 +439,8 @@
   const year = Math.max(2026, new Date().getFullYear());
   const t = (k, v = {}) => L[lang][k].replace(/\{(\w+)\}/g, (_, n) => v[n]);
   const pn = n => n === 1 ? t('photo1') : t('photosN', { n });
+  const vn = n => n === 1 ? t('voice1') : t('voiceN', { n });
+  const summary = (p, a, note) => [p ? pn(p) : '', a ? vn(a) : '', note ? t('withNote') : ''].filter(Boolean).join(' + ');
   const tagName = k => (TAGS.find(x => x[0] === k) || TAGS[0])[lang === 'nl' ? 2 : 1];
 
   // ---------- Telefonda saklama (IndexedDB) ----------
@@ -412,7 +457,7 @@
   const req = r => new Promise((ok, no) => { r.onsuccess = () => ok(r.result); r.onerror = () => no(r.error); });
   const store = mode => db.transaction('q', mode).objectStore('q');
   const dbPut = it => db ? req(store('readwrite').put({ id: it.id, kind: it.kind, blob: it.blob, tag: it.tag,
-    customer: it.customer, date: it.date, fileName: it.fileName })) : Promise.resolve();
+    dur: it.dur, customer: it.customer, date: it.date, fileName: it.fileName })) : Promise.resolve();
   const dbDel = id => db ? req(store('readwrite').delete(id)) : Promise.resolve();
   const dbAll = () => db ? req(store('readonly').getAll()) : Promise.resolve([]);
 
@@ -426,6 +471,8 @@
   const newId = () => Date.now().toString(36) + Math.random().toString(36).slice(2);
   const fileSafe = s => String(s || '').trim().replace(/[^\p{L}\p{N}]+/gu, '-').replace(/^-+|-+$/g, '').slice(0, 30);
   const worker = () => localStorage.getItem('worker') || '';
+  const fmtDur = s => `${Math.floor(s / 60)}:${z(s % 60)}`;
+  const AUDIO_EXT = { 'audio/mp4': 'm4a', 'audio/webm': 'webm', 'audio/ogg': 'ogg', 'audio/mpeg': 'mp3', 'audio/aac': 'aac' };
 
   function show(text, kind) {
     const m = $('msg');
@@ -456,10 +503,21 @@
     }));
   }
 
+  const PLAY = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+  const PAUSE = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>';
   function render(it) {
     it.url = URL.createObjectURL(it.blob);
     it.el = document.createElement('div');
-    it.el.innerHTML = `<img src="${it.url}" alt=""><span class="tg"></span><span class="st"></span><button class="x" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>`;
+    const x = `<button class="x" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>`;
+    if (it.kind === 'audio') {
+      it.el.innerHTML = `<button class="play" type="button">${PLAY}</button><div class="vi"><b></b><small></small></div><span class="vst"></span>${x}<audio preload="none" src="${it.url}"></audio>`;
+      const a = it.el.querySelector('audio'), pb = it.el.querySelector('.play');
+      pb.onclick = () => a.paused ? a.play() : a.pause();
+      a.onplay = () => { pb.innerHTML = PAUSE; };
+      a.onpause = a.onended = () => { pb.innerHTML = PLAY; };
+    } else {
+      it.el.innerHTML = `<img src="${it.url}" alt=""><span class="tg"></span><span class="st"></span>${x}`;
+    }
     it.el.querySelector('.x').onclick = async () => {
       if (busy) return;
       await dbDel(it.id);
@@ -467,11 +525,19 @@
       refresh();
     };
     paint(it);
-    $('grid').append(it.el);
+    $(it.kind === 'audio' ? 'voices' : 'grid').append(it.el);
   }
 
   function paint(it) {
     if (!it.el) return; // notların küçük resmi yok
+    it.el.querySelector('.x').setAttribute('aria-label', t('del'));
+    if (it.kind === 'audio') {
+      it.el.className = 'voice ' + (it.state || '');
+      it.el.querySelector('b').textContent = t('voice');
+      it.el.querySelector('small').textContent = fmtDur(it.dur || 0);
+      it.el.querySelector('.play').setAttribute('aria-label', t('play'));
+      return;
+    }
     it.el.className = 'ph ' + (it.state || '');
     const tg = it.el.querySelector('.tg');
     tg.textContent = it.tag ? tagName(it.tag) : '';
@@ -486,14 +552,15 @@
   }
 
   function refresh() {
-    const fresh = items.filter(i => !i.customer).length;               // henüz Gönder'e basılmamış fotoğraflar
+    const fresh = items.filter(i => !i.customer).length;               // henüz Gönder'e basılmamış foto/ses
+    const freshA = items.filter(i => !i.customer && i.kind === 'audio').length;
     const waiting = items.filter(i => i.customer && i.state !== 'done').length; // kuyrukta bekleyenler
     const hasNote = $('note').value.trim() !== '';
     const shown = items.filter(i => i.kind === 'photo').length;
     $('count').textContent = shown ? `(${shown})` : '';
     $('pendingCount').textContent = fresh + waiting;
     $('send').disabled = busy || !(fresh || waiting || hasNote);
-    if (!busy) $('sendLbl').textContent = fresh ? t('sendN', { p: pn(fresh) }) : waiting ? t('retryN', { n: waiting })
+    if (!busy) $('sendLbl').textContent = fresh ? t('sendN', { p: summary(fresh - freshA, freshA) }) : waiting ? t('retryN', { n: waiting })
       : hasNote ? t('sendNote') : t('send');
   }
 
@@ -504,7 +571,7 @@
       const li = document.createElement('li');
       li.innerHTML = '<div><b></b><small></small></div><time></time>';
       li.querySelector('b').textContent = e.c;
-      li.querySelector('small').textContent = [e.p ? pn(e.p) : '', e.note ? t('withNote') : ''].filter(Boolean).join(' · ');
+      li.querySelector('small').textContent = summary(e.p, e.a, e.note);
       li.querySelector('time').textContent = fmt.format(new Date(e.at));
       return li;
     }) : [Object.assign(document.createElement('li'), { className: 'empty', textContent: t('historyEmpty') })]));
@@ -584,6 +651,78 @@
     $(id).addEventListener('change', e => { const f = [...e.target.files]; e.target.value = ''; add(f); });
   }
 
+  // ---------- Mikrofon ----------
+  // Sesle yazma: Web Speech API (Android Chrome'da var; iPhone ana ekran uygulamasında çoğu zaman yok → düğme gizlenir,
+  // orada klavyedeki 🎤 aynı işi görür). Sesli mesaj: MediaRecorder (iPhone + Android).
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const MAX_REC = 300; // 5 dk ≈ 2,5 MB; Apps Script istek sınırının çok altında kalır
+  let dict = null, recorder = null;
+  $('dictate').hidden = !SR;
+  $('record').hidden = !(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder);
+  function micUI() {
+    $('dictate').classList.toggle('on', !!dict);
+    $('record').classList.toggle('on', !!recorder);
+    $('dictate').disabled = !!recorder;
+    $('record').disabled = !!dict;
+    $('dictLbl').textContent = t(dict ? 'listening' : 'dictate');
+    if (!recorder) $('recLbl').textContent = t('record');
+  }
+
+  $('dictate').onclick = () => {
+    if (dict) { dict.stop(); return; }
+    const r = new SR();
+    r.lang = lang === 'nl' ? 'nl-NL' : 'tr-TR';
+    r.continuous = true;
+    r.interimResults = true;
+    const before = $('note').value.replace(/\s+$/, '');
+    r.onresult = e => {
+      const said = [...e.results].map(x => x[0].transcript.trim()).join(' ');
+      $('note').value = (before ? before + ' ' : '') + said;
+      localStorage.setItem('noteDraft', $('note').value);
+      refresh();
+    };
+    r.onerror = e => { if (/not-allowed/.test(e.error)) show(t('micDenied'), 'err'); };
+    r.onend = () => { dict = null; micUI(); };
+    dict = r; micUI();
+    try { r.start(); } catch { dict = null; micUI(); }
+  };
+
+  $('record').onclick = async () => {
+    if (recorder) { recorder.stop(); return; }
+    let stream;
+    try { stream = await navigator.mediaDevices.getUserMedia({ audio: true }); }
+    catch { show(t('micDenied'), 'err'); return; }
+    // iPhone audio/mp4 (m4a) kaydeder, Android çoğunlukla webm; ikisi de ofiste açılır.
+    const type = ['audio/mp4', 'audio/webm;codecs=opus', 'audio/webm', 'audio/ogg']
+      .find(x => MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(x));
+    const rec = new MediaRecorder(stream, Object.assign({ audioBitsPerSecond: 64000 }, type && { mimeType: type }));
+    const chunks = [], t0 = Date.now();
+    rec.ondataavailable = e => { if (e.data.size) chunks.push(e.data); };
+    const tick = setInterval(() => {
+      const sec = Math.floor((Date.now() - t0) / 1000);
+      $('recLbl').textContent = t('recording', { t: fmtDur(sec) });
+      if (sec >= MAX_REC && rec.state === 'recording') rec.stop();
+    }, 250);
+    rec.onstop = async () => {
+      clearInterval(tick);
+      stream.getTracks().forEach(tr => tr.stop());
+      recorder = null; micUI();
+      const dur = Math.round((Date.now() - t0) / 1000);
+      const blob = new Blob(chunks, { type: (rec.mimeType || type || 'audio/webm').split(';')[0] });
+      if (!blob.size || dur < 1) return;
+      const it = { id: newId(), kind: 'audio', blob, tag: '', dur, customer: null, date: null, fileName: null, state: '' };
+      items.push(it);
+      render(it);
+      refresh();
+      await dbPut(it);
+    };
+    rec.start(1000);
+    recorder = rec; micUI();
+    $('recLbl').textContent = t('recording', { t: '0:00' });
+  };
+  // Uygulamadan çıkılırsa kaydı bitir ve sakla (arka planda mikrofon zaten kesilir).
+  document.addEventListener('visibilitychange', () => { if (document.hidden && recorder) recorder.stop(); });
+
   // ---------- Gönderme ----------
   const b64 = blob => new Promise((ok, no) => {
     const r = new FileReader();
@@ -594,7 +733,7 @@
 
   async function upload(it) {
     const body = { key, customer: it.customer, date: it.date, fileName: it.fileName,
-      mimeType: it.kind === 'note' ? 'text/plain' : 'image/jpeg', data: await b64(it.blob) };
+      mimeType: it.blob.type.split(';')[0] || 'image/jpeg', data: await b64(it.blob) };
     let last;
     for (let attempt = 0; attempt < 3; attempt++) {
       try {
@@ -616,8 +755,14 @@
       if (!customer) { show(t('needCustomer'), 'err'); $('customer').focus(); return; }
       // Gönder'e basıldığı an fotoğraflar bu müşteriye/güne bağlanır; internet sonra gelse de doğru klasöre gider.
       const date = today(), st = stamp(), who = fileSafe(worker());
-      fresh.forEach((it, i) => Object.assign(it, { customer, date, state: 'queued',
-        fileName: [it.tag ? fileSafe(tagName(it.tag)) : '', st, who, i + 1].filter(Boolean).join('_') + '.jpg' }));
+      let np = 0, na = 0;
+      for (const it of fresh) {
+        const audio = it.kind === 'audio';
+        const first = audio ? t('voiceFile') : it.tag ? fileSafe(tagName(it.tag)) : '';
+        const ext = audio ? AUDIO_EXT[it.blob.type] || 'webm' : 'jpg';
+        Object.assign(it, { customer, date, state: 'queued',
+          fileName: [first, st, who, audio ? ++na : ++np].filter(Boolean).join('_') + '.' + ext });
+      }
       if (text) {
         const head = `${t('customer')}: ${customer}\n${t('dateL')}: ${date}` + (worker() ? `\n${t('byL')}: ${worker()}` : '');
         items.push({ id: newId(), kind: 'note', blob: new Blob([`${head}\n\n${text}\n`], { type: 'text/plain' }),
@@ -649,8 +794,8 @@
         await upload(it);
         it.state = 'done'; sent++;
         await dbDel(it.id);
-        const e = log.get(it.customer) || { c: it.customer, p: 0, note: false };
-        it.kind === 'note' ? (e.note = true) : e.p++;
+        const e = log.get(it.customer) || { c: it.customer, p: 0, a: 0, note: false };
+        if (it.kind === 'note') e.note = true; else if (it.kind === 'audio') e.a++; else e.p++;
         log.set(it.customer, e);
       } catch (e) { it.state = 'fail'; failed++; lastErr = e; }
       paint(it);
@@ -670,8 +815,7 @@
     else if (failed) show(t('failed', { sent, failed, err: lastErr && lastErr.message }), 'err');
     else if (sent) {
       const e = [...log.values()];
-      const total = e.reduce((a, x) => a + x.p, 0);
-      const what = [total ? pn(total) : '', e.some(x => x.note) ? t('withNote') : ''].filter(Boolean).join(' + ');
+      const what = summary(e.reduce((s, x) => s + x.p, 0), e.reduce((s, x) => s + (x.a || 0), 0), e.some(x => x.note));
       show(t('sentOk', { c: e.map(x => x.c).join(', '), what }), 'ok');
     }
     setTimeout(() => { for (const it of items.filter(i => i.state === 'done')) drop(it); refresh(); }, 1500);
@@ -682,7 +826,7 @@
   for (const it of (await dbAll()).sort((a, b) => a.id < b.id ? -1 : 1)) {
     it.state = it.customer ? 'queued' : '';
     items.push(it);
-    if (it.kind === 'photo') render(it);
+    if (it.kind !== 'note') render(it);
   }
   addEventListener('online', () => drain());
   document.addEventListener('visibilitychange', () => { if (!document.hidden) drain(); });
