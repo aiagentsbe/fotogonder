@@ -206,6 +206,8 @@
   .inst .hx { appearance: none; border: 0; background: none; width: 30px; height: 30px; flex: none; display: grid; place-items: center;
     color: var(--muted); cursor: pointer; align-self: flex-start; }
   .inst .hx svg { width: 12px; height: 12px; }
+  .btn-soft.geo { margin: 0 0 12px; }
+  .btn-soft.geo:disabled { opacity: .6; }
   .setup { text-align: center; color: var(--muted); }
   .setup b { color: var(--ink); }
 
@@ -343,7 +345,10 @@
 
   <section id="klantCard" hidden>
     <div class="sec"><b data-i18n="klantT"></b><small data-i18n="optional"></small></div>
-    <div class="card"><div class="fields" id="klantFields"></div></div>
+    <div class="card">
+      <button class="btn-soft geo" id="geoBtn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.6"/></svg><span id="geoLbl" data-i18n="geo"></span></button>
+      <div class="fields" id="klantFields"></div>
+    </div>
   </section>
 
   <section>
@@ -470,7 +475,7 @@
       <p class="tagline" data-i18n="tagline"></p>
       <div class="rows">
         <div class="row"><span data-i18n="app"></span><span>Foto Gönder</span></div>
-        <div class="row"><span data-i18n="version"></span><span>3.20</span></div>
+        <div class="row"><span data-i18n="version"></span><span>3.21</span></div>
         <div class="row"><span data-i18n="developer"></span><span>Cintra Software</span></div>
       </div>
       <p class="desc" data-i18n="desc"></p>
@@ -479,7 +484,7 @@
   </div>
 </dialog>
 
-<script src="config.js?v=320"></script>
+<script src="config.js?v=321"></script>
 <script>
 (async () => {
   const MAX_SIDE = 2560;            // Drive'a giden fotoğrafın uzun kenarı; offerte için fazlasıyla yeterli
@@ -517,6 +522,8 @@
       openOfferte: 'Aç ↗', onlyPhotos: 'Sadece foto', offerteSeg: '📄 Offerte', hello: 'Hoş geldin, {n} 👋', helloPlain: 'Hoş geldin 👋',
       todaySent: 'Bugün gönderilen', recentT: 'Son gönderimler', all: 'Tümü', addGal: '+ Galeri', navHome: 'Ana sayfa',
       plusOfferte: ' + offerte', onlyOfferte: 'Offerte hazırla', klantT: 'Müşteri bilgileri',
+      geo: 'Konumdan doldur', geoBusy: 'Konum alınıyor…', geoDenied: 'Konum izni yok. Telefon ayarlarından bu uygulamaya konum izni verin.',
+      geoFail: 'Adres bulunamadı. Lütfen elle yazın.',
       kAdres: 'Adres', kPlaats: 'Posta kodu ve şehir', kTel: 'Telefon', kEmail: 'E-posta',
       firmaT: 'Şirket bilgileri', firmaHint: 'Bir kez doldurun; her offerte\'ye otomatik eklenir.', fNaam: 'Firma adı', firmaEmpty: 'Henüz doldurulmadı',
       fBtw: 'BTW numarası', fIban: 'IBAN', fBetaling: 'Ödeme şartı', betalingPh: 'örn. %40 siparişte, %60 teslimde',
@@ -552,6 +559,8 @@
       openOfferte: 'Open ↗', onlyPhotos: 'Alleen foto\'s', offerteSeg: '📄 Offerte', hello: 'Welkom, {n} 👋', helloPlain: 'Welkom 👋',
       todaySent: 'Vandaag verstuurd', recentT: 'Recent verstuurd', all: 'Alles', addGal: '+ Galerij', navHome: 'Home',
       plusOfferte: ' + offerte', onlyOfferte: 'Offerte maken', klantT: 'Klantgegevens',
+      geo: 'Invullen via locatie', geoBusy: 'Locatie ophalen…', geoDenied: 'Geen toegang tot locatie. Sta dit toe in de instellingen van de telefoon.',
+      geoFail: 'Adres niet gevonden. Vul het handmatig in.',
       kAdres: 'Adres', kPlaats: 'Postcode en plaats', kTel: 'Telefoon', kEmail: 'E-mail',
       firmaT: 'Bedrijfsgegevens', firmaHint: 'Eén keer invullen; komt automatisch op elke offerte.', fNaam: 'Bedrijfsnaam', firmaEmpty: 'Nog niet ingevuld',
       fBtw: 'Btw-nummer', fIban: 'IBAN', fBetaling: 'Betalingsvoorwaarden', betalingPh: 'bijv. 40% bij opdracht, 60% na oplevering',
@@ -779,6 +788,31 @@
     localStorage.setItem('klanten', JSON.stringify(all));
   });
   // Aynı müşteri tekrar yazılınca bilgileri kendiliğinden dolsun.
+  // Konumdan adres: telefonun konumu → OpenStreetMap (Nominatim) ile sokak + numara, posta kodu + şehir.
+  // Koordinat yalnız düğmeye basılınca gönderilir.
+  $('geoBtn').hidden = !navigator.geolocation;
+  $('geoBtn').onclick = () => {
+    const b = $('geoBtn'), lbl = $('geoLbl');
+    b.disabled = true; lbl.textContent = t('geoBusy');
+    const done = () => { b.disabled = false; lbl.textContent = t('geo'); };
+    navigator.geolocation.getCurrentPosition(async pos => {
+      try {
+        const { latitude: la, longitude: lo } = pos.coords;
+        const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&addressdetails=1&zoom=18&accept-language=nl&lat=${la}&lon=${lo}`);
+        const a = (await r.json()).address || {};
+        const street = [a.road || a.pedestrian || a.footway, a.house_number].filter(Boolean).join(' ');
+        const city = [a.postcode, a.city || a.town || a.village || a.municipality].filter(Boolean).join(' ');
+        if (!street && !city) throw new Error('leeg');
+        for (const [k, v] of [['adres', street], ['plaats', city]]) {
+          const inp = $('klantFields').querySelector(`input[data-k="${k}"]`);
+          if (v) { inp.value = v; inp.dispatchEvent(new Event('input')); } // müşteri bilgisi olarak kaydedilsin
+        }
+      } catch { show(navigator.onLine ? t('geoFail') : t('connOffline'), 'err'); }
+      done();
+    }, err => { show(err.code === 1 ? t('geoDenied') : t('geoFail'), 'err'); done(); },
+    { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 });
+  };
+
   function loadKlant() {
     const k = store_('klanten', '{}')[klantKey()] || {};
     for (const i of $('klantFields').querySelectorAll('input')) i.value = k[i.dataset.k] || '';
