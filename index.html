@@ -256,6 +256,16 @@
     border: 2px solid transparent; background: var(--field); outline: none; }
   .f input:focus { border-color: var(--primary); }
   .hint { margin: 0 0 12px; color: var(--muted); font-size: 14px; }
+  details.fold { padding: 0; }
+  details.fold > summary { list-style: none; display: flex; align-items: center; gap: 12px; padding: 16px 18px; cursor: pointer; font-weight: 650; }
+  details.fold > summary::-webkit-details-marker { display: none; }
+  details.fold > summary span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  details.fold > summary span.empty { color: var(--muted); font-weight: 500; }
+  details.fold > summary::after { content: ""; flex: none; width: 9px; height: 9px; margin: 0 6px 4px 0; border-right: 2.5px solid var(--muted);
+    border-bottom: 2.5px solid var(--muted); transform: rotate(45deg); transition: transform .2s; }
+  details.fold[open] > summary::after { transform: rotate(-135deg); margin-bottom: -4px; }
+  .sumlogo { width: 38px; height: 38px; flex: none; border-radius: 10px; object-fit: contain; background: var(--field); }
+  .fold-body { padding: 0 18px 18px; }
   .logo-row { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
   .logo-box { width: 88px; height: 88px; flex: none; border-radius: 18px; background: var(--field); display: grid; place-items: center;
     overflow: hidden; color: var(--muted); font-size: 13px; text-align: center; border: 2px dashed var(--line); }
@@ -367,7 +377,9 @@
     </section>
 
     <div class="section-t" data-i18n="firmaT"></div>
-    <section class="card">
+    <details class="card fold" id="firmaFold">
+      <summary><img class="sumlogo" id="sumLogo" alt="" hidden><span id="sumName"></span></summary>
+      <div class="fold-body">
       <p class="hint" data-i18n="firmaHint"></p>
       <div class="logo-row">
         <div class="logo-box"><img id="logoImg" alt="Logo" hidden><span id="noLogo" data-i18n="noLogo"></span></div>
@@ -378,7 +390,8 @@
         <input id="logoIn" class="file" type="file" accept="image/png,image/jpeg">
       </div>
       <div class="fields" id="firmaFields"></div>
-    </section>
+      </div>
+    </details>
 
     <div class="section-t" data-i18n="connection"></div>
     <section class="card set">
@@ -399,13 +412,13 @@
 
     <div class="section-t" data-i18n="about"></div>
     <section class="card about">
-      <img class="logo" src="cintrasoft.svg" alt="CintraSoft">
-      <p class="brand">Cintra<span>Soft</span></p>
+      <img class="logo" src="cintrasoft.svg" alt="Cintra Software">
+      <p class="brand">Cintra <span>Software</span></p>
       <p class="tagline" data-i18n="tagline"></p>
       <div class="rows">
         <div class="row"><span data-i18n="app"></span><span>Foto Gönder</span></div>
-        <div class="row"><span data-i18n="version"></span><span>2.5</span></div>
-        <div class="row"><span data-i18n="developer"></span><span>CintraSoft</span></div>
+        <div class="row"><span data-i18n="version"></span><span>2.6</span></div>
+        <div class="row"><span data-i18n="developer"></span><span>Cintra Software</span></div>
       </div>
       <p class="desc" data-i18n="desc"></p>
     </section>
@@ -447,7 +460,7 @@
       openOfferte: 'Offerteyi aç ↗', offerteMode: 'Offerte hazırla', offerteOn: 'Offerte hazırlanacak ✓',
       plusOfferte: ' + offerte', onlyOfferte: 'Offerte hazırla', klantT: 'Müşteri bilgileri',
       kAdres: 'Adres', kPlaats: 'Posta kodu ve şehir', kTel: 'Telefon', kEmail: 'E-posta',
-      firmaT: 'Şirket bilgileri', firmaHint: 'Bir kez doldurun; her offerte\'ye otomatik eklenir.', fNaam: 'Firma adı', fKvk: 'KvK numarası',
+      firmaT: 'Şirket bilgileri', firmaHint: 'Bir kez doldurun; her offerte\'ye otomatik eklenir.', fNaam: 'Firma adı', firmaEmpty: 'Henüz doldurulmadı',
       fBtw: 'BTW numarası', fIban: 'IBAN', fBetaling: 'Ödeme şartı', betalingPh: 'örn. %40 siparişte, %60 teslimde',
       pickLogo: 'Logo seç', removeLogo: 'Logoyu kaldır', noLogo: 'Logo yok',
       offerteMaking: '"{c}" için offerte hazırlanıyor…', offerteReady: '"{c}" için offerte hazır.', offerteFail: 'Offerte yapılamadı: {err}',
@@ -456,8 +469,8 @@
       micDenied: 'Mikrofon izni yok. Telefon ayarlarından bu uygulamaya mikrofon izni verin.',
       noteFile: 'Not', dateL: 'Tarih', byL: 'Gönderen',
       about: 'Hakkında', tagline: 'Akıllı yazılım, sade çözümler.', app: 'Uygulama', version: 'Sürüm', developer: 'Geliştirici',
-      desc: 'Foto Gönder, sahada çekilen fotoğrafları tek dokunuşla ofise ulaştırmak için CintraSoft tarafından tasarlandı ve geliştirildi.',
-      copy: '© {y} <b>CintraSoft</b>. Tüm hakları saklıdır.<br>İzinsiz kopyalanamaz, çoğaltılamaz ve dağıtılamaz.',
+      desc: 'Foto Gönder, sahada çekilen fotoğrafları tek dokunuşla ofise ulaştırmak için Cintra Software tarafından tasarlandı ve geliştirildi.',
+      copy: '© {y} <b>Cintra Software</b>. Tüm hakları saklıdır.<br>İzinsiz kopyalanamaz, çoğaltılamaz ve dağıtılamaz.',
     },
     nl: {
       sub: 'Maak foto\'s, verstuur. Ze komen vanzelf op kantoor.', customer: 'Klant', customerPh: 'Naam, bijv. Jansen – Dorpstraat 12',
@@ -477,7 +490,7 @@
       openOfferte: 'Open offerte ↗', offerteMode: 'Offerte maken', offerteOn: 'Offerte wordt gemaakt ✓',
       plusOfferte: ' + offerte', onlyOfferte: 'Offerte maken', klantT: 'Klantgegevens',
       kAdres: 'Adres', kPlaats: 'Postcode en plaats', kTel: 'Telefoon', kEmail: 'E-mail',
-      firmaT: 'Bedrijfsgegevens', firmaHint: 'Eén keer invullen; komt automatisch op elke offerte.', fNaam: 'Bedrijfsnaam', fKvk: 'KvK-nummer',
+      firmaT: 'Bedrijfsgegevens', firmaHint: 'Eén keer invullen; komt automatisch op elke offerte.', fNaam: 'Bedrijfsnaam', firmaEmpty: 'Nog niet ingevuld',
       fBtw: 'Btw-nummer', fIban: 'IBAN', fBetaling: 'Betalingsvoorwaarden', betalingPh: 'bijv. 40% bij opdracht, 60% na oplevering',
       pickLogo: 'Logo kiezen', removeLogo: 'Logo verwijderen', noLogo: 'Geen logo',
       offerteMaking: 'Offerte voor "{c}" wordt gemaakt…', offerteReady: 'Offerte voor "{c}" is klaar.', offerteFail: 'Offerte mislukt: {err}',
@@ -486,8 +499,8 @@
       micDenied: 'Geen toegang tot de microfoon. Sta dit toe in de instellingen van de telefoon.',
       noteFile: 'Notitie', dateL: 'Datum', byL: 'Verstuurd door',
       about: 'Over', tagline: 'Slimme software, eenvoudige oplossingen.', app: 'App', version: 'Versie', developer: 'Ontwikkelaar',
-      desc: 'Foto Gönder is ontworpen en ontwikkeld door CintraSoft om foto\'s van de bouwplaats met één tik op kantoor te krijgen.',
-      copy: '© {y} <b>CintraSoft</b>. Alle rechten voorbehouden.<br>Niets mag zonder toestemming worden gekopieerd, verveelvoudigd of verspreid.',
+      desc: 'Foto Gönder is ontworpen en ontwikkeld door Cintra Software om foto\'s van de bouwplaats met één tik op kantoor te krijgen.',
+      copy: '© {y} <b>Cintra Software</b>. Alle rechten voorbehouden.<br>Niets mag zonder toestemming worden gekopieerd, verveelvoudigd of verspreid.',
     },
   };
   let lang = localStorage.getItem('lang') || (/^nl/i.test(navigator.language) ? 'nl' : 'tr');
@@ -543,7 +556,7 @@
     for (const b of $('langSeg').children) b.setAttribute('aria-pressed', b.dataset.lang === lang);
     $('grid').dataset.empty = t('empty');
     $('conn').textContent = '';
-    renderHistory(); items.forEach(paint); $('offLbl').textContent = t(offerteOn ? 'offerteOn' : 'offerteMode'); refresh();
+    renderHistory(); items.forEach(paint); $('offLbl').textContent = t(offerteOn ? 'offerteOn' : 'offerteMode'); sumFirma(); refresh();
   }
 
   const PLAY = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
@@ -633,7 +646,7 @@
 
   // ---------- Şirket + müşteri bilgileri (offerte için, telefonda saklanır) ----------
   const FIRMA_F = [['naam', 'fNaam', 'organization'], ['adres', 'kAdres', 'street-address'], ['plaats', 'kPlaats', 'address-level2'],
-    ['tel', 'kTel', 'tel', 'tel'], ['email', 'kEmail', 'email', 'email'], ['kvk', 'fKvk'], ['btw', 'fBtw'], ['iban', 'fIban'], ['betaling', 'fBetaling']];
+    ['tel', 'kTel', 'tel', 'tel'], ['email', 'kEmail', 'email', 'email'], ['btw', 'fBtw'], ['iban', 'fIban'], ['betaling', 'fBetaling']];
   const KLANT_F = [['adres', 'kAdres', 'street-address'], ['plaats', 'kPlaats', 'address-level2'], ['tel', 'kTel', 'tel', 'tel'], ['email', 'kEmail', 'email', 'email']];
   const store_ = (k, d) => JSON.parse(localStorage.getItem(k) || d);
   const firma = () => store_('firma', '{}');
@@ -651,7 +664,16 @@
       return l;
     }));
   }
-  fields($('firmaFields'), FIRMA_F, firma(), (k, v) => { const f = firma(); f[k] = v; localStorage.setItem('firma', JSON.stringify(f)); });
+  fields($('firmaFields'), FIRMA_F, firma(), (k, v) => { const f = firma(); f[k] = v; localStorage.setItem('firma', JSON.stringify(f)); if (k === 'naam') sumFirma(); });
+  // Katlanır başlık: logo + firma adı; dolduysa kapalı açılır.
+  function sumFirma() {
+    const f = firma();
+    $('sumName').textContent = f.naam || t('firmaEmpty');
+    $('sumName').className = f.naam ? '' : 'empty';
+    $('sumLogo').hidden = !f.logo;
+    if (f.logo) $('sumLogo').src = f.logo;
+  }
+  $('firmaFold').open = !firma().naam;
   const klantKey = () => $('customer').value.replace(/\s+/g, ' ').trim().toLowerCase();
   const klantNow = () => Object.fromEntries([...$('klantFields').querySelectorAll('input')].map(i => [i.dataset.k, i.value.trim()]));
   fields($('klantFields'), KLANT_F, {}, () => {
@@ -670,6 +692,7 @@
     const src = firma().logo;
     $('logoImg').hidden = !src; $('noLogo').hidden = !!src; $('logoDel').hidden = !src;
     if (src) $('logoImg').src = src; else $('logoImg').removeAttribute('src');
+    sumFirma();
   }
   $('logoIn').addEventListener('change', async e => {
     const file = e.target.files[0]; e.target.value = '';
