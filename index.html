@@ -290,6 +290,34 @@
   .conn { min-height: 20px; font-size: 14px; font-weight: 650; text-align: center; padding: 6px 0 8px; color: var(--muted); }
   .conn.ok { color: var(--ok); }
   .conn.err { color: var(--err); }
+  /* İşler ve fiyatlar (offerte) + fiyat listesi */
+  .rg { padding: 10px 0; border-bottom: 1px solid var(--line); display: grid; gap: 8px; animation: pop .2s ease-out; }
+  .rg:first-child { padding-top: 0; }
+  .rg .l1 { display: flex; align-items: center; gap: 8px; }
+  .rg .l2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, .9fr) auto minmax(0, 1.2fr) minmax(76px, auto); align-items: center; gap: 6px; }
+  .rg input, .pl input { min-width: 0; font: inherit; font-size: 16px; color: var(--ink); padding: 10px 12px; border-radius: 12px;
+    border: 1px solid var(--line); background: var(--field); outline: none; }
+  .rg input:focus, .pl input:focus { border-color: var(--primary); background: var(--card); }
+  .rg .o { flex: 1; font-weight: 650; }
+  .rg .l2 input { width: 100%; }
+  .rg .n, .rg .p { text-align: right; }
+  .rg .x2 { color: var(--muted); font-size: 14px; }
+  .rg .lt { text-align: right; font-weight: 750; white-space: nowrap; font-size: 14.5px; }
+  .rg .hx, .pl .hx { appearance: none; border: 0; width: 40px; height: 40px; border-radius: 12px; flex: none; display: grid; place-items: center;
+    color: var(--err); background: var(--err-bg); cursor: pointer; }
+  .rg .hx svg, .pl .hx svg { width: 18px; height: 18px; }
+  .tot { margin-top: 12px; padding: 14px 16px; border-radius: 16px; background: #0b0d1c; color: #c7cbd6; display: grid; gap: 6px; }
+  .tot div { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 14.5px; }
+  .tot b { color: #fff; font-weight: 650; }
+  .tot select { font: inherit; font-size: 14px; color: #fff; background: #23263a; border: 0; border-radius: 9px; padding: 5px 8px; margin-left: 6px; }
+  .tot .g { border-top: 1px solid #3a3d4f; padding-top: 9px; margin-top: 3px; font-size: 18px; color: #fff; font-weight: 750; }
+  .tot .g b { color: #ff6b70; font-size: 20px; }
+  .pl { display: flex; align-items: center; gap: 8px; padding: 8px 0; }
+  .pl + .pl { border-top: 1px solid var(--line); }
+  .pl .o { flex: 1; }
+  .pl .e { width: 58px; }
+  .pl .p { width: 84px; text-align: right; }
+  .pl-empty { color: var(--muted); font-size: 13.5px; padding: 10px 0 4px; }
   .hist-hint { margin: 2px 0 8px; text-align: center; color: var(--muted); font-size: 12.5px; }
 
   /* Şirket bilgileri: mavi katlanır kart */
@@ -375,6 +403,17 @@
       <button class="btn-soft geo" id="geoBtn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.6"/></svg><span id="geoLbl" data-i18n="geo"></span></button>
       <div class="fields" id="klantFields"></div>
     </div>
+    <div class="sec"><b data-i18n="werkT"></b><small data-i18n="werkHint"></small></div>
+    <div class="card">
+      <div id="regels"></div>
+      <button class="btn-soft" id="addRegel" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg><span data-i18n="addRegel"></span></button>
+      <div class="tot">
+        <div><span data-i18n="subtot"></span><b id="tSub"></b></div>
+        <div><span>BTW<select id="btw" aria-label="BTW"><option value="21">21%</option><option value="6">6%</option></select></span><b id="tVat"></b></div>
+        <div class="g"><span data-i18n="total"></span><b id="tTot"></b></div>
+      </div>
+    </div>
+    <datalist id="prijsDL"></datalist>
   </section>
 
   <section>
@@ -504,6 +543,13 @@
       <div class="conn" id="conn" role="status" aria-live="polite"></div>
     </section>
 
+    <div class="section-t" data-i18n="prijsT"></div>
+    <section class="card set">
+      <p class="hint" data-i18n="prijsHint" style="margin:10px 0 4px"></p>
+      <div id="prijzen"></div>
+      <button class="btn-soft" id="addPrijs" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg><span data-i18n="addRegel"></span></button>
+    </section>
+
     <div class="section-t" data-i18n="history"></div>
     <section class="card set">
       <ul class="hist" id="hist"></ul>
@@ -520,7 +566,7 @@
       <p class="tagline" data-i18n="tagline"></p>
       <div class="rows">
         <div class="row"><span data-i18n="app"></span><span>Foto Gönder</span></div>
-        <div class="row"><span data-i18n="version"></span><span>3.24</span></div>
+        <div class="row"><span data-i18n="version"></span><span>3.25</span></div>
         <div class="row"><span data-i18n="developer"></span><span>Cintra Software</span></div>
       </div>
       <p class="desc" data-i18n="desc"></p>
@@ -529,7 +575,7 @@
   </div>
 </dialog>
 
-<script src="config.js?v=324"></script>
+<script src="config.js?v=325"></script>
 <script>
 (async () => {
   const MAX_SIDE = 2560;            // Drive'a giden fotoğrafın uzun kenarı; offerte için fazlasıyla yeterli
@@ -567,6 +613,10 @@
       delEntry: 'Kaydı sil', histHint: 'Sadece bu liste silinir; Drive\'daki dosyalar yerinde kalır.', photo1: '1 foto', photosN: '{n} foto', withNote: 'not',
       openOfferte: 'Aç ↗', onlyPhotos: 'Sadece foto', offerteSeg: '📄 Offerte', hello: 'Hoş geldin, {n} 👋', helloPlain: 'Hoş geldin 👋',
       todaySent: 'Bugün gönderilen', recentT: 'Son gönderimler', all: 'Tümü', addGal: '+ Galeri', navHome: 'Ana sayfa',
+      werkT: 'İşler ve fiyatlar', werkHint: 'Offerte\'de görünür', addRegel: 'Satır ekle', rgO: 'Yapılacak iş (ör. Fayans döşeme)', rgN: 'Miktar',
+      rgE: 'Birim', rgP: 'Fiyat €', subtot: 'Ara toplam', total: 'Toplam', delRegel: 'Satırı sil', prijsT: 'Fiyat listesi',
+      prijsHint: 'Offerte\'de yazdığınız işler fiyatıyla buraya kendiliğinden eklenir. Sonraki offerte\'de iş adını seçince birim ve fiyat kendisi gelir.',
+      prijsEmpty: 'Henüz fiyat yok.',
       plusOfferte: ' + offerte', onlyOfferte: 'Offerte hazırla', klantT: 'Müşteri bilgileri',
       geo: 'Konumdan doldur', geoBusy: 'Konum alınıyor…', geoDenied: 'Konum izni yok. Telefon ayarlarından bu uygulamaya konum izni verin.',
       geoFail: 'Adres bulunamadı. Lütfen elle yazın.',
@@ -605,6 +655,10 @@
       delEntry: 'Verwijderen', histHint: 'Alleen deze lijst wordt gewist; bestanden in Drive blijven staan.', photo1: '1 foto', photosN: '{n} foto\'s', withNote: 'notitie',
       openOfferte: 'Open ↗', onlyPhotos: 'Alleen foto\'s', offerteSeg: '📄 Offerte', hello: 'Welkom, {n} 👋', helloPlain: 'Welkom 👋',
       todaySent: 'Vandaag verstuurd', recentT: 'Recent verstuurd', all: 'Alles', addGal: '+ Galerij', navHome: 'Home',
+      werkT: 'Werkzaamheden en prijzen', werkHint: 'Komt op de offerte', addRegel: 'Regel toevoegen', rgO: 'Omschrijving (bv. Tegels plaatsen)', rgN: 'Aantal',
+      rgE: 'Eenheid', rgP: 'Prijs €', subtot: 'Subtotaal', total: 'Totaal', delRegel: 'Regel verwijderen', prijsT: 'Prijslijst',
+      prijsHint: 'Werkzaamheden die u op een offerte zet, komen hier vanzelf met hun prijs bij. Kiest u ze de volgende keer, dan vullen eenheid en prijs zich zelf in.',
+      prijsEmpty: 'Nog geen prijzen.',
       plusOfferte: ' + offerte', onlyOfferte: 'Offerte maken', klantT: 'Klantgegevens',
       geo: 'Invullen via locatie', geoBusy: 'Locatie ophalen…', geoDenied: 'Geen toegang tot locatie. Sta dit toe in de instellingen van de telefoon.',
       geoFail: 'Adres niet gevonden. Vul het handmatig in.',
@@ -675,7 +729,9 @@
     for (const b of $('langSeg').children) b.setAttribute('aria-pressed', b.dataset.lang === lang);
     $('grid').dataset.empty = t('empty');
     $('conn').textContent = '';
-    renderHistory(); items.forEach(paint); sumFirma(); if (typeof instUI === 'function') instUI(); refresh();
+    renderHistory(); items.forEach(paint); sumFirma(); if (typeof instUI === 'function') instUI();
+    if (typeof renderRegels === 'function') { renderRegels(); renderPrijzen(); }
+    refresh();
   }
 
   const PLAY = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
@@ -864,7 +920,104 @@
   function loadKlant() {
     const k = store_('klanten', '{}')[klantKey()] || {};
     for (const i of $('klantFields').querySelectorAll('input')) i.value = k[i.dataset.k] || '';
+    const w = store_('werk', '{}')[klantKey()];
+    if (w) { regels = (w.regels || []).map(r => ({ ...r })); $('btw').value = String(w.btw || 21); }
+    else if (werkKey) { regels = []; $('btw').value = '21'; } // başka müşteriye geçildi: boş başla
+    else saveWerk(); // müşteri adı sonradan yazıldı: girilmiş satırlar bu müşteriye kaydedilsin
+    werkKey = klantKey();
+    renderRegels();
   }
+
+  // ---------- İşler ve fiyatlar ----------
+  // Satır: { o: iş, e: birim, n: miktar, p: birim fiyat }. Müşteri başına saklanır: offerte düzeltilip yeniden yapılabilsin.
+  // Fiyat listesi ('prijzen') offerte gönderildikçe kendiliğinden dolar; iş adı seçilince birim + fiyat gelir.
+  let regels = [], werkKey = '';
+  const num = v => { const n = parseFloat(String(v).replace(/\s|€/g, '').replace(',', '.')); return isFinite(n) ? n : 0; };
+  const eur = v => new Intl.NumberFormat('nl-BE', { style: 'currency', currency: 'EUR' }).format(v);
+  const fmtN = v => v ? String(v).replace('.', ',') : '';
+  const cents = v => Math.round(v * 100) / 100;
+  const prijzen = () => store_('prijzen', '[]');
+  function saveWerk() {
+    if (!klantKey()) return;
+    const all = store_('werk', '{}');
+    all[klantKey()] = { regels, btw: Number($('btw').value) };
+    localStorage.setItem('werk', JSON.stringify(all));
+  }
+  function totals() {
+    const sub = cents(regels.reduce((a, r) => a + cents(r.n * r.p), 0)), vat = cents(sub * Number($('btw').value) / 100);
+    $('tSub').textContent = eur(sub); $('tVat').textContent = eur(vat); $('tTot').textContent = eur(sub + vat);
+  }
+  function renderRegels() {
+    $('prijsDL').replaceChildren(...prijzen().map(x => Object.assign(document.createElement('option'), { value: x.o })));
+    $('regels').replaceChildren(...regels.map((r, i) => {
+      const row = document.createElement('div');
+      row.className = 'rg';
+      row.innerHTML = `<div class="l1"><input class="o" list="prijsDL" autocapitalize="sentences" enterkeyhint="next"><button class="hx" type="button">${TRASH}</button></div>`
+        + `<div class="l2"><input class="n" inputmode="decimal"><input class="e"><span class="x2">×</span><input class="p" inputmode="decimal"><span class="lt"></span></div>`;
+      const [o, n, e, p] = ['.o', '.n', '.e', '.p'].map(q => row.querySelector(q));
+      o.placeholder = t('rgO'); n.placeholder = t('rgN'); e.placeholder = t('rgE'); p.placeholder = t('rgP');
+      o.value = r.o || ''; n.value = fmtN(r.n); e.value = r.e || ''; p.value = fmtN(r.p);
+      const lt = () => { row.querySelector('.lt').textContent = r.n && r.p ? eur(cents(r.n * r.p)) : ''; totals(); };
+      o.oninput = () => {
+        r.o = o.value.trim();
+        const hit = prijzen().find(x => x.o.toLowerCase() === r.o.toLowerCase()); // listeden seçildi: birim + fiyat gelsin
+        if (hit) { r.e = hit.e; r.p = hit.p; e.value = hit.e || ''; p.value = fmtN(hit.p); if (!r.n) { r.n = 1; n.value = '1'; } }
+        lt(); saveWerk();
+      };
+      n.oninput = () => { r.n = num(n.value); lt(); saveWerk(); };
+      e.oninput = () => { r.e = e.value.trim(); saveWerk(); };
+      p.oninput = () => { r.p = num(p.value); lt(); saveWerk(); };
+      const x = row.querySelector('.hx');
+      x.setAttribute('aria-label', t('delRegel'));
+      x.onclick = () => { regels.splice(i, 1); saveWerk(); renderRegels(); };
+      lt();
+      return row;
+    }));
+    totals();
+  }
+  $('addRegel').onclick = () => {
+    regels.push({ o: '', e: '', n: 0, p: 0 });
+    renderRegels();
+    $('regels').lastChild.querySelector('.o').focus();
+  };
+  $('btw').onchange = () => { totals(); saveWerk(); };
+  // Offerte gönderilince yazılan işler fiyat listesine eklenir / güncellenir.
+  function learnPrijzen(list) {
+    const pl = prijzen();
+    for (const r of list) {
+      if (!r.o || !r.p) continue;
+      const hit = pl.find(x => x.o.toLowerCase() === r.o.toLowerCase());
+      if (hit) Object.assign(hit, { e: r.e, p: r.p }); else pl.push({ o: r.o, e: r.e, p: r.p });
+    }
+    pl.sort((a, b) => a.o.localeCompare(b.o));
+    localStorage.setItem('prijzen', JSON.stringify(pl));
+  }
+  function renderPrijzen() {
+    const pl = prijzen();
+    const save = () => localStorage.setItem('prijzen', JSON.stringify(pl));
+    $('prijzen').replaceChildren(...(pl.length ? pl.map((x, i) => {
+      const row = document.createElement('div');
+      row.className = 'pl';
+      row.innerHTML = `<input class="o" autocapitalize="sentences"><input class="e"><input class="p" inputmode="decimal"><button class="hx" type="button">${TRASH}</button>`;
+      const [o, e, p] = ['.o', '.e', '.p'].map(q => row.querySelector(q));
+      o.placeholder = t('rgO'); e.placeholder = t('rgE'); p.placeholder = t('rgP');
+      o.value = x.o; e.value = x.e || ''; p.value = fmtN(x.p);
+      o.oninput = () => { x.o = o.value.trim(); save(); };
+      e.oninput = () => { x.e = e.value.trim(); save(); };
+      p.oninput = () => { x.p = num(p.value); save(); };
+      const del = row.querySelector('.hx');
+      del.setAttribute('aria-label', t('delRegel'));
+      del.onclick = () => { pl.splice(i, 1); save(); renderPrijzen(); };
+      return row;
+    }) : [Object.assign(document.createElement('div'), { className: 'pl-empty', textContent: t('prijsEmpty') })]));
+  }
+  $('addPrijs').onclick = () => {
+    const pl = prijzen().filter(x => x.o); // boş kalmış satırlar birikmesin
+    pl.push({ o: '', e: '', p: 0 });
+    localStorage.setItem('prijzen', JSON.stringify(pl));
+    renderPrijzen();
+    $('prijzen').lastChild.querySelector('.o').focus();
+  };
 
   function showLogo() {
     const src = firma().logo;
@@ -906,7 +1059,7 @@
   // ---------- Ayarlar ----------
   const sheet = $('settings');
   function openSettings(toHistory) {
-    renderHistory(); refresh(); sheet.showModal();
+    renderHistory(); renderPrijzen(); refresh(); sheet.showModal();
     if (toHistory) $('hist').scrollIntoView({ block: 'center' });
   }
   $('openSettings').onclick = $('navSet').onclick = () => openSettings(false);
@@ -1097,7 +1250,7 @@
         if (items.some(i => i.customer === o.c && i.date === o.d && i.state !== 'done')) continue; // fotoğraflar henüz gitmedi
         show(t('offerteMaking', { c: o.c }), 'info');
         let out;
-        try { out = await post({ key, action: 'offerte', customer: o.c, date: o.d, klant: o.klant, firma: firmaPayload() }); }
+        try { out = await post({ key, action: 'offerte', customer: o.c, date: o.d, klant: o.klant, regels: o.regels, btw: o.btw, firma: firmaPayload() }); }
         catch { show(t('offline', { n: 1 }), 'info'); break; } // ağ hatası: sonra tekrar denenir
         dropOff(o); // sunucu cevap verdi: başarılı da olsa hatalı da olsa tekrar sorma
         if (out.ok) showLink(t('offerteReady', { c: o.c }), out.url);
@@ -1269,7 +1422,10 @@
       localStorage.setItem('recent', JSON.stringify(r));
       if (wantOff) {
         const list = pendingOff().filter(o => !(o.c === customer && o.d === date));
-        list.push({ c: customer, d: date, klant: klantNow() });
+        const rg = regels.filter(r => r.o).map(({ o, e, n, p }) => ({ o, e, n, p }));
+        list.push({ c: customer, d: date, klant: klantNow(), regels: rg, btw: Number($('btw').value) });
+        learnPrijzen(rg);
+        regels = []; werkKey = ''; // sonraki müşteri boş başlasın (bu müşterinin satırları saklı)
         localStorage.setItem('pendingOfferte', JSON.stringify(list));
         setOfferte(false);
       }
