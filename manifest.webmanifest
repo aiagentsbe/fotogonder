@@ -1,7 +1,7 @@
 {
+  "id": "/fotogonder/",
   "name": "Foto Gönder",
   "short_name": "Foto Gönder",
-  "start_url": "./",
   "display": "standalone",
   "background_color": "#fbf3f3",
   "theme_color": "#fbf3f3",
@@ -24,5 +24,6 @@
       "type": "image/png",
       "purpose": "maskable"
     }
-  ]
+  ],
+  "scope": "./"
 }

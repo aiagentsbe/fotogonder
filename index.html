@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Foto Gönder">
 <title>Foto Gönder</title>
-<link rel="manifest" href="manifest.webmanifest?v=317">
+<link rel="manifest" href="manifest.webmanifest?v=318">
 <link rel="icon" href="favicon.png?v=317" type="image/png">
 <link rel="apple-touch-icon" href="icon-180.png?v=317">
 <style>
@@ -195,6 +195,16 @@
   .msg.info { background: var(--primary-soft); color: var(--primary); }
   .msg.info::before { content: "⏱"; background: var(--red); font-size: 15px; }
   .msg .ob { padding: 9px 14px; border-radius: 12px; color: #fff; background: var(--green); font-weight: 700; font-size: 14px; text-decoration: none; white-space: nowrap; }
+  /* Ana ekrana ekle kartı */
+  .inst { display: flex; align-items: center; gap: 12px; }
+  .inst .t { flex: 1; min-width: 0; }
+  .inst .t b { display: block; font-size: 15px; }
+  .inst .t small { display: block; color: var(--muted); font-size: 13px; line-height: 1.4; margin-top: 2px; }
+  .inst .go { appearance: none; border: 0; flex: none; padding: 10px 14px; border-radius: 12px; cursor: pointer; color: #fff;
+    background: var(--g-red); font-weight: 700; font-size: 14px; }
+  .inst .hx { appearance: none; border: 0; background: none; width: 30px; height: 30px; flex: none; display: grid; place-items: center;
+    color: var(--muted); cursor: pointer; align-self: flex-start; }
+  .inst .hx svg { width: 12px; height: 12px; }
   .setup { text-align: center; color: var(--muted); }
   .setup b { color: var(--ink); }
 
@@ -304,6 +314,12 @@
 
 <main id="app">
   <div id="msg" class="msg" role="status" aria-live="polite"></div>
+  <section class="card inst" id="install" hidden>
+    <span class="sq c0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M12 7v7m-3-3 3 3 3-3M10 18h4"/></svg></span>
+    <div class="t"><b data-i18n="instT"></b><small id="instHow"></small></div>
+    <button class="go" id="instGo" type="button" data-i18n="instGo" hidden></button>
+    <button class="hx" id="instX" type="button" data-i18n-aria="close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  </section>
   <div id="setup" class="card setup" data-i18n="notConfigured" hidden></div>
 
   <section class="seg" role="group">
@@ -453,7 +469,7 @@
       <p class="tagline" data-i18n="tagline"></p>
       <div class="rows">
         <div class="row"><span data-i18n="app"></span><span>Foto Gönder</span></div>
-        <div class="row"><span data-i18n="version"></span><span>3.17</span></div>
+        <div class="row"><span data-i18n="version"></span><span>3.18</span></div>
         <div class="row"><span data-i18n="developer"></span><span>Cintra Software</span></div>
       </div>
       <p class="desc" data-i18n="desc"></p>
@@ -462,7 +478,7 @@
   </div>
 </dialog>
 
-<script src="config.js?v=317"></script>
+<script src="config.js?v=318"></script>
 <script>
 (async () => {
   const MAX_SIDE = 2560;            // Drive'a giden fotoğrafın uzun kenarı; offerte için fazlasıyla yeterli
@@ -479,6 +495,10 @@
   // ---------- Dil ----------
   const L = {
     tr: {
+      instT: 'Ana ekrana ekleyin', instGo: 'Ekle',
+      instChrome: 'Tek dokunuşla telefonun ana ekranına uygulama olarak ekleyin.',
+      instAndroid: 'WhatsApp içinde açıldıysa: sağ üstteki ⋮ → "Chrome\'da aç". Sonra Chrome\'da ⋮ → "Ana ekrana ekle".',
+      instIos: 'Safari\'de açın, alttaki Paylaş ⬆️ → "Ana Ekrana Ekle". (WhatsApp içindeyse önce ••• → "Safari\'de aç".)',
       sub: 'Foto çek, gönder. Ofise otomatik gider.', customer: 'Müşteri', customerPh: 'Ad, örn. Jansen – Dorpstraat 12',
       photos: 'Fotoğraflar', cam: 'Foto çek', gal: 'Galeri', empty: 'Henüz foto yok', del: 'Fotoğrafı sil',
       noteT: 'Not', optional: '(isteğe bağlı)', notePh: 'Ölçüler, yapılacak işler… örn. Mutfak 3,20 × 4,10 m, eski fayans sökülecek',
@@ -510,6 +530,10 @@
       copy: '© {y} <b>Cintra Software</b>. Tüm hakları saklıdır.<br>İzinsiz kopyalanamaz, çoğaltılamaz ve dağıtılamaz.',
     },
     nl: {
+      instT: 'Zet op beginscherm', instGo: 'Toevoegen',
+      instChrome: 'Met één tik als app op het beginscherm van uw telefoon.',
+      instAndroid: 'Geopend in WhatsApp? Rechtsboven ⋮ → "Openen in Chrome". Daarna in Chrome ⋮ → "Toevoegen aan startscherm".',
+      instIos: 'Open in Safari, onderaan Delen ⬆️ → "Zet op beginscherm". (In WhatsApp eerst ••• → "Open in Safari".)',
       sub: 'Maak foto\'s, verstuur. Ze komen vanzelf op kantoor.', customer: 'Klant', customerPh: 'Naam, bijv. Jansen – Dorpstraat 12',
       photos: 'Foto\'s', cam: 'Foto maken', gal: 'Galerij', empty: 'Nog geen foto\'s', del: 'Foto verwijderen',
       noteT: 'Notitie', optional: '(optioneel)', notePh: 'Maten, werkzaamheden… bijv. Keuken 3,20 × 4,10 m, oude tegels eruit',
@@ -594,7 +618,7 @@
     for (const b of $('langSeg').children) b.setAttribute('aria-pressed', b.dataset.lang === lang);
     $('grid').dataset.empty = t('empty');
     $('conn').textContent = '';
-    renderHistory(); items.forEach(paint); sumFirma(); refresh();
+    renderHistory(); items.forEach(paint); sumFirma(); if (typeof instUI === 'function') instUI(); refresh();
   }
 
   const PLAY = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
@@ -824,7 +848,23 @@
     } catch { c.className = 'conn err'; c.textContent = t('connOffline'); }
   };
 
+  // Ana ekrana ekle: uygulama olarak açılmadıysa kart gösterilir. Chrome kurulum penceresini verirse tek dokunuş,
+  // vermezse (WhatsApp içi tarayıcı, iPhone) adım adım tarif.
+  let instPrompt = null;
+  const standalone = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+  const isIos = /iPhone|iPad|iPod/.test(navigator.userAgent);
+  function instUI() {
+    $('install').hidden = standalone() || localStorage.getItem('instHide') === '1';
+    $('instGo').hidden = !instPrompt;
+    $('instHow').textContent = t(instPrompt ? 'instChrome' : isIos ? 'instIos' : 'instAndroid');
+  }
+  addEventListener('beforeinstallprompt', e => { e.preventDefault(); instPrompt = e; instUI(); });
+  addEventListener('appinstalled', () => { instPrompt = null; localStorage.setItem('instHide', '1'); instUI(); });
+  $('instGo').onclick = async () => { if (!instPrompt) return; instPrompt.prompt(); await instPrompt.userChoice; instPrompt = null; instUI(); };
+  $('instX').onclick = () => { localStorage.setItem('instHide', '1'); instUI(); };
+
   applyLang();
+  instUI();
 
   if (!configured) {
     $('setup').hidden = false;
