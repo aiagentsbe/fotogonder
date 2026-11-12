@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#eef0f3" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#121417" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#eef5ff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0b1324" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -14,23 +14,24 @@
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon-180.png">
 <style>
-  /* Sakin, göz yormayan düzen: nötr açık gri zemin, beyaz ve çerçeveli kutular, tek vurgu rengi (yumuşak kırmızı) yalnız önemli yerlerde. */
+  /* Mavi → camgöbeği → yeşil palet (şablondan): açık mavi zemin, beyaz çerçeveli kutular, geçiş yalnız müşteri ve şirket kartında. */
   :root {
-    --bg: #eef0f3; --card: #ffffff; --field: #f5f6f8; --ink: #1f2329; --muted: #6b7280; --line: #dde1e7;
-    --red: #d32f2f; --red-light: #e5534b; --red-dark: #b71c1c;
-    --navy: #3b4a63; --navy-light: #56657f; --navy-dark: #2a3548; --grey: #9aa1ab; --green: #1f9d55;
-    --primary: #c62828; --primary-soft: #fdecea;
-    --ok: #1f9d55; --ok-bg: #e8f6ee; --ok-ink: #14532d;
-    --err: #d32f2f; --err-bg: #fdecea; --err-ink: #7f1d1d;
-    --tint: 31, 35, 41;
-    --shadow: 0 1px 2px rgba(16, 24, 40, .05), 0 6px 16px -8px rgba(16, 24, 40, .12);
+    --bg: #eef5ff; --card: #ffffff; --field: #f3f8ff; --ink: #0d2140; --muted: #6b7c93; --line: #d8e6f7;
+    --red: #1677ff; --red-light: #3aa0ff; --red-dark: #0b5ad9; /* ana renk (mavi); değişken adları eski */
+    --navy: #0d2140; --navy-light: #2a4a75; --navy-dark: #081630; --grey: #9aa9bd; --green: #22c55e;
+    --primary: #1677ff; --primary-soft: #e6f0ff; --link: #16a34a;
+    --ok: #16a34a; --ok-bg: #e7f8ee; --ok-ink: #14532d;
+    --err: #e5484d; --err-bg: #fdecea; --err-ink: #7f1d1d;
+    --tint: 22, 119, 255;
+    --shadow: 0 1px 2px rgba(13, 33, 64, .05), 0 8px 18px -10px rgba(22, 119, 255, .22);
     --g-navy: linear-gradient(180deg, var(--navy-light), var(--navy-dark));
-    --g-red: linear-gradient(180deg, var(--red-light), var(--red) 55%, var(--red-dark));
+    --g-red: linear-gradient(180deg, var(--red-light), var(--red) 55%, var(--red-dark)); /* mavi düğmeler */
+    --g-main: linear-gradient(135deg, #1677ff 0%, #2aa7ff 55%, #3fd18a 100%);      /* mavi → camgöbeği → yeşil */
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg: #121417; --card: #1c1f24; --field: #24282e; --ink: #e6e8eb; --muted: #9aa1ab; --line: #30353d;
-      --primary: #ef6b63; --primary-soft: #3a1d1c; --ok-bg: #12382a; --ok-ink: #9be3c1; --err-bg: #3a1d1c; --err-ink: #ffc9cb;
+      --bg: #0b1324; --card: #121c33; --field: #1a2643; --ink: #e8f0ff; --muted: #8ea3c4; --line: #22314f;
+      --primary: #5aa9ff; --primary-soft: #162a4d; --link: #4ade80; --ok-bg: #12382a; --ok-ink: #9be3c1; --err-bg: #3a1d1c; --err-ink: #ffc9cb;
       --shadow: 0 1px 2px rgba(0, 0, 0, .4);
     }
   }
@@ -51,7 +52,7 @@
   .topbar { display: flex; align-items: center; gap: 12px; max-width: 640px; margin: 0 auto;
     padding: calc(env(safe-area-inset-top) + 16px) 20px 4px; }
   .avatar { width: 46px; height: 46px; border-radius: 15px; flex: none; display: grid; place-items: center; overflow: hidden;
-    color: #fff; font-weight: 800; font-size: 16px; background: var(--red); }
+    color: #fff; font-weight: 800; font-size: 16px; background: var(--g-main); }
   .avatar.logo { background: #fff; width: auto; min-width: 46px; max-width: 120px; padding: 4px 8px; border: 1px solid var(--line); box-shadow: var(--shadow); }
   .avatar img { width: auto; max-width: 100%; height: 100%; object-fit: contain; }
   .avatar svg { width: 22px; height: 22px; }
@@ -68,27 +69,30 @@
   .sec { display: flex; justify-content: space-between; align-items: baseline; margin: 0 2px 10px; }
   .sec b { font-size: 16px; }
   .sec small { color: var(--muted); font-size: 13px; }
-  .link { appearance: none; border: 0; background: none; padding: 0; color: var(--primary); font-weight: 650; font-size: 14px; cursor: pointer; }
+  .link { appearance: none; border: 0; background: none; padding: 0; color: var(--link); font-weight: 650; font-size: 14px; cursor: pointer; }
 
   /* İki parçalı seçici */
   .seg { display: flex; background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 4px; box-shadow: var(--shadow); }
   .seg button { appearance: none; border: 0; flex: 1; padding: 10px 8px; border-radius: 11px; background: none; cursor: pointer;
     font-weight: 650; font-size: 15px; color: var(--muted); transition: background .2s, color .2s; }
-  .seg button[aria-pressed="true"] { background: var(--red); color: #fff; }
+  .seg button[aria-pressed="true"] { background: var(--g-red); color: #fff; box-shadow: 0 4px 10px -6px rgba(var(--tint), .8); }
 
   /* Müşteri kartı: beyaz ve çerçeveli; solda ince kırmızı şerit */
-  .hero { border-radius: 18px; padding: 16px; color: var(--ink); background: var(--card); border: 1px solid var(--line);
-    border-left: 4px solid var(--red); box-shadow: var(--shadow); }
-  .hero label { display: block; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--red); margin: 0 0 8px 2px; }
-  .pill { display: flex; align-items: center; gap: 10px; background: var(--field); border-radius: 14px; padding: 0 14px; border: 1px solid var(--line); }
-  .pill:focus-within { border-color: var(--red); background: var(--card); }
+  .hero { border-radius: 22px; padding: 16px; color: #fff; background: var(--g-main); position: relative; overflow: hidden;
+    box-shadow: 0 14px 26px -16px rgba(var(--tint), .7); }
+  .hero::after { content: ""; position: absolute; right: -50px; top: -70px; width: 180px; height: 180px; border-radius: 50%;
+    background: rgba(255, 255, 255, .12); pointer-events: none; }
+  .hero > * { position: relative; z-index: 1; }
+  .hero label { display: block; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: rgba(255, 255, 255, .9); margin: 0 0 8px 2px; }
+  .pill { display: flex; align-items: center; gap: 10px; background: #fff; border-radius: 14px; padding: 0 14px; border: 2px solid transparent; }
+  .pill:focus-within { border-color: #bfe0ff; }
   .pill svg { width: 20px; height: 20px; color: var(--red); flex: none; }
   .pill input { flex: 1; min-width: 0; border: 0; background: none; outline: none; font: inherit; font-size: 17px; font-weight: 600;
-    color: var(--ink); padding: 13px 0; }
-  .pill input::placeholder { color: #9aa0ad; font-weight: 500; }
+    color: #0d2140; padding: 13px 0; }
+  .pill input::placeholder { color: #8ea0b8; font-weight: 500; }
   .stats { display: flex; gap: 8px; margin-top: 12px; }
-  .stat { flex: 1; background: var(--field); border: 1px solid var(--line); border-radius: 12px; padding: 9px 12px; }
-  .stat small { display: block; font-size: 11.5px; color: var(--muted); }
+  .stat { flex: 1; background: rgba(255, 255, 255, .16); border: 1px solid rgba(255, 255, 255, .35); border-radius: 12px; padding: 9px 12px; }
+  .stat small { display: block; font-size: 11.5px; color: rgba(255, 255, 255, .88); }
   .stat b { font-size: 17px; }
 
   /* Fotoğraflar */
@@ -122,8 +126,8 @@
     border-radius: 14px; font-weight: 650; font-size: 14px; cursor: pointer; }
   .mic svg { width: 18px; height: 18px; }
   #dictate { background: var(--primary-soft); color: var(--primary); }
-  #record { background: #eef1f6; color: var(--navy); }
-  @media (prefers-color-scheme: dark) { #record { background: #26303f; color: #c5d0e2; } }
+  #record { background: #e7f8ee; color: #16a34a; }
+  @media (prefers-color-scheme: dark) { #record { background: #12382a; color: #6fd99f; } }
   .mic.on { background: var(--err) !important; color: #fff !important; animation: pulse 1.4s ease-in-out infinite; }
   .mic:disabled { opacity: .4; }
   .voices { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
@@ -168,15 +172,15 @@
   .hist .hx svg { width: 13px; height: 13px; }
   .sq { width: 40px; height: 40px; border-radius: 13px; display: grid; place-items: center; color: #fff; flex: none; }
   .sq svg { width: 19px; height: 19px; }
-  .c0 { background: #fdecea; color: #c62828; }
-  .c1 { background: #eef1f6; color: #3b4a63; }
-  .c2 { background: #fff4e5; color: #a15c00; }
-  .c3 { background: #e6f5f3; color: #0f766e; }
+  .c0 { background: #e6f0ff; color: #1677ff; }
+  .c1 { background: #e7f8ee; color: #16a34a; }
+  .c2 { background: #e3f7f5; color: #0f9488; }
+  .c3 { background: #e5f6ff; color: #0284c7; }
   .c4 { background: #efeefe; color: #4f46e5; }
-  .c5 { background: #e8f6ee; color: #1f9d55; }
+  .c5 { background: #e7f8ee; color: #16a34a; }
   @media (prefers-color-scheme: dark) {
-    .c0 { background: #3a1d1c; color: #ff8a80; } .c1 { background: #26303f; color: #a9b8d4; } .c2 { background: #3a2a12; color: #f5b75a; }
-    .c3 { background: #133330; color: #5fd1c3; } .c4 { background: #25234a; color: #a5a1ff; } .c5 { background: #12382a; color: #6fd99f; }
+    .c0 { background: #162a4d; color: #7cb8ff; } .c1 { background: #12382a; color: #6fd99f; } .c2 { background: #133330; color: #5fd1c3; }
+    .c3 { background: #10304a; color: #7dd3fc; } .c4 { background: #25234a; color: #a5a1ff; } .c5 { background: #12382a; color: #6fd99f; }
   }
 
   /* Bildirim (yeşil/kırmızı/mavi şerit) */
@@ -190,7 +194,7 @@
   .msg.err { background: var(--err-bg); color: var(--err-ink); }
   .msg.err::before { content: "!"; background: var(--err); }
   .msg.info { background: var(--primary-soft); color: var(--primary); }
-  .msg.info::before { content: "⏱"; background: var(--navy); font-size: 15px; }
+  .msg.info::before { content: "⏱"; background: var(--red); font-size: 15px; }
   .msg .ob { padding: 9px 14px; border-radius: 12px; color: #fff; background: var(--green); font-weight: 700; font-size: 14px; text-decoration: none; white-space: nowrap; }
   .setup { text-align: center; color: var(--muted); }
   .setup b { color: var(--ink); }
@@ -202,7 +206,7 @@
   .bar-in { position: relative; max-width: 640px; margin: 0 auto; padding: 0 20px 12px; }
   .btn-send { appearance: none; border: 0; width: 100%; height: 54px; border-radius: 18px; cursor: pointer; position: relative; overflow: hidden;
     color: #fff; font-weight: 700; font-size: 16.5px; background: var(--g-red);
-    box-shadow: 0 6px 14px -8px rgba(211, 47, 47, .6); transition: transform .1s, opacity .2s; }
+    box-shadow: 0 8px 16px -8px rgba(var(--tint), .7); transition: transform .1s, opacity .2s; }
   .btn-send:active { transform: scale(.98); }
   .btn-send:disabled { opacity: .45; box-shadow: none; }
   .btn-send .prog { position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: rgba(255, 255, 255, .22); transition: width .3s; }
@@ -215,7 +219,7 @@
   .nav svg { width: 22px; height: 22px; }
   .nav .act { color: var(--primary); }
   .nav .fab { width: 64px; height: 64px; border-radius: 50%; place-items: center; margin-top: -34px; padding: 0; color: #fff;
-    background: var(--g-red); box-shadow: 0 6px 14px -6px rgba(211, 47, 47, .6), 0 0 0 6px var(--bg); }
+    background: var(--g-red); box-shadow: 0 8px 16px -6px rgba(var(--tint), .7), 0 0 0 6px var(--bg); }
   .nav .fab svg { width: 28px; height: 28px; }
   .nav .fab:active { transform: scale(.94); }
 
@@ -252,15 +256,15 @@
 
   /* Şirket bilgileri: mavi katlanır kart */
   details.fold { padding: 0; overflow: hidden; }
-  details.fold > summary { list-style: none; display: flex; align-items: center; gap: 12px; padding: 14px; cursor: pointer; color: var(--ink);
-    border-left: 4px solid var(--red); border-radius: 18px; }
+  details.fold > summary { list-style: none; display: flex; align-items: center; gap: 12px; padding: 14px; cursor: pointer; color: #fff;
+    border-radius: 17px; background: var(--g-main); }
   details.fold > summary::-webkit-details-marker { display: none; }
   details.fold > summary .t { flex: 1; min-width: 0; }
-  details.fold > summary small { display: block; font-size: 12.5px; color: var(--muted); }
+  details.fold > summary small { display: block; font-size: 12.5px; color: rgba(255, 255, 255, .88); }
   details.fold > summary #sumName { display: block; font-weight: 750; font-size: 17px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  details.fold > summary #sumName.empty { font-weight: 500; color: var(--muted); }
-  details.fold > summary::after { content: ""; flex: none; width: 9px; height: 9px; margin-right: 6px; border-right: 2.5px solid var(--muted);
-    border-bottom: 2.5px solid var(--muted); transform: rotate(-45deg); opacity: .8; transition: transform .2s; }
+  details.fold > summary #sumName.empty { font-weight: 500; color: rgba(255, 255, 255, .88); }
+  details.fold > summary::after { content: ""; flex: none; width: 9px; height: 9px; margin-right: 6px; border-right: 2.5px solid #fff;
+    border-bottom: 2.5px solid #fff; transform: rotate(-45deg); opacity: .8; transition: transform .2s; }
   details.fold[open] > summary::after { transform: rotate(45deg); }
   .sumlogo { width: 46px; height: 46px; flex: none; border-radius: 12px; object-fit: contain; background: #fff; border: 1px solid var(--line); }
   .suminit { width: 46px; height: 46px; flex: none; border-radius: 12px; background: var(--primary-soft); color: var(--red); display: grid; place-items: center; font-weight: 800; }
@@ -447,7 +451,7 @@
       <p class="tagline" data-i18n="tagline"></p>
       <div class="rows">
         <div class="row"><span data-i18n="app"></span><span>Foto Gönder</span></div>
-        <div class="row"><span data-i18n="version"></span><span>3.8</span></div>
+        <div class="row"><span data-i18n="version"></span><span>3.9</span></div>
         <div class="row"><span data-i18n="developer"></span><span>Cintra Software</span></div>
       </div>
       <p class="desc" data-i18n="desc"></p>
@@ -456,7 +460,7 @@
   </div>
 </dialog>
 
-<script src="config.js?v=38"></script>
+<script src="config.js?v=39"></script>
 <script>
 (async () => {
   const MAX_SIDE = 2560;            // Drive'a giden fotoğrafın uzun kenarı; offerte için fazlasıyla yeterli
