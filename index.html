@@ -208,6 +208,31 @@
   .inst .hx svg { width: 12px; height: 12px; }
   .btn-soft.geo { margin: 0 0 12px; }
   .btn-soft.geo:disabled { opacity: .6; }
+  /* Fotoğraf üzerine çizim */
+  .ph .ed { position: absolute; left: 6px; bottom: 6px; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center;
+    color: #fff; background: rgba(15, 18, 30, .5); border: 1px solid rgba(255, 255, 255, .35); pointer-events: none; }
+  .ph .ed svg { width: 14px; height: 14px; }
+  .ph.sending .ed, .ph.done .ed { display: none; }
+  .ph { cursor: pointer; }
+  dialog.draw { border: 0; padding: 0; margin: 0; width: 100vw; height: 100dvh; max-width: none; max-height: none; background: #0b0d12; color: #fff; }
+  dialog.draw::backdrop { background: #0b0d12; }
+  .draw[open] { display: flex; flex-direction: column; }
+  .dr-top, .dr-bot { display: flex; align-items: center; gap: 8px; padding: calc(env(safe-area-inset-top) + 10px) 12px 10px; }
+  .dr-bot { padding: 10px 8px calc(env(safe-area-inset-bottom) + 12px); justify-content: center; flex-wrap: wrap; gap: 6px; }
+  .dr-bot .dr-btn { padding: 9px 10px; font-size: 14px; }
+  .dr-top .sp { flex: 1; }
+  .dr-btn { appearance: none; border: 0; border-radius: 12px; padding: 10px 14px; font: inherit; font-weight: 650; font-size: 15px; cursor: pointer;
+    background: rgba(255, 255, 255, .12); color: #fff; display: inline-flex; align-items: center; gap: 6px; }
+  .dr-btn svg { width: 18px; height: 18px; }
+  .dr-btn[aria-pressed="true"] { background: #fff; color: #0b0d12; }
+  .dr-btn.save { background: var(--g-red); }
+  .dr-btn:disabled { opacity: .4; }
+  .dr-col { width: 28px; height: 28px; flex: none; border-radius: 50%; border: 3px solid transparent; cursor: pointer; padding: 0; }
+  .dr-col[aria-pressed="true"] { border-color: #fff; box-shadow: 0 0 0 2px #0b0d12 inset; }
+  .dr-stage { flex: 1; min-height: 0; display: grid; place-items: center; padding: 0 8px; }
+  .dr-stage canvas { max-width: 100%; max-height: 100%; touch-action: none; border-radius: 6px; }
+  .dr-text { display: flex; gap: 8px; padding: 0 12px 8px; }
+  .dr-text input { flex: 1; min-width: 0; font: inherit; font-size: 16px; padding: 10px 12px; border-radius: 12px; border: 0; }
   .setup { text-align: center; color: var(--muted); }
   .setup b { color: var(--ink); }
 
@@ -405,6 +430,25 @@
   </nav>
 </div>
 
+<dialog class="draw" id="draw">
+  <div class="dr-top">
+    <button class="dr-btn" id="drCancel" type="button" data-i18n="drCancel"></button>
+    <span class="sp"></span>
+    <button class="dr-btn" id="drUndo" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg><span data-i18n="drUndo"></span></button>
+    <button class="dr-btn save" id="drSave" type="button" data-i18n="drSave"></button>
+  </div>
+  <div class="dr-stage"><canvas id="drCanvas"></canvas></div>
+  <div class="dr-text" id="drTextRow" hidden><input id="drTextIn" type="text" enterkeyhint="done" data-i18n-ph="drTextPh"><button class="dr-btn save" id="drTextOk" type="button" data-i18n="drTextOk"></button></div>
+  <div class="dr-bot">
+    <button class="dr-btn" data-tool="pen" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg><span data-i18n="drPen"></span></button>
+    <button class="dr-btn" data-tool="arrow" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19L19 5M10 5h9v9"/></svg><span data-i18n="drArrow"></span></button>
+    <button class="dr-btn" data-tool="text" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 6V4h14v2M12 4v16M9 20h6"/></svg><span data-i18n="drText"></span></button>
+    <button class="dr-col" data-col="#ff2d2d" type="button" style="background:#ff2d2d" aria-label="Rood"></button>
+    <button class="dr-col" data-col="#ffd400" type="button" style="background:#ffd400" aria-label="Geel"></button>
+    <button class="dr-col" data-col="#ffffff" type="button" style="background:#ffffff" aria-label="Wit"></button>
+  </div>
+</dialog>
+
 <dialog class="sheet" id="settings" aria-labelledby="settingsTitle">
   <div class="sheet-head">
     <h2 id="settingsTitle" data-i18n="settings"></h2>
@@ -475,7 +519,7 @@
       <p class="tagline" data-i18n="tagline"></p>
       <div class="rows">
         <div class="row"><span data-i18n="app"></span><span>Foto Gönder</span></div>
-        <div class="row"><span data-i18n="version"></span><span>3.21</span></div>
+        <div class="row"><span data-i18n="version"></span><span>3.22</span></div>
         <div class="row"><span data-i18n="developer"></span><span>Cintra Software</span></div>
       </div>
       <p class="desc" data-i18n="desc"></p>
@@ -484,7 +528,7 @@
   </div>
 </dialog>
 
-<script src="config.js?v=321"></script>
+<script src="config.js?v=322"></script>
 <script>
 (async () => {
   const MAX_SIDE = 2560;            // Drive'a giden fotoğrafın uzun kenarı; offerte için fazlasıyla yeterli
@@ -506,7 +550,8 @@
       instAndroid: 'WhatsApp içinde açıldıysa: sağ üstteki ⋮ → "Chrome\'da aç". Sonra Chrome\'da ⋮ → "Ana ekrana ekle".',
       instIos: 'Safari\'de açın, alttaki Paylaş ⬆️ → "Ana Ekrana Ekle". (WhatsApp içindeyse önce ••• → "Safari\'de aç".)',
       sub: 'Foto çek, gönder. Ofise otomatik gider.', customer: 'Müşteri', customerPh: 'Ad, örn. Jansen – Dorpstraat 12',
-      photos: 'Fotoğraflar', cam: 'Foto çek', gal: 'Galeri', empty: 'Henüz foto yok', del: 'Fotoğrafı sil',
+      photos: 'Fotoğraflar', cam: 'Foto çek', gal: 'Galeri', empty: 'Henüz foto yok', del: 'Fotoğrafı sil', drPen: 'Kalem', drArrow: 'Ok', drText: 'Yazı', drUndo: 'Geri al', drSave: 'Kaydet', drCancel: 'Vazgeç',
+      drTextPh: 'Örn. 2,40 m', drTextOk: 'Ekle',
       noteT: 'Not', optional: '(isteğe bağlı)', notePh: 'Ölçüler, yapılacak işler… örn. Mutfak 3,20 × 4,10 m, eski fayans sökülecek',
       send: 'Gönder', sendN: 'Gönder ({p})', sendNote: 'Notu gönder', retryN: 'Tekrar gönder ({n})', sending: 'Gönderiliyor… {i}/{n}',
       needCustomer: 'Önce müşteri adını yazın.', sentOk: '"{c}" klasörüne gönderildi: {what}.',
@@ -543,7 +588,8 @@
       instAndroid: 'Geopend in WhatsApp? Rechtsboven ⋮ → "Openen in Chrome". Daarna in Chrome ⋮ → "Toevoegen aan startscherm".',
       instIos: 'Open in Safari, onderaan Delen ⬆️ → "Zet op beginscherm". (In WhatsApp eerst ••• → "Open in Safari".)',
       sub: 'Maak foto\'s, verstuur. Ze komen vanzelf op kantoor.', customer: 'Klant', customerPh: 'Naam, bijv. Jansen – Dorpstraat 12',
-      photos: 'Foto\'s', cam: 'Foto maken', gal: 'Galerij', empty: 'Nog geen foto\'s', del: 'Foto verwijderen',
+      photos: 'Foto\'s', cam: 'Foto maken', gal: 'Galerij', empty: 'Nog geen foto\'s', del: 'Foto verwijderen', drPen: 'Pen', drArrow: 'Pijl', drText: 'Tekst', drUndo: 'Ongedaan', drSave: 'Opslaan', drCancel: 'Annuleren',
+      drTextPh: 'Bijv. 2,40 m', drTextOk: 'Toevoegen',
       noteT: 'Notitie', optional: '(optioneel)', notePh: 'Maten, werkzaamheden… bijv. Keuken 3,20 × 4,10 m, oude tegels eruit',
       send: 'Versturen', sendN: 'Versturen ({p})', sendNote: 'Notitie versturen', retryN: 'Opnieuw versturen ({n})', sending: 'Versturen… {i}/{n}',
       needCustomer: 'Vul eerst de klantnaam in.', sentOk: 'Verstuurd naar map "{c}": {what}.',
@@ -644,7 +690,8 @@
       a.onplay = () => { pb.innerHTML = PAUSE; };
       a.onpause = a.onended = () => { pb.innerHTML = PLAY; };
     } else {
-      it.el.innerHTML = `<img src="${it.url}" alt=""><span class="st"></span>${x}`;
+      it.el.innerHTML = `<img src="${it.url}" alt=""><span class="st"></span><span class="ed"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg></span>${x}`;
+      it.el.onclick = e => { if (!e.target.closest('.x')) openDraw(it); }; // fotoğrafa dokun → çiz (sil düğmesi hariç)
     }
     it.el.querySelector('.x').onclick = async () => {
       if (busy) return;
@@ -1057,6 +1104,101 @@
       }
     } finally { offBusy = false; }
   }
+
+  // ---------- Fotoğraf üzerine çizim ----------
+  // Çizimler fotoğrafın kendi çözünürlüğünde tutulur; Kaydet'te fotoğrafa işlenip yeni JPEG olur.
+  const dr = { it: null, img: null, ops: [], tool: 'pen', col: '#ff2d2d', cur: null, textAt: null };
+  const cv = $('drCanvas'), cx = cv.getContext('2d');
+  function drSize() { return Math.max(4, cv.width / 220); }
+  function drArrowHead(a, b, w) {
+    const ang = Math.atan2(b.y - a.y, b.x - a.x), L = w * 5;
+    cx.beginPath(); cx.moveTo(b.x, b.y);
+    cx.lineTo(b.x - L * Math.cos(ang - .45), b.y - L * Math.sin(ang - .45));
+    cx.lineTo(b.x - L * Math.cos(ang + .45), b.y - L * Math.sin(ang + .45));
+    cx.closePath(); cx.fill();
+  }
+  function drPaint() {
+    cx.drawImage(dr.img, 0, 0, cv.width, cv.height);
+    for (const o of dr.ops.concat(dr.cur ? [dr.cur] : [])) {
+      cx.strokeStyle = cx.fillStyle = o.col; cx.lineWidth = o.w; cx.lineCap = cx.lineJoin = 'round';
+      if (o.t === 'pen' && o.pts.length) {
+        cx.beginPath(); cx.moveTo(o.pts[0].x, o.pts[0].y); for (const q of o.pts) cx.lineTo(q.x, q.y); cx.stroke();
+      } else if (o.t === 'arrow') {
+        cx.beginPath(); cx.moveTo(o.a.x, o.a.y); cx.lineTo(o.b.x, o.b.y); cx.stroke(); drArrowHead(o.a, o.b, o.w);
+      } else if (o.t === 'text') {
+        cx.font = `700 ${o.size}px -apple-system, Segoe UI, Roboto, sans-serif`; cx.textBaseline = 'middle';
+        cx.lineWidth = o.size / 6; cx.strokeStyle = o.col === '#ffffff' || o.col === '#ffd400' ? '#000' : '#fff';
+        cx.strokeText(o.text, o.p.x, o.p.y); cx.fillText(o.text, o.p.x, o.p.y);
+      }
+    }
+    $('drUndo').disabled = !dr.ops.length;
+  }
+  function drPt(e) {
+    const r = cv.getBoundingClientRect();
+    return { x: (e.clientX - r.left) * cv.width / r.width, y: (e.clientY - r.top) * cv.height / r.height };
+  }
+  function drUI() {
+    for (const b of document.querySelectorAll('[data-tool]')) b.setAttribute('aria-pressed', b.dataset.tool === dr.tool);
+    for (const b of document.querySelectorAll('[data-col]')) b.setAttribute('aria-pressed', b.dataset.col === dr.col);
+    if (dr.tool !== 'text') { $('drTextRow').hidden = true; dr.textAt = null; }
+  }
+  async function openDraw(it) {
+    if (busy || it.state === 'sending' || it.state === 'done') return;
+    const img = new Image();
+    img.src = it.url;
+    try { await img.decode(); } catch { return; }
+    Object.assign(dr, { it, img, ops: [], cur: null, textAt: null });
+    cv.width = img.naturalWidth; cv.height = img.naturalHeight;
+    drUI(); drPaint();
+    $('draw').showModal();
+  }
+  cv.addEventListener('pointerdown', e => {
+    const p = drPt(e);
+    if (dr.tool === 'text') { dr.textAt = p; $('drTextRow').hidden = false; $('drTextIn').value = ''; $('drTextIn').focus(); return; }
+    cv.setPointerCapture(e.pointerId);
+    dr.cur = dr.tool === 'pen' ? { t: 'pen', col: dr.col, w: drSize(), pts: [p] } : { t: 'arrow', col: dr.col, w: drSize(), a: p, b: p };
+    drPaint();
+  });
+  cv.addEventListener('pointermove', e => {
+    if (!dr.cur) return;
+    const p = drPt(e);
+    if (dr.cur.t === 'pen') dr.cur.pts.push(p); else dr.cur.b = p;
+    drPaint();
+  });
+  const drEnd = () => {
+    if (!dr.cur) return;
+    const c = dr.cur; dr.cur = null;
+    const long = c.t === 'pen' ? c.pts.length > 1 : Math.hypot(c.b.x - c.a.x, c.b.y - c.a.y) > c.w * 3;
+    if (long) dr.ops.push(c);
+    drPaint();
+  };
+  cv.addEventListener('pointerup', drEnd);
+  cv.addEventListener('pointercancel', drEnd);
+  const drAddText = () => {
+    const v = $('drTextIn').value.trim();
+    if (v && dr.textAt) dr.ops.push({ t: 'text', col: dr.col, size: Math.max(22, cv.width / 18), p: dr.textAt, text: v });
+    $('drTextRow').hidden = true; dr.textAt = null; drPaint();
+  };
+  $('drTextOk').onclick = drAddText;
+  $('drTextIn').addEventListener('keydown', e => { if (e.key === 'Enter') drAddText(); });
+  for (const b of document.querySelectorAll('[data-tool]')) b.onclick = () => { dr.tool = b.dataset.tool; drUI(); };
+  for (const b of document.querySelectorAll('[data-col]')) b.onclick = () => { dr.col = b.dataset.col; drUI(); };
+  $('drUndo').onclick = () => { dr.ops.pop(); drPaint(); };
+  $('drCancel').onclick = () => $('draw').close();
+  $('drSave').onclick = async () => {
+    const it = dr.it;
+    if (dr.ops.length && it) {
+      drPaint();
+      const blob = await new Promise(ok => cv.toBlob(ok, 'image/jpeg', 0.88));
+      if (blob) {
+        it.blob = blob;
+        URL.revokeObjectURL(it.url); it.url = URL.createObjectURL(blob);
+        it.el.querySelector('img').src = it.url;
+        await dbPut(it);
+      }
+    }
+    $('draw').close();
+  };
 
   // ---------- Gönderme ----------
   const b64 = blob => new Promise((ok, no) => {
