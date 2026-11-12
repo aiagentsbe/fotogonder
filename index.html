@@ -144,9 +144,10 @@
   .voice.sending .vst::after { content: ""; display: block; width: 18px; height: 18px; border-radius: 50%;
     border: 3px solid var(--primary-soft); border-top-color: var(--primary); animation: spin .8s linear infinite; }
   .voice.done .vst::after { content: "✓"; color: var(--ok); }
-  .voice .x { appearance: none; border: 0; width: 32px; height: 32px; border-radius: 50%; flex: none; display: grid; place-items: center;
-    cursor: pointer; background: none; color: var(--muted); }
-  .voice .x svg { width: 13px; height: 13px; }
+  .voice .x { appearance: none; border: 0; width: 38px; height: 38px; border-radius: 12px; flex: none; display: grid; place-items: center;
+    cursor: pointer; color: var(--err); background: var(--err-bg); transition: transform .1s, background .2s; }
+  .voice .x:active { transform: scale(.9); background: var(--err); color: #fff; }
+  .voice .x svg { width: 18px; height: 18px; }
   .voice.sending .x, .voice.done .x { visibility: hidden; }
 
   /* Form alanları */
@@ -519,7 +520,7 @@
       <p class="tagline" data-i18n="tagline"></p>
       <div class="rows">
         <div class="row"><span data-i18n="app"></span><span>Foto Gönder</span></div>
-        <div class="row"><span data-i18n="version"></span><span>3.22</span></div>
+        <div class="row"><span data-i18n="version"></span><span>3.23</span></div>
         <div class="row"><span data-i18n="developer"></span><span>Cintra Software</span></div>
       </div>
       <p class="desc" data-i18n="desc"></p>
@@ -528,7 +529,7 @@
   </div>
 </dialog>
 
-<script src="config.js?v=322"></script>
+<script src="config.js?v=323"></script>
 <script>
 (async () => {
   const MAX_SIDE = 2560;            // Drive'a giden fotoğrafın uzun kenarı; offerte için fazlasıyla yeterli
@@ -684,7 +685,7 @@
     it.el = document.createElement('div');
     const x = `<button class="x" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>`;
     if (it.kind === 'audio') {
-      it.el.innerHTML = `<button class="play" type="button">${PLAY}</button><div class="vi"><b></b><small></small></div><span class="vst"></span>${x}<audio preload="none" src="${it.url}"></audio>`;
+      it.el.innerHTML = `<button class="play" type="button">${PLAY}</button><div class="vi"><b></b><small></small></div><span class="vst"></span><button class="x" type="button">${TRASH}</button><audio preload="none" src="${it.url}"></audio>`;
       const a = it.el.querySelector('audio'), pb = it.el.querySelector('.play');
       pb.onclick = () => a.paused ? a.play() : a.pause();
       a.onplay = () => { pb.innerHTML = PAUSE; };
