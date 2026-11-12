@@ -520,7 +520,7 @@
       <p class="tagline" data-i18n="tagline"></p>
       <div class="rows">
         <div class="row"><span data-i18n="app"></span><span>Foto Gönder</span></div>
-        <div class="row"><span data-i18n="version"></span><span>3.23</span></div>
+        <div class="row"><span data-i18n="version"></span><span>3.24</span></div>
         <div class="row"><span data-i18n="developer"></span><span>Cintra Software</span></div>
       </div>
       <p class="desc" data-i18n="desc"></p>
@@ -529,7 +529,7 @@
   </div>
 </dialog>
 
-<script src="config.js?v=323"></script>
+<script src="config.js?v=324"></script>
 <script>
 (async () => {
   const MAX_SIDE = 2560;            // Drive'a giden fotoğrafın uzun kenarı; offerte için fazlasıyla yeterli
@@ -552,7 +552,7 @@
       instIos: 'Safari\'de açın, alttaki Paylaş ⬆️ → "Ana Ekrana Ekle". (WhatsApp içindeyse önce ••• → "Safari\'de aç".)',
       sub: 'Foto çek, gönder. Ofise otomatik gider.', customer: 'Müşteri', customerPh: 'Ad, örn. Jansen – Dorpstraat 12',
       photos: 'Fotoğraflar', cam: 'Foto çek', gal: 'Galeri', empty: 'Henüz foto yok', del: 'Fotoğrafı sil', drPen: 'Kalem', drArrow: 'Ok', drText: 'Yazı', drUndo: 'Geri al', drSave: 'Kaydet', drCancel: 'Vazgeç',
-      drTextPh: 'Örn. 2,40 m', drTextOk: 'Ekle',
+      drTextPh: 'Örn. 2,40 m (sonra parmakla taşıyabilirsiniz)', drTextOk: 'Ekle',
       noteT: 'Not', optional: '(isteğe bağlı)', notePh: 'Ölçüler, yapılacak işler… örn. Mutfak 3,20 × 4,10 m, eski fayans sökülecek',
       send: 'Gönder', sendN: 'Gönder ({p})', sendNote: 'Notu gönder', retryN: 'Tekrar gönder ({n})', sending: 'Gönderiliyor… {i}/{n}',
       needCustomer: 'Önce müşteri adını yazın.', sentOk: '"{c}" klasörüne gönderildi: {what}.',
@@ -590,7 +590,7 @@
       instIos: 'Open in Safari, onderaan Delen ⬆️ → "Zet op beginscherm". (In WhatsApp eerst ••• → "Open in Safari".)',
       sub: 'Maak foto\'s, verstuur. Ze komen vanzelf op kantoor.', customer: 'Klant', customerPh: 'Naam, bijv. Jansen – Dorpstraat 12',
       photos: 'Foto\'s', cam: 'Foto maken', gal: 'Galerij', empty: 'Nog geen foto\'s', del: 'Foto verwijderen', drPen: 'Pen', drArrow: 'Pijl', drText: 'Tekst', drUndo: 'Ongedaan', drSave: 'Opslaan', drCancel: 'Annuleren',
-      drTextPh: 'Bijv. 2,40 m', drTextOk: 'Toevoegen',
+      drTextPh: 'Bijv. 2,40 m (daarna met de vinger verplaatsen)', drTextOk: 'Toevoegen',
       noteT: 'Notitie', optional: '(optioneel)', notePh: 'Maten, werkzaamheden… bijv. Keuken 3,20 × 4,10 m, oude tegels eruit',
       send: 'Versturen', sendN: 'Versturen ({p})', sendNote: 'Notitie versturen', retryN: 'Opnieuw versturen ({n})', sending: 'Versturen… {i}/{n}',
       needCustomer: 'Vul eerst de klantnaam in.', sentOk: 'Verstuurd naar map "{c}": {what}.',
@@ -1148,25 +1148,40 @@
     const img = new Image();
     img.src = it.url;
     try { await img.decode(); } catch { return; }
-    Object.assign(dr, { it, img, ops: [], cur: null, textAt: null });
+    Object.assign(dr, { it, img, ops: [], cur: null, textAt: null, drag: null });
     cv.width = img.naturalWidth; cv.height = img.naturalHeight;
     drUI(); drPaint();
     $('draw').showModal();
   }
+  // Yazının üstüne basılırsa (hangi araç seçili olursa olsun) yazı sürüklenir.
+  function drTextHit(p) {
+    for (let i = dr.ops.length - 1; i >= 0; i--) {
+      const o = dr.ops[i];
+      if (o.t !== 'text') continue;
+      cx.font = `700 ${o.size}px -apple-system, Segoe UI, Roboto, sans-serif`;
+      const w = cx.measureText(o.text).width, pad = o.size * .4;
+      if (p.x >= o.p.x - pad && p.x <= o.p.x + w + pad && Math.abs(p.y - o.p.y) <= o.size / 2 + pad) return o;
+    }
+    return null;
+  }
   cv.addEventListener('pointerdown', e => {
     const p = drPt(e);
+    const hit = drTextHit(p);
+    if (hit) { cv.setPointerCapture(e.pointerId); dr.drag = { o: hit, dx: p.x - hit.p.x, dy: p.y - hit.p.y }; $('drTextRow').hidden = true; return; }
     if (dr.tool === 'text') { dr.textAt = p; $('drTextRow').hidden = false; $('drTextIn').value = ''; $('drTextIn').focus(); return; }
     cv.setPointerCapture(e.pointerId);
     dr.cur = dr.tool === 'pen' ? { t: 'pen', col: dr.col, w: drSize(), pts: [p] } : { t: 'arrow', col: dr.col, w: drSize(), a: p, b: p };
     drPaint();
   });
   cv.addEventListener('pointermove', e => {
+    if (dr.drag) { const p = drPt(e); dr.drag.o.p = { x: p.x - dr.drag.dx, y: p.y - dr.drag.dy }; drPaint(); return; }
     if (!dr.cur) return;
     const p = drPt(e);
     if (dr.cur.t === 'pen') dr.cur.pts.push(p); else dr.cur.b = p;
     drPaint();
   });
   const drEnd = () => {
+    dr.drag = null;
     if (!dr.cur) return;
     const c = dr.cur; dr.cur = null;
     const long = c.t === 'pen' ? c.pts.length > 1 : Math.hypot(c.b.x - c.a.x, c.b.y - c.a.y) > c.w * 3;
