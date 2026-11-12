@@ -240,6 +240,22 @@
     cursor: pointer; background: none; color: var(--muted); }
   .voice .x svg { width: 14px; height: 14px; }
   .voice.sending .x, .voice.done .x { visibility: hidden; }
+  /* Offerte modu + form alanları */
+  .offerte-btn { width: 100%; min-height: 56px; font-size: 17px; background: var(--card); color: var(--primary); box-shadow: var(--shadow); }
+  .offerte-btn svg { width: 22px; height: 22px; }
+  .offerte-btn[aria-pressed="true"] { color: #fff; background: linear-gradient(135deg, var(--hero-a), var(--hero-b)); }
+  .fields { display: grid; gap: 10px; }
+  .f { display: grid; gap: 5px; font-size: 14px; font-weight: 600; color: var(--muted); }
+  .f input { width: 100%; font: inherit; font-size: 16px; font-weight: 400; color: var(--ink); padding: 12px 14px; border-radius: 14px;
+    border: 2px solid transparent; background: var(--field); outline: none; }
+  .f input:focus { border-color: var(--primary); }
+  .hint { margin: 0 0 12px; color: var(--muted); font-size: 14px; }
+  .logo-row { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
+  .logo-box { width: 88px; height: 88px; flex: none; border-radius: 18px; background: var(--field); display: grid; place-items: center;
+    overflow: hidden; color: var(--muted); font-size: 13px; text-align: center; border: 2px dashed var(--line); }
+  .logo-box img { max-width: 100%; max-height: 100%; object-fit: contain; }
+  .logo-btns { flex: 1; display: grid; gap: 8px; }
+  .logo-btns .btn { margin: 0; padding: 11px; font-size: 15px; }
 </style>
 </head>
 <body>
@@ -267,6 +283,15 @@
 <main id="app">
   <div id="msg" class="msg" role="status" aria-live="polite"></div>
   <div id="setup" class="card setup" data-i18n="notConfigured" hidden></div>
+
+  <button class="btn offerte-btn" id="offerteMode" type="button" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg><span id="offLbl"></span></button>
+  <section class="card" id="klantCard" hidden>
+    <div class="step">
+      <span class="badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span>
+      <span data-i18n="klantT"></span> <small data-i18n="optional"></small>
+    </div>
+    <div class="fields" id="klantFields"></div>
+  </section>
 
   <section class="card">
     <div class="step">
@@ -335,6 +360,20 @@
       </div>
     </section>
 
+    <div class="section-t" data-i18n="firmaT"></div>
+    <section class="card">
+      <p class="hint" data-i18n="firmaHint"></p>
+      <div class="logo-row">
+        <div class="logo-box"><img id="logoImg" alt="Logo" hidden><span id="noLogo" data-i18n="noLogo"></span></div>
+        <div class="logo-btns">
+          <label class="btn btn-soft" for="logoIn"><span data-i18n="pickLogo"></span></label>
+          <button class="btn btn-soft" id="logoDel" type="button" data-i18n="removeLogo" hidden></button>
+        </div>
+        <input id="logoIn" class="file" type="file" accept="image/png,image/jpeg">
+      </div>
+      <div class="fields" id="firmaFields"></div>
+    </section>
+
     <div class="section-t" data-i18n="connection"></div>
     <section class="card set">
       <div class="set-row"><span data-i18n="pending"></span><b id="pendingCount">0</b></div>
@@ -355,7 +394,7 @@
       <p class="tagline" data-i18n="tagline"></p>
       <div class="rows">
         <div class="row"><span data-i18n="app"></span><span>Foto Gönder</span></div>
-        <div class="row"><span data-i18n="version"></span><span>2.3</span></div>
+        <div class="row"><span data-i18n="version"></span><span>2.4</span></div>
         <div class="row"><span data-i18n="developer"></span><span>CintraSoft</span></div>
       </div>
       <p class="desc" data-i18n="desc"></p>
@@ -394,7 +433,13 @@
       connection: 'Bağlantı', pending: 'Telefonda bekleyen', check: 'Bağlantıyı kontrol et', checking: 'Kontrol ediliyor…',
       connOk: '✓ Bağlantı çalışıyor', connBadKey: 'Anahtar geçersiz. Kurulum linkini yeniden açın.', connOffline: 'İnternet yok veya sunucuya ulaşılamıyor.',
       history: 'Geçmiş', historyEmpty: 'Henüz gönderim yok.', photo1: '1 foto', photosN: '{n} foto', withNote: 'not',
-      makeOfferte: '📄 Offerte hazırla', making: 'Hazırlanıyor…', openOfferte: 'Offerteyi aç ↗',
+      openOfferte: 'Offerteyi aç ↗', offerteMode: 'Offerte hazırla', offerteOn: 'Offerte hazırlanacak ✓',
+      plusOfferte: ' + offerte', onlyOfferte: 'Offerte hazırla', klantT: 'Müşteri bilgileri',
+      kAdres: 'Adres', kPlaats: 'Posta kodu ve şehir', kTel: 'Telefon', kEmail: 'E-posta',
+      firmaT: 'Şirket bilgileri', firmaHint: 'Bir kez doldurun; her offerte\'ye otomatik eklenir.', fNaam: 'Firma adı', fKvk: 'KvK numarası',
+      fBtw: 'BTW numarası', fIban: 'IBAN', fBetaling: 'Ödeme şartı', betalingPh: 'örn. %40 siparişte, %60 teslimde',
+      pickLogo: 'Logo seç', removeLogo: 'Logoyu kaldır', noLogo: 'Logo yok',
+      offerteMaking: '"{c}" için offerte hazırlanıyor…', offerteReady: '"{c}" için offerte hazır.', offerteFail: 'Offerte yapılamadı: {err}',
       dictate: 'Sesle yaz', listening: 'Dinliyorum… bitir', record: 'Sesli mesaj', recording: 'Kayıt {t} · bitir',
       voice: 'Sesli mesaj', voice1: '1 sesli mesaj', voiceN: '{n} sesli mesaj', voiceFile: 'Sesli-mesaj', play: 'Dinle',
       micDenied: 'Mikrofon izni yok. Telefon ayarlarından bu uygulamaya mikrofon izni verin.',
@@ -417,7 +462,13 @@
       connection: 'Verbinding', pending: 'Wacht op de telefoon', check: 'Verbinding controleren', checking: 'Bezig met controleren…',
       connOk: '✓ Verbinding werkt', connBadKey: 'Sleutel ongeldig. Open de installatielink opnieuw.', connOffline: 'Geen internet of server onbereikbaar.',
       history: 'Geschiedenis', historyEmpty: 'Nog niets verstuurd.', photo1: '1 foto', photosN: '{n} foto\'s', withNote: 'notitie',
-      makeOfferte: '📄 Offerte maken', making: 'Bezig…', openOfferte: 'Open offerte ↗',
+      openOfferte: 'Open offerte ↗', offerteMode: 'Offerte maken', offerteOn: 'Offerte wordt gemaakt ✓',
+      plusOfferte: ' + offerte', onlyOfferte: 'Offerte maken', klantT: 'Klantgegevens',
+      kAdres: 'Adres', kPlaats: 'Postcode en plaats', kTel: 'Telefoon', kEmail: 'E-mail',
+      firmaT: 'Bedrijfsgegevens', firmaHint: 'Eén keer invullen; komt automatisch op elke offerte.', fNaam: 'Bedrijfsnaam', fKvk: 'KvK-nummer',
+      fBtw: 'Btw-nummer', fIban: 'IBAN', fBetaling: 'Betalingsvoorwaarden', betalingPh: 'bijv. 40% bij opdracht, 60% na oplevering',
+      pickLogo: 'Logo kiezen', removeLogo: 'Logo verwijderen', noLogo: 'Geen logo',
+      offerteMaking: 'Offerte voor "{c}" wordt gemaakt…', offerteReady: 'Offerte voor "{c}" is klaar.', offerteFail: 'Offerte mislukt: {err}',
       dictate: 'Dicteren', listening: 'Luisteren… stop', record: 'Spraakbericht', recording: 'Opname {t} · stop',
       voice: 'Spraakbericht', voice1: '1 spraakbericht', voiceN: '{n} spraakberichten', voiceFile: 'Spraakbericht', play: 'Afspelen',
       micDenied: 'Geen toegang tot de microfoon. Sta dit toe in de instellingen van de telefoon.',
@@ -480,7 +531,7 @@
     for (const b of $('langSeg').children) b.setAttribute('aria-pressed', b.dataset.lang === lang);
     $('grid').dataset.empty = t('empty');
     $('conn').textContent = '';
-    renderHistory(); items.forEach(paint); refresh();
+    renderHistory(); items.forEach(paint); $('offLbl').textContent = t(offerteOn ? 'offerteOn' : 'offerteMode'); refresh();
   }
 
   const PLAY = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
@@ -535,9 +586,9 @@
     const shown = items.filter(i => i.kind === 'photo').length;
     $('count').textContent = shown ? `(${shown})` : '';
     $('pendingCount').textContent = fresh + waiting;
-    $('send').disabled = busy || !(fresh || waiting || hasNote);
-    if (!busy) $('sendLbl').textContent = fresh ? t('sendN', { p: summary(fresh - freshA, freshA) }) : waiting ? t('retryN', { n: waiting })
-      : hasNote ? t('sendNote') : t('send');
+    $('send').disabled = busy || !(fresh || waiting || hasNote || offerteOn);
+    if (!busy) $('sendLbl').textContent = (fresh ? t('sendN', { p: summary(fresh - freshA, freshA) }) : waiting ? t('retryN', { n: waiting })
+      : hasNote ? t('sendNote') : offerteOn ? t('onlyOfferte') : t('send')) + (offerteOn && (fresh || waiting || hasNote) ? t('plusOfferte') : '');
   }
 
   function renderHistory() {
@@ -552,27 +603,75 @@
     }) : [Object.assign(document.createElement('li'), { className: 'empty', textContent: t('historyEmpty') })]));
   }
 
-  // Gönderildi mesajı + tek düğmeyle offerte: Google o ziyaretin gün klasöründen bir Google Docs taslağı yapar.
-  function showSent(text, c, d) {
-    const m = $('msg'), box = document.createElement('div');
-    const b = Object.assign(document.createElement('button'), { className: 'ob', type: 'button', textContent: t('makeOfferte') });
-    b.onclick = async () => {
-      b.disabled = true; b.textContent = t('making');
-      try {
-        const out = await post({ key, action: 'offerte', customer: c, date: d });
-        if (!out.ok) throw new Error(out.error);
-        b.replaceWith(Object.assign(document.createElement('a'), { className: 'ob', href: out.url, target: '_blank', rel: 'noopener', textContent: t('openOfferte') }));
-      } catch (err) {
-        b.disabled = false; b.textContent = t('makeOfferte');
-        box.firstChild.textContent = navigator.onLine ? String(err.message || err) : t('connOffline');
-      }
-    };
-    box.append(document.createElement('span'), b);
-    box.firstChild.textContent = text;
-    m.replaceChildren(box);
-    m.className = 'msg show ok'; // kendiliğinden kapanmaz; bir sonraki gönderime kadar durur
-    m.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  // ---------- Şirket + müşteri bilgileri (offerte için, telefonda saklanır) ----------
+  const FIRMA_F = [['naam', 'fNaam', 'organization'], ['adres', 'kAdres', 'street-address'], ['plaats', 'kPlaats', 'address-level2'],
+    ['tel', 'kTel', 'tel', 'tel'], ['email', 'kEmail', 'email', 'email'], ['kvk', 'fKvk'], ['btw', 'fBtw'], ['iban', 'fIban'], ['betaling', 'fBetaling']];
+  const KLANT_F = [['adres', 'kAdres', 'street-address'], ['plaats', 'kPlaats', 'address-level2'], ['tel', 'kTel', 'tel', 'tel'], ['email', 'kEmail', 'email', 'email']];
+  const store_ = (k, d) => JSON.parse(localStorage.getItem(k) || d);
+  const firma = () => store_('firma', '{}');
+  function fields(box, defs, values, onInput) {
+    box.replaceChildren(...defs.map(([k, label, ac, type]) => {
+      const l = document.createElement('label');
+      l.className = 'f';
+      l.innerHTML = `<span data-i18n="${label}"></span><input type="${type || 'text'}" autocomplete="${ac || 'off'}">`;
+      const inp = l.querySelector('input');
+      inp.dataset.k = k;
+      inp.value = values[k] || '';
+      if (k === 'betaling') inp.dataset.i18nPh = 'betalingPh';
+      if (type !== 'email' && k !== 'iban') inp.autocapitalize = 'words';
+      inp.addEventListener('input', () => onInput(k, inp.value.trim()));
+      return l;
+    }));
   }
+  fields($('firmaFields'), FIRMA_F, firma(), (k, v) => { const f = firma(); f[k] = v; localStorage.setItem('firma', JSON.stringify(f)); });
+  const klantKey = () => $('customer').value.replace(/\s+/g, ' ').trim().toLowerCase();
+  const klantNow = () => Object.fromEntries([...$('klantFields').querySelectorAll('input')].map(i => [i.dataset.k, i.value.trim()]));
+  fields($('klantFields'), KLANT_F, {}, () => {
+    if (!klantKey()) return;
+    const all = store_('klanten', '{}');
+    all[klantKey()] = klantNow();
+    localStorage.setItem('klanten', JSON.stringify(all));
+  });
+  // Aynı müşteri tekrar yazılınca bilgileri kendiliğinden dolsun.
+  function loadKlant() {
+    const k = store_('klanten', '{}')[klantKey()] || {};
+    for (const i of $('klantFields').querySelectorAll('input')) i.value = k[i.dataset.k] || '';
+  }
+
+  function showLogo() {
+    const src = firma().logo;
+    $('logoImg').hidden = !src; $('noLogo').hidden = !!src; $('logoDel').hidden = !src;
+    if (src) $('logoImg').src = src; else $('logoImg').removeAttribute('src');
+  }
+  $('logoIn').addEventListener('change', async e => {
+    const file = e.target.files[0]; e.target.value = '';
+    if (!file) return;
+    const img = new Image();
+    img.src = URL.createObjectURL(file);
+    try { await img.decode(); } catch { return; } finally { URL.revokeObjectURL(img.src); }
+    const k = Math.min(1, 600 / Math.max(img.naturalWidth, img.naturalHeight)); // offerte'de küçük basılır; 600 px yeter
+    const c = document.createElement('canvas');
+    c.width = Math.round(img.naturalWidth * k); c.height = Math.round(img.naturalHeight * k);
+    c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+    const f = firma();
+    f.logo = file.type === 'image/png' ? c.toDataURL('image/png') : c.toDataURL('image/jpeg', 0.9); // PNG şeffaflığı korunsun
+    localStorage.setItem('firma', JSON.stringify(f));
+    showLogo();
+  });
+  $('logoDel').onclick = () => { const f = firma(); delete f.logo; localStorage.setItem('firma', JSON.stringify(f)); showLogo(); };
+  showLogo();
+
+  // Offerte modu: açıksa Gönder'den sonra o ziyaret için offerte kendiliğinden hazırlanır.
+  let offerteOn = false;
+  function setOfferte(on) {
+    offerteOn = on;
+    $('offerteMode').setAttribute('aria-pressed', on);
+    $('offLbl').textContent = t(on ? 'offerteOn' : 'offerteMode');
+    $('klantCard').hidden = !on;
+    refresh();
+  }
+  $('offerteMode').onclick = () => { setOfferte(!offerteOn); if (offerteOn) loadKlant(); };
+  $('customer').addEventListener('change', () => { if (offerteOn) loadKlant(); });
 
   // ---------- Ayarlar ----------
   const sheet = $('settings');
@@ -720,6 +819,42 @@
   // Uygulamadan çıkılırsa kaydı bitir ve sakla (arka planda mikrofon zaten kesilir).
   document.addEventListener('visibilitychange', () => { if (document.hidden && recorder) recorder.stop(); });
 
+  // Bekleyen offerte'ler: ilgili fotoğraflar gidince Google'da taslak yapılır (internet yoksa sonra).
+  const pendingOff = () => store_('pendingOfferte', '[]');
+  const dropOff = o => localStorage.setItem('pendingOfferte', JSON.stringify(pendingOff().filter(x => !(x.c === o.c && x.d === o.d))));
+  function firmaPayload() {
+    const f = firma(), out = { ...f };
+    delete out.logo;
+    const m = /^data:(image\/(?:png|jpeg));base64,(.+)$/.exec(f.logo || '');
+    if (m) { out.logoType = m[1]; out.logo = m[2]; }
+    return out;
+  }
+  function showLink(text, url) {
+    const m = $('msg'), box = document.createElement('div');
+    box.append(Object.assign(document.createElement('span'), { textContent: text }),
+      Object.assign(document.createElement('a'), { className: 'ob', href: url, target: '_blank', rel: 'noopener', textContent: t('openOfferte') }));
+    m.replaceChildren(box);
+    m.className = 'msg show ok'; // kendiliğinden kapanmaz
+    m.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+  let offBusy = false;
+  async function makeOffertes() {
+    if (offBusy || !navigator.onLine) return;
+    offBusy = true;
+    try {
+      for (const o of pendingOff()) {
+        if (items.some(i => i.customer === o.c && i.date === o.d && i.state !== 'done')) continue; // fotoğraflar henüz gitmedi
+        show(t('offerteMaking', { c: o.c }), 'info');
+        let out;
+        try { out = await post({ key, action: 'offerte', customer: o.c, date: o.d, klant: o.klant, firma: firmaPayload() }); }
+        catch { show(t('offline', { n: 1 }), 'info'); break; } // ağ hatası: sonra tekrar denenir
+        dropOff(o); // sunucu cevap verdi: başarılı da olsa hatalı da olsa tekrar sorma
+        if (out.ok) showLink(t('offerteReady', { c: o.c }), out.url);
+        else show(t('offerteFail', { err: out.error }), 'err');
+      }
+    } finally { offBusy = false; }
+  }
+
   // ---------- Gönderme ----------
   const b64 = blob => new Promise((ok, no) => {
     const r = new FileReader();
@@ -748,7 +883,8 @@
     const customer = $('customer').value.replace(/\s+/g, ' ').trim();
     const fresh = items.filter(i => !i.customer);
     const text = $('note').value.trim();
-    if (fresh.length || text) {
+    const wantOff = offerteOn;
+    if (fresh.length || text || wantOff) {
       if (!customer) { show(t('needCustomer'), 'err'); $('customer').focus(); return; }
       // Gönder'e basıldığı an fotoğraflar bu müşteriye/güne bağlanır; internet sonra gelse de doğru klasöre gider.
       const date = today(), st = stamp(), who = fileSafe(worker());
@@ -771,6 +907,12 @@
       localStorage.setItem('lastCustomer', customer);
       const r = [customer, ...JSON.parse(localStorage.getItem('recent') || '[]').filter(n => n.toLowerCase() !== customer.toLowerCase())].slice(0, 30);
       localStorage.setItem('recent', JSON.stringify(r));
+      if (wantOff) {
+        const list = pendingOff().filter(o => !(o.c === customer && o.d === date));
+        list.push({ c: customer, d: date, klant: klantNow() });
+        localStorage.setItem('pendingOfferte', JSON.stringify(list));
+        setOfferte(false);
+      }
     }
     drain(true);
   };
@@ -778,7 +920,7 @@
   async function drain(manual) {
     if (busy) return;
     const todo = items.filter(i => i.customer && i.state !== 'done');
-    if (!todo.length || (!manual && !navigator.onLine)) { refresh(); return; }
+    if (!todo.length || (!manual && !navigator.onLine)) { refresh(); makeOffertes(); return; }
     busy = true; refresh();
     $('msg').className = 'msg';
     let sent = 0, failed = 0, lastErr;
@@ -814,9 +956,9 @@
     else if (sent) {
       const e = [...log.values()];
       const what = summary(e.reduce((s, x) => s + x.p, 0), e.reduce((s, x) => s + (x.a || 0), 0), e.some(x => x.note));
-      const last = e[e.length - 1];
-      showSent(t('sentOk', { c: [...new Set(e.map(x => x.c))].join(', '), what }), last.c, last.d);
+      show(t('sentOk', { c: [...new Set(e.map(x => x.c))].join(', '), what }), 'ok');
     }
+    makeOffertes();
     setTimeout(() => { for (const it of items.filter(i => i.state === 'done')) drop(it); refresh(); }, 1500);
     refresh();
   }
