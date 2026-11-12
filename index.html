@@ -318,6 +318,17 @@
   .pl .e { width: 58px; }
   .pl .p { width: 84px; text-align: right; }
   .pl-empty { color: var(--muted); font-size: 13.5px; padding: 10px 0 4px; }
+  /* Offerte: gönderilmeden önce seçim */
+  dialog.ask .sheet-body { padding-top: 22px; }
+  dialog.ask h3 { margin: 4px 2px 4px; font-size: 21px; font-weight: 800; }
+  .ask-opt { appearance: none; width: 100%; display: flex; align-items: center; gap: 14px; padding: 14px; border-radius: 18px; cursor: pointer;
+    border: 1.5px solid var(--line); background: var(--card); color: var(--ink); font: inherit; text-align: left; transition: transform .1s; }
+  .ask-opt:active { transform: scale(.98); }
+  .ask-opt.main { border-color: var(--primary); background: var(--primary-soft); }
+  .ask-opt .sq svg { width: 21px; height: 21px; }
+  .ask-opt b { display: block; font-size: 16.5px; }
+  .ask-opt small { display: block; color: var(--muted); font-size: 13px; line-height: 1.4; margin-top: 2px; overflow-wrap: anywhere; }
+  .msg .ob.share { background: #25d366; border: 0; cursor: pointer; font: inherit; font-weight: 700; font-size: 14px; }
   .hist-hint { margin: 2px 0 8px; text-align: center; color: var(--muted); font-size: 12.5px; }
 
   /* Şirket bilgileri: mavi katlanır kart */
@@ -489,6 +500,16 @@
   </div>
 </dialog>
 
+<dialog class="sheet ask" id="offAsk" aria-labelledby="askT">
+  <div class="sheet-head"></div>
+  <div class="sheet-body">
+    <h3 id="askT" data-i18n="askT"></h3>
+    <button class="ask-opt" type="button" data-v="save"><span class="sq c1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 13l2 2 4-4"/></svg></span><span><b data-i18n="askSave"></b><small data-i18n="askSaveS"></small></span></button>
+    <button class="ask-opt main" type="button" data-v="send"><span class="sq c0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg></span><span><b data-i18n="askSend"></b><small id="askSendS"></small></span></button>
+    <button class="btn-soft" type="button" data-v="" data-i18n="drCancel"></button>
+  </div>
+</dialog>
+
 <dialog class="sheet" id="settings" aria-labelledby="settingsTitle">
   <div class="sheet-head">
     <h2 id="settingsTitle" data-i18n="settings"></h2>
@@ -566,7 +587,7 @@
       <p class="tagline" data-i18n="tagline"></p>
       <div class="rows">
         <div class="row"><span data-i18n="app"></span><span>Foto Gönder</span></div>
-        <div class="row"><span data-i18n="version"></span><span>3.25</span></div>
+        <div class="row"><span data-i18n="version"></span><span>3.26</span></div>
         <div class="row"><span data-i18n="developer"></span><span>Cintra Software</span></div>
       </div>
       <p class="desc" data-i18n="desc"></p>
@@ -575,7 +596,7 @@
   </div>
 </dialog>
 
-<script src="config.js?v=325"></script>
+<script src="config.js?v=326"></script>
 <script>
 (async () => {
   const MAX_SIDE = 2560;            // Drive'a giden fotoğrafın uzun kenarı; offerte için fazlasıyla yeterli
@@ -624,6 +645,11 @@
       firmaT: 'Şirket bilgileri', firmaHint: 'Bir kez doldurun; her offerte\'ye otomatik eklenir.', fNaam: 'Firma adı', firmaEmpty: 'Henüz doldurulmadı',
       fBtw: 'BTW numarası', fIban: 'IBAN', fBetaling: 'Ödeme şartı', betalingPh: 'örn. %40 siparişte, %60 teslimde',
       pickLogo: 'Logo seç', removeLogo: 'Logoyu kaldır', noLogo: 'Logo yok',
+      askT: 'Offerte ne olsun?', askSave: 'Sadece kaydet', askSaveS: 'Ofiste (Drive) kalır, müşteriye gitmez.',
+      askSend: 'Kaydet + müşteriye gönder', askSendMail: '{e} adresine e-postayla gider. WhatsApp için Paylaş düğmesi de çıkar.',
+      askSendNo: 'Müşterinin e-postası yok: offerte hazır olunca Paylaş ile WhatsApp\'tan gönderin.',
+      offerteMailed: '"{c}" offerte hazır ve {e} adresine gönderildi.', offerteNoMail: '"{c}" offerte hazır. E-posta yok: Paylaş ile gönderin.',
+      offerteMailErr: '"{c}" offerte hazır ama e-posta gitmedi ({err}). Paylaş ile gönderin.', share: 'Paylaş',
       offerteMaking: '"{c}" için offerte hazırlanıyor…', offerteReady: '"{c}" için offerte hazır.', offerteFail: 'Offerte yapılamadı: {err}',
       dictate: 'Sesle yaz', listening: 'Dinliyorum… bitir', record: 'Sesli mesaj', recording: 'Kayıt {t} · bitir',
       voice: 'Sesli mesaj', voice1: '1 sesli mesaj', voiceN: '{n} sesli mesaj', voiceFile: 'Sesli-mesaj', play: 'Dinle',
@@ -666,6 +692,11 @@
       firmaT: 'Bedrijfsgegevens', firmaHint: 'Eén keer invullen; komt automatisch op elke offerte.', fNaam: 'Bedrijfsnaam', firmaEmpty: 'Nog niet ingevuld',
       fBtw: 'Btw-nummer', fIban: 'IBAN', fBetaling: 'Betalingsvoorwaarden', betalingPh: 'bijv. 40% bij opdracht, 60% na oplevering',
       pickLogo: 'Logo kiezen', removeLogo: 'Logo verwijderen', noLogo: 'Geen logo',
+      askT: 'Wat doen we met de offerte?', askSave: 'Alleen opslaan', askSaveS: 'Blijft op kantoor (Drive), gaat niet naar de klant.',
+      askSend: 'Opslaan + naar klant sturen', askSendMail: 'Gaat per e-mail naar {e}. Plus een knop Delen voor WhatsApp.',
+      askSendNo: 'Geen e-mailadres van de klant: stuur de offerte straks via Delen (WhatsApp).',
+      offerteMailed: 'Offerte voor "{c}" is klaar en verstuurd naar {e}.', offerteNoMail: 'Offerte voor "{c}" is klaar. Geen e-mail: stuur via Delen.',
+      offerteMailErr: 'Offerte voor "{c}" is klaar, maar de e-mail is niet verstuurd ({err}). Stuur via Delen.', share: 'Delen',
       offerteMaking: 'Offerte voor "{c}" wordt gemaakt…', offerteReady: 'Offerte voor "{c}" is klaar.', offerteFail: 'Offerte mislukt: {err}',
       dictate: 'Dicteren', listening: 'Luisteren… stop', record: 'Spraakbericht', recording: 'Opname {t} · stop',
       voice: 'Spraakbericht', voice1: '1 spraakbericht', voiceN: '{n} spraakberichten', voiceFile: 'Spraakbericht', play: 'Afspelen',
@@ -1233,10 +1264,24 @@
     if (m) { out.logoType = m[1]; out.logo = m[2]; }
     return out;
   }
-  function showLink(text, url) {
+  function showLink(text, url, pdf) {
     const m = $('msg'), box = document.createElement('div');
     box.append(Object.assign(document.createElement('span'), { textContent: text }),
       Object.assign(document.createElement('a'), { className: 'ob', href: url, target: '_blank', rel: 'noopener', textContent: t('openOfferte') }));
+    if (pdf) { // müşteriye WhatsApp vb. ile: PDF dosyası paylaşılır (Drive linki müşteriye açık değil)
+      const b = Object.assign(document.createElement('button'), { className: 'ob share', type: 'button', textContent: t('share') });
+      b.onclick = async () => {
+        const file = new File([Uint8Array.from(atob(pdf.data), c => c.charCodeAt(0))], pdf.name, { type: 'application/pdf' });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          try { await navigator.share({ files: [file], title: pdf.name }); } catch { /* vazgeçildi */ }
+          return;
+        }
+        const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(file), download: pdf.name }); // paylaşım yoksa indir
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+      };
+      box.append(b);
+    }
     m.replaceChildren(box);
     m.className = 'msg show ok'; // kendiliğinden kapanmaz
     m.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -1250,10 +1295,12 @@
         if (items.some(i => i.customer === o.c && i.date === o.d && i.state !== 'done')) continue; // fotoğraflar henüz gitmedi
         show(t('offerteMaking', { c: o.c }), 'info');
         let out;
-        try { out = await post({ key, action: 'offerte', customer: o.c, date: o.d, klant: o.klant, regels: o.regels, btw: o.btw, firma: firmaPayload() }); }
+        try { out = await post({ key, action: 'offerte', customer: o.c, date: o.d, klant: o.klant, regels: o.regels, btw: o.btw, mail: !!o.mail, firma: firmaPayload() }); }
         catch { show(t('offline', { n: 1 }), 'info'); break; } // ağ hatası: sonra tekrar denenir
         dropOff(o); // sunucu cevap verdi: başarılı da olsa hatalı da olsa tekrar sorma
-        if (out.ok) showLink(t('offerteReady', { c: o.c }), out.url);
+        if (out.ok && o.mail) showLink(out.mailed ? t('offerteMailed', { c: o.c, e: out.mailed }) : out.mailError ? t('offerteMailErr', { c: o.c, err: out.mailError })
+          : t('offerteNoMail', { c: o.c }), out.url, out.pdf && { data: out.pdf, name: `Offerte ${out.nr} – ${o.c}.pdf` });
+        else if (out.ok) showLink(t('offerteReady', { c: o.c }), out.url);
         else show(t('offerteFail', { err: out.error }), 'err');
       }
     } finally { offBusy = false; }
@@ -1377,6 +1424,19 @@
     r.readAsDataURL(blob);
   });
 
+  // Offerte modunda Gönder'e basınca: sadece kaydet / kaydet + müşteriye gönder. Vazgeçilirse ''.
+  function askOff() {
+    const d = $('offAsk'), mail = klantNow().email;
+    $('askSendS').textContent = /^[^\s@,;]+@[^\s@,;]+\.[^\s@,;]+$/.test(mail) ? t('askSendMail', { e: mail }) : t('askSendNo');
+    return new Promise(done => {
+      const end = v => { d.close(); done(v); };
+      for (const b of d.querySelectorAll('[data-v]')) b.onclick = () => end(b.dataset.v);
+      d.oncancel = e => { e.preventDefault(); end(''); };
+      d.onclick = e => { if (e.target === d) end(''); }; // arka plana dokununca kapan
+      d.showModal();
+    });
+  }
+
   async function upload(it) {
     const body = { key, customer: it.customer, date: it.date, fileName: it.fileName,
       mimeType: it.blob.type.split(';')[0] || 'image/jpeg', data: await b64(it.blob) };
@@ -1400,6 +1460,8 @@
     const wantOff = offerteOn;
     if (fresh.length || text || wantOff) {
       if (!customer) { show(t('needCustomer'), 'err'); $('customer').focus(); return; }
+      let mail = false;
+      if (wantOff) { const v = await askOff(); if (!v) return; mail = v === 'send'; }
       // Gönder'e basıldığı an fotoğraflar bu müşteriye/güne bağlanır; internet sonra gelse de doğru klasöre gider.
       const date = today(), st = stamp(), who = fileSafe(worker());
       let np = 0, na = 0;
@@ -1423,7 +1485,7 @@
       if (wantOff) {
         const list = pendingOff().filter(o => !(o.c === customer && o.d === date));
         const rg = regels.filter(r => r.o).map(({ o, e, n, p }) => ({ o, e, n, p }));
-        list.push({ c: customer, d: date, klant: klantNow(), regels: rg, btw: Number($('btw').value) });
+        list.push({ c: customer, d: date, klant: klantNow(), regels: rg, btw: Number($('btw').value), mail });
         learnPrijzen(rg);
         regels = []; werkKey = ''; // sonraki müşteri boş başlasın (bu müşterinin satırları saklı)
         localStorage.setItem('pendingOfferte', JSON.stringify(list));
