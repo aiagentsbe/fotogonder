@@ -10,9 +10,9 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Foto Gönder">
 <title>Foto Gönder</title>
-<link rel="manifest" href="manifest.webmanifest?v=319">
-<!-- iPhone, manifest varsa ana ekran ikonunu start_url ("./") ile açar ve ?k= anahtarı kaybolur; manifest yoksa o anki (anahtarlı) adresi saklar. -->
-<script>if (/iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Mac/.test(navigator.platform))) document.querySelector('link[rel=manifest]').remove();</script>
+<!-- iPhone, manifest varsa ana ekran ikonunu start_url ("./") ile açar ve ?k= anahtarı kaybolur; manifest yoksa o anki (anahtarlı) adresi saklar.
+     Bu yüzden manifest sayfaya yalnız iPhone/iPad dışında eklenir (sonradan silmek yerine hiç koymamak: Safari onu önceden okumuş olamaz). -->
+<script>if (!(/iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Mac/.test(navigator.platform)))) document.head.insertAdjacentHTML('beforeend', '<link rel="manifest" href="manifest.webmanifest?v=319">');</script>
 <link rel="icon" href="favicon.png?v=317" type="image/png">
 <link rel="apple-touch-icon" href="icon-180.png?v=317">
 <style>
@@ -399,6 +399,7 @@
     <div data-i18n="notConfigured"></div>
     <input id="setupIn" class="set-in" type="text" data-i18n-ph="setupPh" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go">
     <button class="btn-send" id="setupGo" type="button"><span class="lbl" data-i18n="setupGo"></span></button>
+    <small style="display:block;margin-top:10px;opacity:.6">v3.30</small>
   </div>
 
   <section class="seg" role="group">
@@ -599,7 +600,7 @@
       <p class="tagline" data-i18n="tagline"></p>
       <div class="rows">
         <div class="row"><span data-i18n="app"></span><span>Foto Gönder</span></div>
-        <div class="row"><span data-i18n="version"></span><span>3.28</span></div>
+        <div class="row"><span data-i18n="version"></span><span>3.30</span></div>
         <div class="row"><span data-i18n="developer"></span><span>Cintra Software</span></div>
       </div>
       <p class="desc" data-i18n="desc"></p>
@@ -618,8 +619,10 @@
   // Anahtar kurulum linkinden (?k=…) gelir. iOS ana ekran uygulaması Safari'nin hafızasını paylaşmaz,
   // bu yüzden link adreste kalır ve ayrıca burada saklanır.
   const urlKey = new URLSearchParams(location.search).get('k');
-  if (urlKey) localStorage.setItem('key', urlKey);
-  const key = urlKey || localStorage.getItem('key');
+  // Üçüncü yol çerez: iOS ana ekrana eklerken Safari'nin çerezlerini uygulamaya kopyalayabilir (hafızayı kopyalamaz).
+  const cookieKey = (document.cookie.match(/(?:^|; )k=([^;]+)/) || [])[1];
+  const key = urlKey || localStorage.getItem('key') || (cookieKey ? decodeURIComponent(cookieKey) : null);
+  if (key) { localStorage.setItem('key', key); document.cookie = 'k=' + encodeURIComponent(key) + '; max-age=31536000; samesite=lax'; }
   const configured = !!(scriptUrl && key);
 
   // ---------- Dil ----------
@@ -742,7 +745,7 @@
   const req = r => new Promise((ok, no) => { r.onsuccess = () => ok(r.result); r.onerror = () => no(r.error); });
   const store = mode => db.transaction('q', mode).objectStore('q');
   const dbPut = it => db ? req(store('readwrite').put({ id: it.id, kind: it.kind, blob: it.blob,
-    dur: it.dur, customer: it.customer, date: it.date, fileName: it.fileName })) : Promise.resolve();
+    dur: it.dur, customer: it.customer, date: it.date, worker: it.worker, fileName: it.fileName })) : Promise.resolve();
   const dbDel = id => db ? req(store('readwrite').delete(id)) : Promise.resolve();
   const dbAll = () => db ? req(store('readonly').getAll()) : Promise.resolve([]);
 
@@ -1328,7 +1331,7 @@
         if (items.some(i => i.customer === o.c && i.date === o.d && i.state !== 'done')) continue; // fotoğraflar henüz gitmedi
         show(t('offerteMaking', { c: o.c }), 'info');
         let out;
-        try { out = await post({ key, action: 'offerte', customer: o.c, date: o.d, klant: o.klant, regels: o.regels, btw: o.btw, mail: !!o.mail, firma: firmaPayload() }); }
+        try { out = await post({ key, action: 'offerte', customer: o.c, date: o.d, worker: o.w || '', klant: o.klant, regels: o.regels, btw: o.btw, mail: !!o.mail, firma: firmaPayload() }); }
         catch { show(t('offline', { n: 1 }), 'info'); break; } // ağ hatası: sonra tekrar denenir
         dropOff(o); // sunucu cevap verdi: başarılı da olsa hatalı da olsa tekrar sorma
         if (out.ok && o.mail) showLink(out.mailed ? t('offerteMailed', { c: o.c, e: out.mailed }) : out.mailError ? t('offerteMailErr', { c: o.c, err: out.mailError })
@@ -1471,7 +1474,7 @@
   }
 
   async function upload(it) {
-    const body = { key, customer: it.customer, date: it.date, fileName: it.fileName,
+    const body = { key, customer: it.customer, date: it.date, worker: it.worker || '', fileName: it.fileName,
       mimeType: it.blob.type.split(';')[0] || 'image/jpeg', data: await b64(it.blob) };
     let last;
     for (let attempt = 0; attempt < 3; attempt++) {
@@ -1502,13 +1505,13 @@
         const audio = it.kind === 'audio';
         const first = audio ? t('voiceFile') : '';
         const ext = audio ? AUDIO_EXT[it.blob.type] || 'webm' : 'jpg';
-        Object.assign(it, { customer, date, state: 'queued',
+        Object.assign(it, { customer, date, worker: worker(), state: 'queued',
           fileName: [first, st, who, audio ? ++na : ++np].filter(Boolean).join('_') + '.' + ext });
       }
       if (text) {
         const head = `${t('customer')}: ${customer}\n${t('dateL')}: ${date}` + (worker() ? `\n${t('byL')}: ${worker()}` : '');
         items.push({ id: newId(), kind: 'note', blob: new Blob([`${head}\n\n${text}\n`], { type: 'text/plain' }),
-          customer, date, state: 'queued', fileName: [t('noteFile'), st, who].filter(Boolean).join('_') + '.txt' });
+          customer, date, worker: worker(), state: 'queued', fileName: [t('noteFile'), st, who].filter(Boolean).join('_') + '.txt' });
       }
       await Promise.all(items.filter(i => i.state === 'queued').map(dbPut));
       fresh.forEach(paint);
@@ -1518,7 +1521,7 @@
       if (wantOff) {
         const list = pendingOff().filter(o => !(o.c === customer && o.d === date));
         const rg = regels.filter(r => r.o).map(({ o, e, n, p }) => ({ o, e, n, p }));
-        list.push({ c: customer, d: date, klant: klantNow(), regels: rg, btw: Number($('btw').value), mail });
+        list.push({ c: customer, d: date, w: worker(), klant: klantNow(), regels: rg, btw: Number($('btw').value), mail });
         learnPrijzen(rg);
         regels = []; werkKey = ''; // sonraki müşteri boş başlasın (bu müşterinin satırları saklı)
         localStorage.setItem('pendingOfferte', JSON.stringify(list));
