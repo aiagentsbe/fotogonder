@@ -399,7 +399,7 @@
     <div data-i18n="notConfigured"></div>
     <input id="setupIn" class="set-in" type="text" data-i18n-ph="setupPh" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go">
     <button class="btn-send" id="setupGo" type="button"><span class="lbl" data-i18n="setupGo"></span></button>
-    <small style="display:block;margin-top:10px;opacity:.6">v3.30</small>
+    <small style="display:block;margin-top:10px;opacity:.6">v3.31</small>
   </div>
 
   <section class="seg" role="group">
@@ -600,7 +600,7 @@
       <p class="tagline" data-i18n="tagline"></p>
       <div class="rows">
         <div class="row"><span data-i18n="app"></span><span>Foto Gönder</span></div>
-        <div class="row"><span data-i18n="version"></span><span>3.30</span></div>
+        <div class="row"><span data-i18n="version"></span><span>3.31</span></div>
         <div class="row"><span data-i18n="developer"></span><span>Cintra Software</span></div>
       </div>
       <p class="desc" data-i18n="desc"></p>
@@ -656,7 +656,7 @@
       prijsEmpty: 'Henüz fiyat yok.',
       plusOfferte: ' + offerte', onlyOfferte: 'Offerte hazırla', klantT: 'Müşteri bilgileri',
       custGeo: 'Adresi konumdan doldur', geo: 'Konumdan doldur', geoBusy: 'Konum alınıyor…', geoDenied: 'Konum izni yok. Telefon ayarlarından bu uygulamaya konum izni verin.',
-      geoFail: 'Adres bulunamadı. Lütfen elle yazın.',
+      geoFail: 'Adres bulunamadı. Lütfen elle yazın.', geoOff: 'Telefonun konumu kapalı. Konumu açıp tekrar deneyin.',
       kAdres: 'Adres', kPlaats: 'Posta kodu ve şehir', kTel: 'Telefon', kEmail: 'E-posta',
       firmaT: 'Şirket bilgileri', firmaHint: 'Bir kez doldurun; her offerte\'ye otomatik eklenir.', fNaam: 'Firma adı', firmaEmpty: 'Henüz doldurulmadı',
       fBtw: 'BTW numarası', fIban: 'IBAN', fBetaling: 'Ödeme şartı', betalingPh: 'örn. %40 siparişte, %60 teslimde',
@@ -704,7 +704,7 @@
       prijsEmpty: 'Nog geen prijzen.',
       plusOfferte: ' + offerte', onlyOfferte: 'Offerte maken', klantT: 'Klantgegevens',
       custGeo: 'Adres invullen via locatie', geo: 'Invullen via locatie', geoBusy: 'Locatie ophalen…', geoDenied: 'Geen toegang tot locatie. Sta dit toe in de instellingen van de telefoon.',
-      geoFail: 'Adres niet gevonden. Vul het handmatig in.',
+      geoFail: 'Adres niet gevonden. Vul het handmatig in.', geoOff: 'Locatie staat uit op de telefoon. Zet locatie aan en probeer opnieuw.',
       kAdres: 'Adres', kPlaats: 'Postcode en plaats', kTel: 'Telefoon', kEmail: 'E-mail',
       firmaT: 'Bedrijfsgegevens', firmaHint: 'Eén keer invullen; komt automatisch op elke offerte.', fNaam: 'Bedrijfsnaam', firmaEmpty: 'Nog niet ingevuld',
       fBtw: 'Btw-nummer', fIban: 'IBAN', fBetaling: 'Betalingsvoorwaarden', betalingPh: 'bijv. 40% bij opdracht, 60% na oplevering',
@@ -946,7 +946,11 @@
   function geoAdres(b, lbl, use) {
     b.disabled = true; if (lbl) lbl.textContent = t('geoBusy');
     const done = () => { b.disabled = false; if (lbl) lbl.textContent = t('geo'); };
-    navigator.geolocation.getCurrentPosition(async pos => {
+    // İçeride GPS çoğu zaman 15 sn'de konum bulamaz → bir kez Wi-Fi/baz istasyonu konumuyla (düşük hassasiyet) tekrar dene.
+    const get = (ok, fail) => navigator.geolocation.getCurrentPosition(ok, e => e.code === 1 ? fail(e)
+      : navigator.geolocation.getCurrentPosition(ok, fail, { enableHighAccuracy: false, timeout: 15000, maximumAge: 600000 }),
+    { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 });
+    get(async pos => {
       try {
         const { latitude: la, longitude: lo } = pos.coords;
         const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&addressdetails=1&zoom=18&accept-language=nl&lat=${la}&lon=${lo}`);
@@ -957,8 +961,7 @@
         use(street, city);
       } catch { show(navigator.onLine ? t('geoFail') : t('connOffline'), 'err'); }
       done();
-    }, err => { show(err.code === 1 ? t('geoDenied') : t('geoFail'), 'err'); done(); },
-    { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 });
+    }, err => { show(t(err.code === 1 ? 'geoDenied' : err.code === 2 ? 'geoOff' : 'geoFail'), 'err'); done(); });
   }
   function klantAdres(street, city) {
     for (const [k, v] of [['adres', street], ['plaats', city]]) {
